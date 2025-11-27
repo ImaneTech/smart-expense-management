@@ -2,9 +2,9 @@
 session_start();
 
 // Inclure les fichiers nécessaires
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../controllers/UserController.php';
-require_once __DIR__ . '/../includes/flash.php'; 
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../controllers/UserController.php';
+require_once __DIR__ . '/../../includes/flash.php'; 
 
 // Initialiser le contrôleur utilisateur
 $controller = new UserController($pdo);
@@ -44,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     <title>GoTrackr - Réinitialiser le mot de passe</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="../assets/css/login.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet"> 
-    <script src="../assets/js/resetpassword.js" defer></script>
+    <link href="../../assets/css/login.css" rel="stylesheet">
+    <link href="../../assets/css/stylee.css" rel="stylesheet"> 
+    <script src="../../assets/js/resetpassword.js" defer></script>
 </head>
 
 <body class="reset-page">
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         <!-- Left Section - Formulaire -->
         <div class="left-section">
             <div class="logo-section">
-                <img src="../assets/img/logo.png" alt="GoTrackr Logo" class="logo-icon">
+                <img src="../../assets/img/logo.png" alt="GoTrackr Logo" class="logo-icon">
                 <span class="logo-text">GoTrackr</span>
             </div>
             
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             <div class="illustration-container">
                 <h2 class="illustration-tagline">Sécurité renforcée</h2>
                 <p class="illustration-subtitle">Créez un mot de passe fort pour protéger votre compte</p>
-                <img src="../assets/img/reset_pass_pic.svg" alt="Reset Password Illustration" class="illustration-image">
+                <img src="../../assets/img/reset_pass_pic.svg" alt="Reset Password Illustration" class="illustration-image">
                 <div class="feature-badges">
                     <div class="feature-badge"><i class="fas fa-shield-alt"></i> Sécurisé</div>
                     <div class="feature-badge"><i class="fas fa-key"></i> Crypté</div>

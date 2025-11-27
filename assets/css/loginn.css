@@ -46,7 +46,7 @@ body {
 }
 
 .logo-icon {
-  width: 130px;
+  width: 60px;
   height: auto;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   cursor: pointer;
@@ -62,6 +62,7 @@ body {
 .logo-text {
   font-size: 39px;
   font-weight: 900;
+  margin-left: 30px;
   background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -215,9 +216,10 @@ body {
     color: #7cb342;
     text-decoration: none;
     font-weight: 600;
-    margin-left: auto; /* Force l'alignement à droite */
+    /*
+    margin-left: auto;
     white-space: nowrap; 
-    width: 98%;
+    width: 94%; */
     text-align: right;
   }
   

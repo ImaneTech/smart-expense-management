@@ -6,10 +6,10 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Inclusion des fichiers nécessaires
-require __DIR__ . '/../config.php';
-require_once(__DIR__ . '/../models/User.php');
-require __DIR__ . '/../controllers/UserController.php';
-require_once __DIR__ . '/../includes/flash.php';
+require __DIR__ . '/../../config.php';
+require_once(__DIR__ . '/../../models/User.php');
+require __DIR__ . '/../../controllers/UserController.php';
+require_once __DIR__ . '/../../includes/flash.php';
 
 
 // Initialisation du contrôleur utilisateur
@@ -28,10 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             header("Location: login.php");
             exit;
         }
-    } else {
-        // Cas où $result n'est pas un tableau
-        setFlash('error', 'Une erreur inattendue est survenue.');
+   } else {
+    if ($result !== false) {
+        setFlash('danger', 'Une erreur inattendue est survenue.');
     }
+}
 }
 
 
@@ -45,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     <title>GoTrackr - Sign up</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="../assets/css/signup.css" rel="stylesheet">
-    <script src="../assets/js/signup.js" defer></script>
-    <link href="../assets/css/style.css" rel="stylesheet"> <!-- CSS popups flash -->
+    <link href="../../assets/css/signupp.css" rel="stylesheet">
+    <script src="../../assets/js/signup.js" defer></script>
+    <link href="../../assets/css/stylee.css" rel="stylesheet">
     
 </head>
 
@@ -60,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         <!-- Left Section - Formulaire de inscription -->
         <div class="left-section">
             <div class="logo-section">
-                <img src="../assets/img/logo.png" alt="ExpenseTrack Logo" class="logo-icon">
+                <img src="../../assets/img/logo3.png" alt="ExpenseTrack Logo" class="logo-icon">
                 <span class="logo-text">GoTrackr</span>
             </div>
             <h2 class="form-title">Inscription</h2>
@@ -146,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             <div class="illustration-container">
                 <h2 class="illustration-tagline">Track Every Expense, Simplify Your Life</h2>
                 <p class="illustration-subtitle">Join thousands of users managing their finances smarter</p>
-                <img src="../assets/img/illustration.png" alt="Expense Management Illustration" class="illustration-image">
+                <img src="../../assets/img/illustration.png" alt="Expense Management Illustration" class="illustration-image">
                 <div class="feature-badges">
                     <div class="feature-badge"><i class="fas fa-check-circle"></i> Easy to Use</div>
                     <div class="feature-badge"><i class="fas fa-shield-alt"></i> Secure</div>

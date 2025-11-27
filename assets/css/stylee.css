@@ -1,0 +1,143 @@
+/* Container pour les popups */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;             /* Collé à droite avec une marge */
+    left: auto;              /* On annule le centrage */
+    transform: none;         /* On annule le centrage */
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;   /* Aligne les alertes à droite */
+    gap: 10px;
+}
+
+/* Style des popups */
+.flash-popup {
+  display: flex;
+    align-items: center;
+    width: 100%;           
+    min-width: 320px;      
+    max-width: 500px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+    transition: all 0.3s ease;
+    position: relative;
+    /* Animation for smooth entry */
+    animation: slideDownFade 0.4s ease-out;
+}
+.flash-popup {
+    animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%); /* Arrive depuis la droite */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Taille des icônes */
+.flash-popup svg.bi {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-right: 15px;
+    fill: currentColor;
+}
+
+/* Bouton de fermeture */
+.flash-popup .btn-close {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0;
+}
+.flash-popup .btn-close:hover {
+    opacity: 1;
+}
+/* Ajoutez !important pour forcer la couleur */
+.flash-popup.alert-info {
+    background-color: #cff4fc !important; 
+    color: #055160 !important;
+    border: 1px solid #b6effb !important;
+}
+
+/* Faites de même pour l'icône si nécessaire */
+.flash-popup.alert-info svg {
+    fill: #055160 !important;
+}
+
+.flash-popup.alert-success {
+    background-color: #dcfce7; 
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.flash-popup.alert-warning {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde047;
+}
+
+.flash-popup.alert-danger {
+    background-color: #fee2e2; 
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+
+/* =================== LAYOUT ==================== 
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+background-color: #f5f7fa;
+color: #2d3748;
+}
+
+.app-container {
+display: flex;
+min-height: 100vh;
+}
+
+.main-wrapper {
+flex: 1;
+display: flex;
+flex-direction: column;
+margin-left: 240px;
+transition: margin-left 0.3s ease;
+}
+
+.main-wrapper.sidebar-collapsed {
+margin-left: 70px;
+}
+
+ =================== SIDEBAR ==================== */

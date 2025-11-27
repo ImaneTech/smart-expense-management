@@ -1,45 +1,45 @@
 <?php
 session_start();
 
-//affichage des erreurs pour le débogage
+// Affichage des erreurs (A désactiver en production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+// Inclusion unique des fichiers
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../includes/flash.php';
+require_once __DIR__ . '/../../controllers/UserController.php';
 
-// Inclusion des fichiers nécessaires
- require_once __DIR__ . '/../includes/flash.php'; 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../controllers/UserController.php';
-
-// Gestion du formulaire de connexion
+// Gestion du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     
-    // Validation des champs
+    // Validation simple
     if (empty($email) || empty($password)) {
         setFlash('danger', 'Veuillez remplir tous les champs.');
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-         setFlash('danger', 'Format d\'email invalide.');
     } else {
         // Tentative de connexion
         $userController = new UserController($pdo);
-      $result = $userController->login($email, $password);
+        $result = $userController->login($email, $password);
 
-    if ($result['success']) {
-        // Connexion réussie
-        $_SESSION['user_id'] = $result['user']['id'];
-        $_SESSION['role'] = $result['user']['role'];
-        $_SESSION['email'] = $result['user']['email'];
-        $_SESSION['first_name'] = $result['user']['first_name'];
+        // $result est maintenant GARANTI d'être un tableau grâce à la modif du controller
+        if ($result['success']) {
+            // Mise en session
+            $_SESSION['user_id'] = $result['user']['id'];
+            $_SESSION['role'] = $result['user']['role'];
+            $_SESSION['email'] = $result['user']['email'];
+            $_SESSION['first_name'] = $result['user']['first_name'];
 
-        setFlash('success', $result['message']); // Message succès
-        header('Location: dashboard.php');
-        exit();
-    } else {
-        // Échec de la connexion
-       setFlash('danger', $result['message']); // Message erreur
-    }
+            // Message et redirection
+            setFlash('success', $result['message']);
+            header('Location: ../dashboard.php');
+            exit();
+        } else {
+            // Erreur
+            setFlash('danger', $result['message']);
+        }
     }
 }
 ?>
@@ -54,9 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="../assets/css/login.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
-    <script src="../assets/js/login.js" defer></script>
+    <link href="../../assets/css/loginn.css" rel="stylesheet">
+    <link href="../../assets/css/stylee.css" rel="stylesheet">
+    <script src="../../assets/js/login.js" defer></script>
 </head>
 
 
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body class="login-page">
   <?php
-require_once __DIR__ . '/../includes/flash.php';
+require_once __DIR__ . '/../../includes/flash.php';
 displayFlash();
 ?>
     <div class="login-container">
@@ -72,7 +72,7 @@ displayFlash();
         <div class="left-section">
             <!-- Logo -->
             <div class="logo-section">
-                <img src="../assets/img/logo.png" alt="ExpenseTrack Logo" class="logo-icon">
+                <img src="../../assets/img/logo3.png" alt="ExpenseTrack Logo" class="logo-icon">
                 <span class="logo-text">GoTrackr</span>
             </div>
             <!-- Formulaire -->
@@ -130,7 +130,7 @@ displayFlash();
                 <p class="illustration-subtitle">Gérez vos dépenses simplement et efficacement</p>
                 
                 <!-- Illustration Image -->
-                <img src="../assets/img/illustration.png" alt="Login Illustration" class="illustration-image">
+                <img src="../../assets/img/illustration.png" alt="Login Illustration" class="illustration-image">
                 
                 <!-- Feature Badges -->
                 <div class="feature-badges">

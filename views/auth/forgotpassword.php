@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     <!-- Bootstrap / Icons / CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="../assets/css/login.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet"> <!-- CSS popups flash -->
-    <script src="../assets/js/forgotpassword.js" defer></script>
+    <link href="../../assets/css/login.css" rel="stylesheet">
+    <link href="../../assets/css/stylee.css" rel="stylesheet"> <!-- CSS popups flash -->
+    <script src="../../assets/js/forgotpassword.js" defer></script>
 </head>
 
 <body class="forgot-page">
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
             <!-- Logo -->
             <div class="logo-section">
-                <img src="../assets/img/logo.png" alt="ExpenseTrack Logo" class="logo-icon">
+                <img src="../../assets/img/logo.png" alt="ExpenseTrack Logo" class="logo-icon">
                 <span class="logo-text">GoTrackr</span>
             </div>
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             <div class="illustration-container">
                 <h2 class="illustration-tagline">Récupération de mot de passe</h2>
                 <p class="illustration-subtitle">Nous vous enverrons un lien pour réinitialiser votre mot de passe.</p>
-                <img src="../assets/img/forgot-password.png" 
+                <img src="../../assets/img/forgot-password.png" 
                      alt="Illustration de mot de passe oublié" 
                      class="illustration-image">
             </div>
