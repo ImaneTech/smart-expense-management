@@ -1,42 +1,54 @@
 <?php
-require_once "../config.php";
-require_once "../models/Demande.php";
+session_start();
 
-$demandes = Demande::getAll($pdo);
+// 1. Sécurité : Vérifier si connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// 2. Récupération du rôle
+$role = $_SESSION['role']; // 'admin', 'manager', ou 'employe'
+
 ?>
 
-<tbody>
-<?php foreach ($demandes as $d): ?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GoTrackr - Tableau de bord</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+</head>
+<body>
 
-<tr>
-    <td><?= $d['id']; ?></td>
-    <td><?= $d['visiteur_nom']; ?></td>
-    <td><?= $d['objectif']; ?></td>
-    <td><?= $d['date_mission']; ?></td>
-    <td><?= $d['montant_total']; ?></td>
+    <?php include __DIR__ . '/includes/sidebar.php'; ?>
 
-    <td class="
-        <?php
-        if ($d['statut_actuel'] === 'validé') echo 'status-valid';
-        elseif ($d['statut_actuel'] === 'rejeté') echo 'status-rejet';
-        else echo 'status-attente';
-        ?>
-    ">
-        <?= ucfirst($d['statut_actuel']); ?>
-    </td>
-</tr>
+    <section class="home-section">
+        <div class="main-content">
+            
+            <?php
+            // 4. LOGIQUE D'AFFICHAGE DYNAMIQUE
+            // On charge un fichier différent selon le rôle
+            switch($role) {
+                case 'admin':
+                    include __DIR__ . '/admin/dashboard_admin.php';
+                    break;
+                
+                case 'manager':
+                    include __DIR__ . '/manager/dashboard_manager.php';
+                    break;
+                
+                case 'employe':
+                default:
+                    include __DIR__ . '/employe/dashboard_employe.php';
+                    break;
+            }
+            ?>
 
-<?php endforeach; ?>
-</tbody>
+        </div>
+    </section>
 
-<td>
-    <form method="POST" action="../controllers/demandesController.php?action=updateStatus">
-        <input type="hidden" name="demande_id" value="<?= $d['id']; ?>">
-        <input type="hidden" name="user_type" value="admin">
-        <input type="hidden" name="user_id" value="1">
-
-        <button name="statut" value="validé" class="btn btn-success btn-sm">Valider</button>
-        <button name="statut" value="rejeté" class="btn btn-danger btn-sm">Rejeter</button>
-    </form>
-</td>
-
+    <script src="../assets/js/sidebar.js"></script>
+</body>
+</html>
