@@ -1,82 +1,42 @@
 <?php
-session_start();
+require_once "../config.php";
+require_once "../models/Demande.php";
 
-// 1. Redirection si pas connecté
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-// 2. Récupération des infos
-$role = $_SESSION['role'];
-$name = $_SESSION['first_name'] ?? 'Utilisateur';
+$demandes = Demande::getAll($pdo);
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Dashboard</title>
-    
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    
-    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+<tbody>
+<?php foreach ($demandes as $d): ?>
 
-    <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; background: #f4f4f4; }
-        
-        .home-section {
-            position: relative;
-            left: 250px; /* Largeur sidebar ouverte */
-            width: calc(100% - 250px);
-            padding: 50px;
-            transition: all 0.3s ease;
-        }
+<tr>
+    <td><?= $d['id']; ?></td>
+    <td><?= $d['visiteur_nom']; ?></td>
+    <td><?= $d['objectif']; ?></td>
+    <td><?= $d['date_mission']; ?></td>
+    <td><?= $d['montant_total']; ?></td>
 
-        /* Ajustement quand la sidebar se ferme */
-        .sidebar.close ~ .home-section {
-            left: 88px;
-            width: calc(100% - 88px);
-        }
+    <td class="
+        <?php
+        if ($d['statut_actuel'] === 'validé') echo 'status-valid';
+        elseif ($d['statut_actuel'] === 'rejeté') echo 'status-rejet';
+        else echo 'status-attente';
+        ?>
+    ">
+        <?= ucfirst($d['statut_actuel']); ?>
+    </td>
+</tr>
 
-        .box-test {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
+<?php endforeach; ?>
+</tbody>
 
-    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+<td>
+    <form method="POST" action="../controllers/demandesController.php?action=updateStatus">
+        <input type="hidden" name="demande_id" value="<?= $d['id']; ?>">
+        <input type="hidden" name="user_type" value="admin">
+        <input type="hidden" name="user_id" value="1">
 
+        <button name="statut" value="validé" class="btn btn-success btn-sm">Valider</button>
+        <button name="statut" value="rejeté" class="btn btn-danger btn-sm">Rejeter</button>
+    </form>
+</td>
 
-    <section class="home-section">
-        
-        <h1>Test de connexion</h1>
-        <p>Bonjour, <strong><?php echo htmlspecialchars($name); ?></strong>.</p>
-        
-        <div class="box-test">
-            <h3>Diagnostic Rôle :</h3>
-            <p>Votre rôle en base de données est : <span style="font-size: 20px; font-weight: bold; color: blue; text-transform: uppercase;"><?php echo $role; ?></span></p>
-            
-            <hr>
-
-            <?php if($role === 'admin'): ?>
-                <p style="color: red; font-weight: bold;">🔴 VUE ADMIN : Je vois tout (Utilisateurs, Config).</p>
-            <?php elseif($role === 'manager'): ?>
-                <p style="color: orange; font-weight: bold;">🟠 VUE MANAGER : Je vois la validation d'équipe.</p>
-            <?php else: ?>
-                <p style="color: green; font-weight: bold;">🟢 VUE EMPLOYÉ : Je vois mes demandes.</p>
-            <?php endif; ?>
-        </div>
-
-    </section>
-
-    <script src="../../assets/js/sidebar.js"></script>
-
-</body>
-</html>
