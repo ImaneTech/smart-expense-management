@@ -1,5 +1,5 @@
 <?php
-require_once "../configG.php";
+require_once "../config.php";
 require_once "../models/Demande.php";
 
 $demandes = Demande::getAll($pdo);
