@@ -1,6 +1,6 @@
 <?php
 $dbname = "gestion_frais_db";
-require_once "";
+require_once "config.php";
 
 class Demande {
 
