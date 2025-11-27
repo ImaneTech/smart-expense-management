@@ -1,48 +1,30 @@
 <?php
-$dbname = "gestion_frais_db";
-require_once "../config.php";
+ class Demande {
 
-class Demande {
+    public static function getAll($pdo) {
+        $sql = "SELECT d.*, v.nom AS visiteur_nom 
+                FROM DemandeDeFrais d
+                JOIN Visiteur v ON d.visiteur_id = v.id
+                ORDER BY d.date_creation DESC";
 
-    private $pdo;
-
-    public function __construct() {
-        $db = new Database();
-        $this->pdo = $db->getConnection();
-    }
-
-    // Récupérer toutes les demandes
-    public function getAllDemandes() {
-
-        $sql = "SELECT d.id, d.date_demande, d.montant_total, d.status,
-                       v.nom AS visiteur, c.libelle AS categorie
-                FROM demandes_frais d
-                JOIN visiteur v ON d.id_visiteur = v.id
-                JOIN categorie_frais c ON d.id_categorie = c.id
-                ORDER BY d.date_demande DESC";
-
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $pdo->prepare($sql);
         $stmt->execute();
+         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+     }
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public static function updateStatus($pdo, $demande_id, $new_status, $user_type, $user_id) {
+
+        // 1) Update statut dans demande
+        $sql1 = "UPDATE DemandeDeFrais SET statut_actuel = ? WHERE id = ?";
+        $stmt1 = $pdo->prepare($sql1);
+        $stmt1->execute([$new_status, $demande_id]);
+
+        // 2) Ajouter dans historique
+        $sql2 = "INSERT INTO HistoriqueStatus(demande_id, nouveau_statut, utilisateur) 
+                 VALUES (?, ?, ?)";
+        $stmt2 = $pdo->prepare($sql2);
+        $stmt2->execute([$demande_id, $new_status, $user_type . " #" . $user_id]);
     }
 
-    // Récupérer une demande par ID
-    public function getDemandeById($id) {
-
-        $sql = "SELECT * FROM demandes_frais WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Mise à jour du statut
-    public function updateStatus($id, $status) {
-
-        $sql = "UPDATE demandes_frais SET status = ? WHERE id = ?";
-        $stmt = $this->pdo->prepare($sql);
-
-        return $stmt->execute([$status, $id]);
-    }
 }
+?>
