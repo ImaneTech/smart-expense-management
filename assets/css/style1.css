@@ -1,0 +1,19 @@
+body {
+    background-color: #1c1c1c;
+}
+
+.nav-link.active {
+    color: #000 !important;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 5px;
+}
