@@ -14,31 +14,33 @@ $role = $_SESSION['role']; // 'admin', 'manager', ou 'employe'
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>GoTrackr - Tableau de bord</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
 </head>
+
 <body>
 
-    <?php include __DIR__ . '/includes/sidebar.php'; ?>
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
 
     <section class="home-section">
         <div class="main-content">
-            
+
             <?php
             // 4. LOGIQUE D'AFFICHAGE DYNAMIQUE
             // On charge un fichier différent selon le rôle
-            switch($role) {
+            switch ($role) {
                 case 'admin':
                     include __DIR__ . '/admin/dashboard_admin.php';
                     break;
-                
+
                 case 'manager':
                     include __DIR__ . '/manager/dashboard_manager.php';
                     break;
-                
+
                 case 'employe':
                 default:
                     include __DIR__ . '/employe/dashboard_employe.php';
@@ -49,6 +51,7 @@ $role = $_SESSION['role']; // 'admin', 'manager', ou 'employe'
         </div>
     </section>
 
-    <script src="../assets/js/sidebar.js"></script>
+    <script src="../../assets/js/sidebar.js" defer></script>
 </body>
+
 </html>
