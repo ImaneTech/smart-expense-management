@@ -2,7 +2,7 @@
 require_once "config.php";
 
 // Récupération des demandes depuis la base de données
-$stmt = $pdo->query("SELECT * FROM demandes ORDER BY id ASC");
+$stmt = $pdo->query("SELECT * FROM demandedefrais ORDER BY id ASC");
 $demandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Comptage des demandes validées et en attente
