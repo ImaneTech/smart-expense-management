@@ -1,0 +1,408 @@
+/* ========================
+   RESET & VARIABLES
+======================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+:root {
+    --body-color: #e4e9f7;
+    --sidebar-color: #fff;
+    --primary-color: #76BD46;
+    --secondary-color: #2566A1;
+    --primary-color-light: #E8F6E2;
+    --toggle-color: #cdd1dc;
+    --text-color: #5A5A5A;
+
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+body {
+    background: var(--body-color);
+    transition: background 0.3s ease;
+}
+
+body.dark {
+    --body-color: #1E1E2F;
+    --sidebar-color: #2A2A3D;
+    --primary-color-light: #3E5F2F;
+    --text-color: #E0E0E0;
+}
+
+/* ========================
+   SIDEBAR STRUCTURE
+======================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background: var(--sidebar-color);
+    transition: width 0.3s ease;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Petite ombre pour détacher du fond */
+}
+
+
+
+/* ========================
+   HEADER : LOGO (CORRIGÉ)
+======================== */
+.sidebar-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+    min-height: 80px; 
+    white-space: nowrap; 
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    transition: var(--tran-03);
+}
+
+/* FIX DU LOGO GÉANT */
+.sidebar-brand img {
+    width: 50px;       /* Largeur forcée */
+    height: 50px;      /* Hauteur forcée */
+    min-width: 40px;   /* Empêche l'écrasement */
+    object-fit: contain; 
+    border-radius: 6px;
+    display: block;
+}
+
+.brand-text {
+    font-size: 2.3rem; /* Ajusté pour être propre */
+    font-weight: 700;
+    color: var(--primary-color);
+    transition: opacity 0.2s ease;
+    margin-top: 4px;
+}
+
+/* ========================
+   BOUTON TOGGLE (Flèche)
+======================== */
+.toggle-sidebar {
+    position: absolute;
+    top: 50%;
+    right: -12.5px;
+    transform: translateY(-50%) rotate(180deg);
+    
+    height: 25px;
+    width: 25px;
+    background: var(--secondary-color);
+    color: #fff;
+    border-radius: 50%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: var(--tran-03);
+    z-index: 1000;
+}
+
+/* ========================
+   MENU & LIENS
+======================== */
+.menu-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 10px 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.menu-bar::-webkit-scrollbar { display: none; }
+
+.menu-links {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.menu-links li {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    transition: var(--tran-03);
+}
+
+/* RECHERCHE */
+.search-box {
+    background: var(--primary-color-light);
+    border-radius: 6px;
+    position: relative;
+}
+
+.search-box input {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 16px;
+    color: var(--text-color);
+    padding-left: 65px; 
+    transition: var(--tran-05);
+}
+
+.search-box .icon {
+    position: absolute;
+    left: 15px; 
+    color: var(--secondary-color);
+    font-size: 20px;
+    z-index: 10;
+    transition: var(--tran-03);
+}
+
+/* LIENS COMMUNS */
+.nav-link a, 
+.bottom-content a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: var(--tran-03);
+}
+
+.nav-link a:hover, 
+.bottom-content a:hover {
+    background: var(--primary-color);
+}
+
+.nav-link a:hover .icon, .nav-link a:hover .text,
+.bottom-content a:hover .icon, .bottom-content a:hover .text {
+    color: #fff;
+}
+
+.menu-links .icon,
+.bottom-content .icon {
+    min-width: 50px; 
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--secondary-color);
+    transition: var(--tran-03);
+}
+
+.text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+    white-space: nowrap;
+    opacity: 1;
+    transition: var(--tran-03);
+}
+
+/* ========================
+   BOTTOM CONTENT
+======================== */
+.bottom-content {
+    border-top: 1px solid var(--toggle-color);
+    padding-top: 10px;
+}
+
+.bottom-content li { list-style: none; }
+.bottom-content a { margin-bottom: 5px; }
+
+/* DARK MODE */
+.mode {
+    background: var(--primary-color-light);
+    border-radius: 6px;
+    position: relative;
+    transition: var(--tran-05);
+    display: flex;
+    align-items: center;
+    height: 50px;
+    margin-top: 10px;
+}
+
+.mode .sun-moon {
+    height: 50px;
+    width: 50px;
+    min-width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mode .sun { opacity: 0; pointer-events: none; position: absolute; }
+body.dark .mode .sun { opacity: 1; pointer-events: auto; }
+body.dark .mode .moon { opacity: 0; pointer-events: none; }
+
+.toggle-switch {
+    position: absolute;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-width: 60px;
+    cursor: pointer;
+}
+
+.switch {
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background: var(--toggle-color);
+}
+
+.switch::before {
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background: var(--sidebar-color);
+    transition: var(--tran-03);
+}
+
+body.dark .switch::before { left: 20px; }
+
+
+/* ========================
+   CONTENU PRINCIPAL (HOME SECTION) - AJOUTÉ
+======================== */
+.home-section {
+    position: relative;
+    background: var(--body-color);
+    min-height: 100vh;
+    top: 0;
+    left: 250px; /* Pousse le contenu après la sidebar */
+    width: calc(100% - 250px); /* Réduit la largeur pour éviter le scroll horizontal */
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+/* Ajustement quand la sidebar est fermée */
+.sidebar.close ~ .home-section {
+    left: 88px;
+    width: calc(100% - 88px);
+}
+
+
+/* ========================
+   ETAT FERMÉ (COLLAPSE)
+======================== */
+
+.sidebar.close {
+    width: 88px;
+}
+
+.sidebar.close .sidebar-brand {
+    justify-content: center;
+}
+.sidebar.close .brand-text {
+    display: none;
+}
+.sidebar.close .toggle-sidebar {
+    transform: translateY(-50%) rotate(0deg);
+}
+
+.sidebar.close .menu-bar {
+    padding: 10px 0;
+}
+
+.sidebar.close .menu-links li,
+.sidebar.close .nav-link a,
+.sidebar.close .bottom-content a,
+.sidebar.close .mode {
+    justify-content: center;
+    width: 100%;
+}
+
+.sidebar.close .search-box {
+    background: transparent;
+}
+.sidebar.close .search-box input {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+}
+.sidebar.close .search-box .icon {
+    position: static;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar.close .text {
+    display: none;
+}
+
+.sidebar.close .bottom-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar.close .mode {
+    background: transparent;
+}
+.sidebar.close .toggle-switch {
+    display: none;
+}
+
+/* =============================================
+   CORRECTIF BOOTSTRAP (ANTI-CONFLIT)
+============================================= */
+
+/* 1. Enlever le décalage à gauche des listes (padding-left) */
+.sidebar ul, 
+.sidebar .menu-links, 
+.sidebar .bottom-content {
+    padding-left: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* 2. Enlever les puces (points) si elles reviennent */
+.sidebar li {
+    list-style: none !important;
+}
+
+/* 3. Enlever le soulignement des liens (Bootstrap souligne parfois) */
+.sidebar a {
+    text-decoration: none !important;
+    color: inherit; /* Garde ta couleur perso, pas le bleu Bootstrap */
+}
+
+/* 4. Corriger le box-sizing si Bootstrap le change */
+.sidebar * {
+    box-sizing: border-box;
+}
+
+/* 5. Si tu utilises des inputs Bootstrap dans la sidebar, reset les styles */
+.sidebar .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none !important; /* Enlève le halo bleu de Bootstrap */
+}

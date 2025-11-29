@@ -1,0 +1,163 @@
+/* =========================================
+   STYLE GLOBAL DES TABLEAUX (MODERN UI)
+   Fichier: assets/css/table.css
+========================================= */
+
+/* 1. Conteneur principal */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 5px; /* Espace pour l'ombre du bas */
+    /* NOUVEAU: Cadre arrondi pour le tableau entier */
+    background-color: transparent; /* CHANGÉ: Supprime le fond blanc du conteneur */
+    border-radius: 0; /* CHANGÉ: Supprime les coins arrondis du conteneur */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* AJOUTÉ: Ombre subtile sous le tableau */
+    margin-bottom: 1px; /* Espace après le cadre */
+    padding: 5px; /* Petit padding interne pour ne pas coller les bords */
+}
+
+/* 2. Configuration de la grille (Floating Rows) */
+.modern-table {
+    width: 100%;
+    border-collapse: separate; 
+    border-spacing: 0 10px; /* Espace vertical entre les lignes, légèrement réduit */
+    margin-top: 0;      /* Pas de correction négative ici, on gère avec padding du responsive */
+    white-space: nowrap;    /* Garde le texte sur une ligne */
+}
+
+/* 3. En-tête (Head) - NOUVEAU: Fond vert clair et texte plus foncé */
+.modern-table thead th {
+    background-color: #e6ffe6; /* Vert très clair */
+    border: none;
+    color: #4CAF50; /* Vert un peu plus foncé */
+    font-size: 0.8rem; /* Légèrement plus grand */
+    text-transform: uppercase;
+    letter-spacing: 0.08em; /* Plus d'espacement */
+    font-weight: 700;
+    padding: 15px 20px; /* Plus de padding pour l'esthétique */
+    position: sticky; /* Pour garder l'en-tête visible si on scroll horizontalement */
+    top: 0;
+    z-index: 10;
+}
+
+/* NOUVEAU: Arrondir les coins de l'en-tête */
+.modern-table thead tr th:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 0; /* Pas d'arrondi en bas à gauche de la thead */
+}
+.modern-table thead tr th:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 0; /* Pas d'arrondi en bas à droite de la thead */
+}
+
+
+/* 4. Corps (Body) - Les lignes "Cartes" */
+.modern-table tbody tr {
+    background-color: #ffffff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.03); /* Ombre très légère, un peu plus subtile */
+    transition: all 0.25s ease;
+    border-radius: 60px; 
+}
+
+/* Effet au survol (Hover) */
+.modern-table tbody tr:hover {
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1); 
+    position: relative;
+    z-index: 5;
+}
+
+/* 5. Cellules (Cells) */
+.modern-table tbody td {
+    border: none; /* Pas de ligne de séparation classique */
+    padding: 15px 20px; /* Espace interne généreux */
+    vertical-align: middle;
+    color: #525f7f;
+    font-size: 0.9rem;
+}
+
+/* 6. Coins Arrondis des cellules du body */
+/* On applique les arrondis directement sur les TR maintenant pour simplifier,
+   et on retire les arrondis spécifiques aux TD */
+.modern-table tbody td:first-child {
+    border-top-left-radius: 0; /* Géré par le TR parent */
+    border-bottom-left-radius: 0; /* Géré par le TR parent */
+}
+.modern-table tbody td:last-child {
+    border-top-right-radius: 0; /* Géré par le TR parent */
+    border-bottom-right-radius: 0; /* Géré par le TR parent */
+}
+
+
+/* --- ÉLÉMENTS DE DESIGN INTERNES --- */
+
+/* Texte principal (Nom, Titre) */
+.table-primary-text {
+    font-weight: 600;
+    color: #32325d;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Texte secondaire (Email, Date, Sous-titre) */
+.table-sub-text {
+    font-size: 0.8rem;
+    color: #8898aa;
+    display: block;
+}
+
+/* Avatar dans le tableau */
+.table-avatar {
+    width: 40px; /* Légèrement plus petit */
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e6ffe6; /* Fond vert clair pour l'avatar aussi */
+    color: #4CAF50; /* Texte vert */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-right: 12px; /* Espacement légèrement réduit */
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+/* Bouton d'action (Flèche Chevron) */
+.btn-action-icon {
+    width: 30px; /* Légèrement plus petit */
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    background: transparent;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: 1px solid transparent; /* Bordure discrète */
+}
+
+.btn-action-icon:hover {
+    background-color: var(--secondary-color, #2566A1);
+    color: #fff;
+    transform: translateX(2px); /* Petite animation vers la droite */
+    border-color: var(--secondary-color, #2566A1); /* Bordure colorée au survol */
+}
+
+/* État Vide (Empty State) */
+.empty-state-row {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.empty-state-row:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+.empty-state-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    border: 2px dashed #e9ecef;
+    margin-top: 15px; /* Pour séparer visuellement de l'en-tête s'il n'y a pas de lignes */
+}

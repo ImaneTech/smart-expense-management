@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../controllers/UserController.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    
+
     // Validation simple
     if (empty($email) || empty($password)) {
         setFlash('danger', 'Veuillez remplir tous les champs.');
@@ -32,6 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['email'] = $result['user']['email'];
             $_SESSION['first_name'] = $result['user']['first_name'];
 
+            // Gestion du "Se souvenir de moi"
+            if (isset($_POST['remember'])) {
+                // Créer un cookie 'remember_email' qui dure 30 jours (86400 sec * 30)
+                // Le paramètre true à la fin active 'HttpOnly' pour la sécurité (empêche l'accès via JS)
+                setcookie('remember_email', $email, time() + (86400 * 30), "/", "", false, true);
+            } else {
+                // Si l'utilisateur décoche la case, on supprime le cookie (temps dans le passé)
+                if (isset($_COOKIE['remember_email'])) {
+                    setcookie('remember_email', "", time() - 3600, "/");
+                }
+            }
+
             // Message et redirection
             setFlash('success', $result['message']);
             header('Location: ../dashboard.php');
@@ -46,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="../../assets/css/loginn.css" rel="stylesheet">
+    <link href="../../assets/css/login.css" rel="stylesheet">
     <link href="../../assets/css/stylee.css" rel="stylesheet">
     <script src="../../assets/js/login.js" defer></script>
 </head>
@@ -63,10 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 <body class="login-page">
-  <?php
-require_once __DIR__ . '/../../includes/flash.php';
-displayFlash();
-?>
+    <?php
+    require_once __DIR__ . '/../../includes/flash.php';
+    displayFlash();
+    ?>
     <div class="login-container">
         <!-- Left Section - Formulaire -->
         <div class="left-section">
@@ -81,7 +94,7 @@ displayFlash();
 
             <!-- Affichage des erreurs et messages de succès -->
             <?php displayFlash(); ?>
-            
+
             <?php if (isset($_SESSION['success_message'])): ?>
                 <div class="alert alert-success" role="alert">
                     <?php echo htmlspecialchars($_SESSION['success_message']); ?>
@@ -95,7 +108,7 @@ displayFlash();
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-control" placeholder="mohamed@example.ma" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Mot de passe</label>
                     <div class="input-group">
@@ -105,33 +118,34 @@ displayFlash();
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="form-options">
                     <div class="remember-group">
-                        <input type="checkbox" id="remember" name="remember">
+                        <input type="checkbox" id="remember" name="remember"
+                            <?php echo isset($_COOKIE['remember_email']) ? 'checked' : ''; ?>>
                         <label for="remember">Se souvenir de moi</label>
                     </div>
                     <a href="forgotpassword.php" class="forgot-link">Mot de passe oublié ?</a>
                 </div>
-                
+
                 <button type="submit" class="btn-login">Se connecter</button>
-                
+
                 <div class="signup-link">
                     Vous n'avez pas de compte ? <a href="signup.php">S'inscrire</a>
                 </div>
             </form>
         </div>
-        
+
         <!-- Right Section - Illustration -->
         <div class="right-section">
             <div class="illustration-container">
                 <!-- Tagline -->
                 <h2 class="illustration-tagline">Bienvenue chez GoTrackr</h2>
                 <p class="illustration-subtitle">Gérez vos dépenses simplement et efficacement</p>
-                
+
                 <!-- Illustration Image -->
                 <img src="../../assets/img/illustration.png" alt="Login Illustration" class="illustration-image">
-                
+
                 <!-- Feature Badges -->
                 <div class="feature-badges">
                     <div class="feature-badge">

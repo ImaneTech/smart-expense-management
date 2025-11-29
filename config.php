@@ -23,4 +23,11 @@ $emailConfig = [
     'from_name' => 'GoTrackr'
 ];
 
+// 1. Pour PHP (Chemin fichier disque dur)
+// __DIR__ donne le dossier où est config.php (donc la racine du projet)
+define('BASE_PATH', __DIR__ . '/'); 
+
+// 2. Pour le HTML (Lien navigateur)
+// Adapte le nom du dossier si ce n'est pas exactement celui-là
+define('BASE_URL', 'http://localhost/smart-expense-management/');
 ?>
