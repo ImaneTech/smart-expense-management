@@ -44,23 +44,26 @@ body.dark {
     width: 250px;
     height: 100vh;
     background: var(--sidebar-color);
-    transition: width 0.3s ease; /* Transition fluide de la largeur */
+    transition: width 0.3s ease;
     z-index: 100;
     display: flex;
     flex-direction: column;
     overflow: visible;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Petite ombre pour détacher du fond */
 }
 
+
+
 /* ========================
-   HEADER : LOGO
+   HEADER : LOGO (CORRIGÉ)
 ======================== */
 .sidebar-header {
     position: relative;
     display: flex;
     align-items: center;
     padding: 20px 15px;
-    min-height: 80px; /* Hauteur fixe pour éviter les sauts */
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    min-height: 80px; 
+    white-space: nowrap; 
 }
 
 .sidebar-brand {
@@ -71,23 +74,22 @@ body.dark {
     transition: var(--tran-03);
 }
 
-.logo {
-    width: 40px;      
-    min-width: 40px;  
-    height: 40px;     
+/* FIX DU LOGO GÉANT */
+.sidebar-brand img {
+    width: 50px;       /* Largeur forcée */
+    height: 50px;      /* Hauteur forcée */
+    min-width: 40px;   /* Empêche l'écrasement */
     object-fit: contain; 
     border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
 }
 
 .brand-text {
-    font-size: 2rem;
-    font-style: bold;
+    font-size: 2.3rem; /* Ajusté pour être propre */
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--primary-color);
     transition: opacity 0.2s ease;
+    margin-top: 4px;
 }
 
 /* ========================
@@ -96,8 +98,8 @@ body.dark {
 .toggle-sidebar {
     position: absolute;
     top: 50%;
-    right: -12.5px; /* Centré sur la ligne */
-    transform: translateY(-50%) rotate(180deg); /* Pointe vers la gauche quand ouvert */
+    right: -12.5px;
+    transform: translateY(-50%) rotate(180deg);
     
     height: 25px;
     width: 25px;
@@ -127,7 +129,6 @@ body.dark {
     overflow-x: hidden;
 }
 
-/* Cacher scrollbar */
 .menu-bar::-webkit-scrollbar { display: none; }
 
 .menu-links {
@@ -161,13 +162,12 @@ body.dark {
     font-size: 16px;
     color: var(--text-color);
     padding-left: 65px; 
-
     transition: var(--tran-05);
 }
 
 .search-box .icon {
     position: absolute;
-    left: 15px; /* Position absolue importante pour le collapse */
+    left: 15px; 
     color: var(--secondary-color);
     font-size: 20px;
     z-index: 10;
@@ -196,10 +196,9 @@ body.dark {
     color: #fff;
 }
 
-/* Gestion des icônes et textes */
 .menu-links .icon,
 .bottom-content .icon {
-    min-width: 50px; /* Largeur fixe pour centrage */
+    min-width: 50px; 
     height: 50px;
     display: flex;
     align-items: center;
@@ -289,41 +288,57 @@ body.dark .mode .moon { opacity: 0; pointer-events: none; }
 body.dark .switch::before { left: 20px; }
 
 
-/* ######################################################## */
-/* CORRECTION ETAT FERMÉ (COLLAPSE)             */
-/* ######################################################## */
+/* ========================
+   CONTENU PRINCIPAL (HOME SECTION) - AJOUTÉ
+======================== */
+.home-section {
+    position: relative;
+    background: var(--body-color);
+    min-height: 100vh;
+    top: 0;
+    left: 250px; /* Pousse le contenu après la sidebar */
+    width: calc(100% - 250px); /* Réduit la largeur pour éviter le scroll horizontal */
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+/* Ajustement quand la sidebar est fermée */
+.sidebar.close ~ .home-section {
+    left: 88px;
+    width: calc(100% - 88px);
+}
+
+
+/* ========================
+   ETAT FERMÉ (COLLAPSE)
+======================== */
 
 .sidebar.close {
-    width: 88px; /* Largeur fermée */
+    width: 88px;
 }
 
-/* 1. HEADER : Centrer logo et cacher texte */
 .sidebar.close .sidebar-brand {
-    justify-content: center; /* Centre le logo horizontalement */
+    justify-content: center;
 }
 .sidebar.close .brand-text {
-    display: none; /* Cache brutalement le texte pour éviter qu'il dépasse */
+    display: none;
 }
-
-/* 2. BOUTON TOGGLE : Rotation */
 .sidebar.close .toggle-sidebar {
-    transform: translateY(-50%) rotate(0deg); /* Pointe à droite */
+    transform: translateY(-50%) rotate(0deg);
 }
 
-/* 3. MENU ITEMS & ICONS : Centrage */
 .sidebar.close .menu-bar {
-    padding: 10px 0; /* Enlève le padding latéral pour permettre le centrage exact */
+    padding: 10px 0;
 }
 
 .sidebar.close .menu-links li,
 .sidebar.close .nav-link a,
 .sidebar.close .bottom-content a,
 .sidebar.close .mode {
-    justify-content: center; /* Centre Flexbox */
+    justify-content: center;
     width: 100%;
 }
 
-/* 4. RECHERCHE : Nettoyage */
 .sidebar.close .search-box {
     background: transparent;
 }
@@ -333,29 +348,61 @@ body.dark .switch::before { left: 20px; }
     opacity: 0;
 }
 .sidebar.close .search-box .icon {
-    /* L'icône de recherche doit être recentrée car elle était en absolute left:15px */
-    position: static; /* Annule le position:absolute */
+    position: static;
     width: 50px;
     display: flex;
     justify-content: center;
 }
 
-/* 5. TEXTES : Disparition */
 .sidebar.close .text {
-    display: none; /* Cache tous les textes des liens */
+    display: none;
 }
 
-/* 6. BOTTOM CONTENT & DARK MODE */
 .sidebar.close .bottom-content {
-    /* Assure que le conteneur du bas centre ses enfants */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .sidebar.close .mode {
-    background: transparent; /* Enlève le fond vert */
+    background: transparent;
 }
 .sidebar.close .toggle-switch {
-    display: none; /* Cache le switch on/off */
+    display: none;
+}
+
+/* =============================================
+   CORRECTIF BOOTSTRAP (ANTI-CONFLIT)
+============================================= */
+
+/* 1. Enlever le décalage à gauche des listes (padding-left) */
+.sidebar ul, 
+.sidebar .menu-links, 
+.sidebar .bottom-content {
+    padding-left: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* 2. Enlever les puces (points) si elles reviennent */
+.sidebar li {
+    list-style: none !important;
+}
+
+/* 3. Enlever le soulignement des liens (Bootstrap souligne parfois) */
+.sidebar a {
+    text-decoration: none !important;
+    color: inherit; /* Garde ta couleur perso, pas le bleu Bootstrap */
+}
+
+/* 4. Corriger le box-sizing si Bootstrap le change */
+.sidebar * {
+    box-sizing: border-box;
+}
+
+/* 5. Si tu utilises des inputs Bootstrap dans la sidebar, reset les styles */
+.sidebar .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none !important; /* Enlève le halo bleu de Bootstrap */
 }

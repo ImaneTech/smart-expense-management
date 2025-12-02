@@ -1,3 +1,4 @@
+
 * {
   margin: 0;
   padding: 0;
@@ -355,7 +356,7 @@ select.form-control:focus {
 /* Feature badges below illustration */
 .feature-badges {
   display: flex;
-  gap: 15px;
+  gap: 10px; /* MODIFIED: Decreased gap between badges */
   margin-top: 30px;
   flex-wrap: wrap;
   justify-content: center;
@@ -380,8 +381,8 @@ select.form-control:focus {
 
 .illustration-image {
   transform: scale(2.0);
-  margin: 50px 0;
-  transform-origin: center; /* facultatif */
+  margin: 15px 0;
+  transform-origin: center;
 }
 .right-section {
   overflow: hidden;
@@ -489,4 +490,3 @@ select.form-control:focus {
   font-size: 16px;
   font-weight: 700;
 }
-

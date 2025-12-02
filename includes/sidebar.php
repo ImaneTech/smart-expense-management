@@ -6,7 +6,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
 <nav class="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-brand">
-            <img src="<?= BASE_URL ?>assets/img/logo3.png" alt="Logo">
+            <img src="<?= BASE_URL ?>assets/img/logo.png" alt="Logo">
             <span class="brand-text">GoTrackr</span>
         </div>
         <i class='bx bx-chevron-right toggle-sidebar'></i>
@@ -30,7 +30,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
 
                 <?php if($role == 'manager'): ?>
                 <li class="nav-link">
-                    <a href="<?= BASE_URL ?>views/manager/demandes.php">
+                    <a href="<?= BASE_URL ?>views/manager/demandes_liste.php">
                         <i class='bx bx-check-shield icon'></i>
                         <span class="text nav-text">Demandes de frais</span>
                     </a>

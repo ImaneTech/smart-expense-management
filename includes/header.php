@@ -26,8 +26,8 @@ if (!isset($_SESSION['user_id'])) {
 
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/stylee.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/sidebarr.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/sidebar.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table.css">
     <link rel="icon" href="<?= BASE_URL ?>assets/img/logo3.png">
 </head>

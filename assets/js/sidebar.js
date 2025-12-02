@@ -20,5 +20,5 @@ document.addEventListener("DOMContentLoaded", () => {
     modeSwitch.addEventListener("click", () => {
         body.classList.toggle("dark");
     });
-    console.log("GoTrackr Sidebar JS chargé avec succès !");
+
 });

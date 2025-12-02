@@ -103,7 +103,7 @@ class UserController
         $token = bin2hex(random_bytes(32));
         $this->model->storeResetToken($email, $token);
 
-        $resetLink = "http://localhost/smart-expense-management/views/resetpassword.php?token=$token";
+        $resetLink = "http://localhost/smart-expense-management/views/auth/resetpassword.php?token=$token";
 
         $subject = "Réinitialisation de mot de passe - GoTrackr";
         $message = "Bonjour " . $user['first_name'] . ",<br>";

@@ -1,0 +1,26 @@
+/* --- 01_settings.css (Variables Globales) --- */
+:root {
+    --primary-color: #76BD46; 
+    --secondary-color: #2566A1; 
+    --text-color: #5A5A5A;
+    --body-color: #e4e9f7;
+    --card-bg: #fff;
+    
+    --primary-color-rgb: 118, 189, 70; 
+    --secondary-color-rgb: 37, 102, 161; 
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+/* GLOBAL: Ajout de transition pour les animations de couleur (mode sombre) */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+body.dark {
+    --card-bg: #2A2A3D;
+    --text-color: #E0E0E0;
+}
+/* Styles de base pour la couleur du texte sur les cartes */
+.text-theme-primary { color: var(--primary-color); }
+.text-theme-secondary { color: var(--secondary-color); }

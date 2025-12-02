@@ -1,47 +1,42 @@
 <?php
+// ======================================================
+// 1. Charger la configuration
+// ======================================================
+require_once __DIR__ . '/../config.php';
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Test 1 : Est-ce qu'on trouve la config ?
-if (!file_exists(__DIR__ . '/../config.php')) {
-    die("ERREUR CRITIQUE : Je ne trouve pas config.php dans " . realpath(__DIR__ . '/../'));
-}
-require_once __DIR__ . '/../config.php'; 
-
-// Test 2 : Est-ce que BASE_PATH est défini ?
-if (!defined('BASE_PATH')) {
-    die("ERREUR : BASE_PATH n'est pas défini dans config.php");
+// ======================================================
+// 2. Démarrer la session (si pas déjà faite)
+// ======================================================
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-// Test 3 : Est-ce qu'on trouve le header ?
-if (!file_exists(BASE_PATH . 'includes/header.php')) {
-    die("ERREUR : Je ne trouve pas header.php ici : " . BASE_PATH . 'includes/header.php');
+// ======================================================
+// 3. Sécurité : Rediriger si non connecté
+// ======================================================
+if (!isset($_SESSION['user_id'])) {
+    header("Location: " . BASE_URL . "views/auth/login.php");
+    exit();
 }
-require_once BASE_PATH . 'includes/header.php'; 
-// ...
 
+// ======================================================
+// 4. Charger le header (HTML + assets + sidebar)
+// ======================================================
+require_once BASE_PATH . 'includes/header.php';
 
-
-
-// 1. CHARGEMENT CONFIG (C'est le seul endroit avec ../)
-require_once __DIR__ . '/../config.php'; 
-
-// 2. HEADER (Session démarre ici)
-require_once BASE_PATH . 'includes/header.php'; 
-
-// 3. RECUPERATION ROLE
+// ======================================================
+// 5. Charger le bon tableau de bord selon le rôle
+// ======================================================
 $role = $_SESSION['role'] ?? 'employe';
 
-// 4. ROUTAGE DYNAMIQUE
-// On utilise BASE_PATH pour inclure les vues "filles"
+
+
 switch ($role) {
     case 'admin':
         include BASE_PATH . 'views/admin/dashboard_admin.php';
         break;
 
     case 'manager':
-        // C'est ici que dashboard_manager.php sera injecté
         include BASE_PATH . 'views/manager/dashboard_manager.php';
         break;
 
@@ -51,6 +46,10 @@ switch ($role) {
         break;
 }
 
-// 5. FOOTER
-require_once BASE_PATH . 'includes/footer.php'; 
-?>
+echo '</div></section>';
+
+// ======================================================
+// 6. Footer (scripts JS)
+// ======================================================
+
+require_once BASE_PATH . 'includes/footer.php';

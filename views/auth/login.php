@@ -68,8 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="../../assets/css/login.css" rel="stylesheet">
-    <link href="../../assets/css/stylee.css" rel="stylesheet">
-    <script src="../../assets/js/login.js" defer></script>
+   <script src="../../assets/js/login.js" defer></script>
+   <script src="../../assets/js/signup.js" defer></script>
+    <link href="../../assets/css/style.css" rel="stylesheet">
 </head>
 
 
@@ -85,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="left-section">
             <!-- Logo -->
             <div class="logo-section">
-                <img src="../../assets/img/logo3.png" alt="ExpenseTrack Logo" class="logo-icon">
+                <img src="../../assets/img/logo.png" alt="ExpenseTrack Logo" class="logo-icon">
                 <span class="logo-text">GoTrackr</span>
             </div>
             <!-- Formulaire -->

@@ -1,6 +1,4 @@
-/* ========================================
-   SMART EXPENSE MANAGEMENT - LOGIN STYLES
-   ======================================== */
+
 
 /* --- GLOBAL RESET & BASE STYLES --- */
 * {
@@ -182,50 +180,48 @@ body {
 }
 
 /* --- FORM OPTIONS (REMEMBER ME + FORGOT PASSWORD) --- */
-  .form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0 40px ;
-    width: 100%; /* Ajouté pour s'assurer que le conteneur prend toute la largeur */
-  }
-  
-  .remember-group {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0; /* Empêche la compression du groupe */
-  }
-  
-  .remember-group input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-    cursor: pointer;
-    accent-color: #7cb342;
-  }
-  
-  .remember-group label {
-    font-size: 14px;
-    color: #6b7280;
-    cursor: pointer;
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
-  }
-  
-  .forgot-link {
-    font-size: 14px;
-    color: #7cb342;
-    text-decoration: none;
-    font-weight: 600;
-    
-    margin-left: auto;
-    white-space: nowrap; 
-    width: 94%; 
-    text-align: right;
-  }
-  
-  .forgot-link:hover {
-    text-decoration: underline;
-  }
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 40px;
+  width: 100%;
+}
+
+.remember-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.remember-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  cursor: pointer;
+  accent-color: #7cb342;
+}
+
+.remember-group label {
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.forgot-link {
+  font-size: 14px;
+  color: #7cb342;
+  text-decoration: none;
+  font-weight: 600;
+  /* Ensure no conflicting properties if this block is outside the specific page rules */
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
 
 /* --- SUBMIT BUTTON --- */
 .btn-login {
@@ -347,10 +343,11 @@ body {
 .illustration-image {
   width: 100%;
   height: auto;
-  max-width: 550px;
-  transform: scale(1.7);
+  max-width: 500px;
+  transform: scale(1.5);
   margin: 50px 0;
 }
+
 
 /* --- FEATURE BADGES --- */
 .feature-badges {
@@ -435,6 +432,7 @@ body {
   font-size: 17px;
 }
 
+/* FIX: The form options are correctly styled here using flexbox */
 .login-page .left-section .form-options {
   display: flex;
   justify-content: space-between;
@@ -506,6 +504,10 @@ body {
   align-items: stretch;
 }
 
+
+
+
+
 /* --- RESET PASSWORD PAGE SPECIFIC --- *//* --- PAGE RESET PASSWORD --- */
 
 /* Section droite avec illustration */
@@ -554,10 +556,13 @@ body {
   display: block;
   box-sizing: border-box;
 }
+.reset-page .left-section {
+  margin-left: 20px;
+}
 
 /* Champs de saisie */
 .reset-page .left-section .form-control {
-  padding: 14px 16px;
+  padding: 16px 20px;
   font-size: 16px;
 }
 

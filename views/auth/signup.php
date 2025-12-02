@@ -46,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     <title>GoTrackr - Sign up</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="../../assets/css/signupp.css" rel="stylesheet">
+    <link href="../../assets/css/signup.css" rel="stylesheet">
     <script src="../../assets/js/signup.js" defer></script>
-    <link href="../../assets/css/stylee.css" rel="stylesheet">
+    <link href="../../assets/css/style.css" rel="stylesheet">
     
 </head>
 
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         <!-- Left Section - Formulaire de inscription -->
         <div class="left-section">
             <div class="logo-section">
-                <img src="../../assets/img/logo3.png" alt="ExpenseTrack Logo" class="logo-icon">
+                <img src="../../assets/img/logo.png" alt="ExpenseTrack Logo" class="logo-icon">
                 <span class="logo-text">GoTrackr</span>
             </div>
             <h2 class="form-title">Inscription</h2>

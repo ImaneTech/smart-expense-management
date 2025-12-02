@@ -1,158 +1,20 @@
-
-/* --- 1. Cartes Statistiques (KPI) --- */
-.stat-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    background-color: #fff;
-    overflow: hidden;
-}
-
-/* Effet au survol de la souris */
-.stat-card:hover {
-    transform: translateY(-5px); /* Monte légèrement */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
-}
-
-/* Boîte carrée pour l'icône */
-.icon-box {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-/* =========================================
-   2. TABLEAU MODERNE (STYLE FLOTTANT)
-========================================= */
-
-/* Le conteneur ne doit pas avoir de fond blanc, pour laisser voir les lignes flotter */
-.custom-table-card {
-    background-color: transparent; 
-    box-shadow: none;
-    border: none;
-}
-
-/* En-tête du tableau (Transparent et discret) */
-.table thead th {
-    background-color: transparent;
-    color: #8898aa;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
-    border: none;
-    padding: 0 20px 15px 20px; /* Espace en bas pour séparer du corps */
-}
-
-/* Configuration de la grille flottante */
-.table {
-    border-collapse: separate; 
-    border-spacing: 0 15px; /* ESPACE ENTRE LES LIGNES (La clé du design) */
-    margin-top: -15px; /* Remonte un peu pour compenser l'espace */
-}
-
-/* LES LIGNES (Chaque ligne est une carte) */
-.table tbody tr {
-    background-color: #fff;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.03); /* Ombre très légère */
-    transition: all 0.3s ease;
-}
-
-/* Effet au survol : La ligne se soulève */
-.table tbody tr:hover {
-    transform: translateY(-3px) scale(1.005);
-    box-shadow: 0 10px 25px rgba(37, 102, 161, 0.1); /* Ombre bleutée */
-    z-index: 10;
-    position: relative;
-}
-
-/* Les Cellules */
-.table tbody td {
-    border: none; /* Pas de ligne de séparation */
-    padding: 20px; /* Beaucoup d'espace interne */
-    vertical-align: middle;
-    color: var(--text-color);
-}
-
-/* ARRONDIS DES LIGNES (Coins ronds gauche et droite) */
-.table tbody td:first-child {
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-}
-
-.table tbody td:last-child {
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-
-/* Style de l'avatar dans le tableau */
-.avatar-initials {
-    width: 45px; /* Un peu plus grand */
-    height: 45px;
-    background-color: rgba(37, 102, 161, 0.1); /* Bleu clair transparent */
-    color: var(--secondary-color);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1rem;
-    box-shadow: inset 0 0 0 1px rgba(37, 102, 161, 0.1);
-}
-
-/* Typographie spécifique */
-.fw-bold-dark {
-    font-weight: 700;
-    color: #344767; /* Gris très foncé presque noir */
-}
-
-.sub-text {
-    font-size: 0.85rem;
-    color: #8898aa;
-}
-/* --- 3. Avatar (Rond avec initiales) --- */
-.avatar-initials {
-    width: 40px;
-    height: 40px;
-    /* Dégradé bleu/violet moderne */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-}
-
-/* --- 4. Badges et Boutons --- */
-.badge-soft-warning {
-    background-color: rgba(255, 193, 7, 0.15);
-    color: #856404;
-}
-
-.btn-pill {
-    border-radius: 50px;
-}
-
-/* =========================================
-   STYLE DU TABLEAU DE BORD (THEME GOTRACKR)
-   Fichier: assets/css/dashboard.css
-========================================= */
-
-/* Récupération des variables définies dans sidebar.css */
+/* --- DASHBOARD MANAGER CSS --- */
 :root {
-    --primary-color: #76BD46;   /* Vert GoTrackr */
-    --secondary-color: #2566A1; /* Bleu GoTrackr */
+    --primary-color: #76BD46; 
+    --secondary-color: #2566A1; 
     --text-color: #5A5A5A;
     --body-color: #e4e9f7;
     --card-bg: #fff;
+    
+    --primary-color-rgb: 118, 189, 70;
+    --secondary-color-rgb: 37, 102, 161; 
 }
 
-/* Mode Sombre (Support automatique si body.dark est actif) */
+/* GLOBAL: Ajout de transition pour les animations de couleur (mode sombre) */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
 body.dark {
     --card-bg: #2A2A3D;
     --text-color: #E0E0E0;
@@ -161,7 +23,7 @@ body.dark {
 /* --- 1. Cartes Statistiques (KPI) --- */
 .stat-card {
     background-color: var(--card-bg);
-    border-radius: 15px; /* Plus arrondi pour matcher le logo */
+    border-radius: 20px;
     border: none;
     transition: all 0.3s ease;
     position: relative;
@@ -170,7 +32,8 @@ body.dark {
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(118, 189, 70, 0.15) !important; /* Ombre verte subtile */
+    /* FIX APPLIED: Using --primary-color-rgb variable */
+    box-shadow: 0 10px 20px rgba(var(--primary-color-rgb), 0.15) !important;
 }
 
 /* Petite barre colorée à gauche */
@@ -181,7 +44,7 @@ body.dark {
     top: 0;
     height: 100%;
     width: 4px;
-    background: var(--border-color, #ccc); /* Couleur dynamique */
+    background: var(--border-color, #ccc);
 }
 
 .stat-card.border-valid::before { background: var(--primary-color); }
@@ -189,54 +52,35 @@ body.dark {
 .stat-card.border-reject::before { background: #dc3545; }
 .stat-card.border-total::before { background: var(--secondary-color); }
 
-.icon-box {
-    width: 45px;
-    height: 45px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
 /* Couleurs spécifiques au thème */
-.bg-theme-primary { background-color: rgba(118, 189, 70, 0.1); color: var(--primary-color); }
-.bg-theme-secondary { background-color: rgba(37, 102, 161, 0.1); color: var(--secondary-color); }
+.bg-theme-primary { 
+    background-color: rgba(var(--primary-color-rgb), 0.1); 
+    color: var(--primary-color); 
+}
+.bg-theme-secondary { 
+    background-color: rgba(var(--secondary-color-rgb), 0.1); 
+    color: var(--secondary-color); 
+}
 .text-theme-primary { color: var(--primary-color); }
 .text-theme-secondary { color: var(--secondary-color); }
 
-/* --- 2. Tableau --- */
+/* --- 2. Tableau (Styles pour le conteneur) --- */
 .custom-table-card {
     background-color: var(--card-bg);
     border-radius: 15px;
     border: none;
     box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+    overflow: hidden;
 }
 
-.table thead th {
-    background-color: rgba(37, 102, 161, 0.05); /* Fond bleu très léger */
-    color: var(--secondary-color);
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    border-bottom: 2px solid rgba(37, 102, 161, 0.1);
-    padding: 18px 15px;
-}
-
-.table tbody td {
-    padding: 18px 15px;
-    vertical-align: middle;
-    color: var(--text-color);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-}
 
 /* --- 3. Avatar --- */
 .avatar-initials {
     width: 38px;
     height: 38px;
-    background-color: var(--secondary-color); /* Fond Bleu GoTrackr */
+    background-color: var(--secondary-color);
     color: #fff;
-    border-radius: 8px; /* Carré arrondi comme le logo */
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -250,33 +94,236 @@ body.dark {
     font-weight: 500;
     font-size: 0.75rem;
 }
-.badge-wait { background-color: rgba(255, 193, 7, 0.15); color: #d6a100; }
-.badge-valid { background-color: rgba(118, 189, 70, 0.15); color: var(--primary-color); }
-.badge-reject { background-color: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.badge-wait { 
+    background-color: rgba(255, 193, 7, 0.15); 
+    color: #d6a100; 
+}
+.text-dark-warning {
+    color: #cc9900 !important; 
+}
+.badge-valid { 
+    background-color: rgba(var(--primary-color-rgb), 0.15); 
+    color: var(--primary-color); 
+}
+.badge-reject { 
+    background-color: rgba(220, 53, 69, 0.15); 
+    color: #dc3545; 
+}
 
-/* Bouton principal (Examiner) */
-.btn-theme {
+/* Bouton principal (Examiner / Retour à l'Équipe - BLEU OUTLINE) */
+.btn-theme, 
+.btn-secondary {
     background-color: transparent;
     border: 1px solid var(--secondary-color);
     color: var(--secondary-color);
     border-radius: 6px;
-    padding: 5px 15px;
+    padding: 8px 18px; /* Rendu plus grand */
     transition: all 0.3s;
+    text-decoration: none !important;
 }
 
-.btn-theme:hover {
+.btn-theme:hover,
+.btn-secondary:hover {
     background-color: var(--secondary-color);
     color: #fff;
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* Animation subtile */
+    box-shadow: 0 4px 8px rgba(var(--secondary-color-rgb), 0.2);
 }
 
-/* Bouton "Tout voir" */
-.btn-link-theme {
+/* Bouton "Tout voir" (Lien secondaire) */
+.btn-link-theme-secondary {
     color: var(--secondary-color);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
-.btn-link-theme:hover {
+.btn-link-theme-secondary:hover {
+    background-color: var(--secondary-color);
+    color: #fff; 
+}
+
+
+/* --- 5. CORRECTION DU LAYOUT GLOBAL --- */
+body > div:nth-child(2) { 
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+.page-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+}
+
+/* --- 6. STYLES SPÉCIFIQUES À MON ÉQUIPE & COULEURS PRIMAIRES LÉGÈRES --- */
+
+/* Nouvelle classe pour le conteneur de liste des membres ajoutables */
+.member-list-container {
+    padding-right: 15px;
+}
+
+.bg-theme-light-green {
+    background-color: rgba(var(--primary-color-rgb), 0.05) !important;
+}
+
+.bg-theme-primary-soft {
+    background-color: rgba(var(--primary-color-rgb), 0.15) !important;
+    color: var(--primary-color) !important;
+}
+
+/* Style de survol subtil pour les cartes de membre */
+.team-member-card {
+    transition: transform 0.2s, box-shadow 0.3s, background-color 0.3s;
+    border: none; 
+}
+
+.team-member-card:hover {
+    transform: scale(1.01); /* Léger agrandissement */
+    box-shadow: 0 4px 10px rgba(var(--primary-color-rgb), 0.2);
+    background-color: rgba(var(--primary-color-rgb), 0.15) !important;
+    border-color: var(--primary-color); /* Bordure verte au survol */
+}
+
+.team-member-card input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+/* Bouton Vert Principal Arondi (Ajouter un Membre - STYLE INVERSÉ) */
+.btn-link-theme-primary {
+    /* DEFAUT : Rempli en Vert (style hover) */
+    background-color: var(--primary-color);
+    color: #fff;
+    border: 1px solid var(--primary-color);
+    transition: all 0.3s ease;
+    border-radius: 50px;
+    padding: 10px 25px; /* Rendu plus grand */
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-link-theme-primary:hover {
+    /* HOVER : Contour Vert (style defaut) */
+    background-color: transparent;
     color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px); /* Animation de levage */
+}
+/* --- 7. AJUSTEMENTS POUR LA TABLE EN ÉCRAN LARGE --- */
+
+.col-lg-8 .table-responsive,
+.col-lg-7 .table-responsive {
+    width: 100%; 
+}
+
+/* S'assurer que la table elle-même remplit son conteneur */
+.modern-table {
+    width: 100%;
+    table-layout: fixed; 
+}
+.modern-table thead {
+    border-top-left-radius: 15px; 
+    border-top-right-radius: 15px;
+    overflow: hidden; 
+}
+
+/* --- 8. CORRECTION BOUTON DÉTAILS & SCROLL TABLE --- */
+
+/* 1. Suppression du Scroll de la Table */
+.table-responsive {
+    overflow-x: hidden !important; 
+    overflow-y: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 2. Style et Centrage du Bouton 'Détails' */
+.btn-action-icon {
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%;
+    background-color: rgba(var(--secondary-color-rgb), 0.1); 
+    color: var(--secondary-color); 
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-action-icon:hover {
+    background-color: var(--primary-color);
+    color: #fff; 
+    transform: translateX(3px);
+}
+
+/* 3. Augmentation de la Taille de l'Icône de Flèche */
+.btn-action-icon i {
+    font-size: 1.4rem;
+    line-height: 1; 
+}
+
+
+.icon-box {
+    width: 80px;  /* Taille du conteneur égale à la largeur des images */
+    height: 80px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Ajoutez une marge pour éloigner l'icône des chiffres, si nécessaire */
+    margin-left: 10px;
+}
+
+/* 2. Assurer que toutes les images à l'intérieur de ce conteneur s'adaptent */
+.icon-box img {
+    /* S'assurer que les images ne dépassent pas la taille du conteneur */
+    max-width: 100%;
+    max-height: 100%;
+    /* Vous pouvez ajuster cette valeur si l'icône de rejet est un élément SVG ou une icône Font Awesome */
+}
+/* 4. Centrage du contenu de la colonne 'Détails' */
+.modern-table td:last-child {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* 5. Prévention du wrap pour les colonnes (si la table est serrée) */
+.modern-table td, .modern-table th {
+    white-space: nowrap; 
+    padding: 10px 10px; /* Correction de la syntaxe de la virgule */
+}
+
+/* --- AMÉLIORATION DE LA GRILLE DE SÉLECTION --- */
+
+/* Style pour cacher visuellement la checkbox standard mais la laisser active */
+.row .form-check-input {
+    opacity: 0; 
+    pointer-events: none; /* Empêche le double-clic (via input et label) */
+    position: absolute;
+}
+
+/* Style de base pour la carte non sélectionnée */
+.team-member-card {
+  background-color: var(--card-bg) !important; 
+    transition: all 0.2s ease-in-out; 
+    border: 1px rgba(var(--secondary-color-rgb), 0.1) solid;
+}
+
+.bg-theme-light-green {
+    background-color: rgba(var(--primary-color-rgb), 0.05) !important;
+}
+/* Style appliqué lorsque la carte est sélectionnée (input:checked ou onchange) */
+.selected-card {
+    border: 3px solid var(--primary-color) !important; /* Contour vert vif */
+    background-color: rgba(var(--primary-color-rgb), 0.1) !important; /* Fond légèrement vert */
+    box-shadow: 0 0 10px rgba(var(--primary-color-rgb), 0.3); /* Ombre pour l'effet 'collectionné' */
+}
+
+
+.badge-wait { 
+    background-color: rgba(255, 193, 7, 0.15); /* Fond jaune très clair */
+    color: #d6a100; /* Texte jaune foncé (OK) */
 }
