@@ -327,3 +327,14 @@ body > div:nth-child(2) {
     background-color: rgba(255, 193, 7, 0.15); /* Fond jaune très clair */
     color: #d6a100; /* Texte jaune foncé (OK) */
 }
+
+/* Exemple CSS pour les badges cohérents */
+.badge-wait {
+    background-color: var(--warning-light-color) !important; /* Jaune très clair */
+    color: var(--warning-dark-color) !important; /* Texte orange/sombre */
+}
+.badge-valid {
+    background-color: var(--success-light-color) !important; /* Vert très clair */
+    color: var(--success-dark-color) !important; /* Texte vert foncé */
+}
+/* etc. */

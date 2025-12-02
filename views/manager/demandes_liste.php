@@ -62,28 +62,25 @@ function getFilterButtonClass(string $statut): string {
     <h2 class="fw-bold text-theme-secondary">Demandes de Frais</h2>
     
     <div class="d-flex mb-4 gap-2 mt-3"> 
-        <?php foreach ($statuts as $dbValue => $label): 
-            $currentFilter = $dbValue;
-            $isActive = strtolower($statutFiltre) === strtolower($currentFilter);
-            
-            // Logique pour les classes claires des boutons ACTIFS
-            $activeClass = match ($dbValue) {
-                'toutes'          => 'btn-light text-secondary border',
-                'En attente'      => 'bg-warning-light text-dark-warning border',
-                'Validée Manager' => 'bg-success-light text-success border',
-                'Rejetée Manager' => 'bg-danger-light text-danger border',
-                default           => 'btn-light text-secondary border', 
-            };
+<?php foreach ($statuts as $dbValue => $label): 
+    $currentFilter = $dbValue;
+    $isActive = strtolower($statutFiltre) === strtolower($currentFilter);
 
-            $buttonClasses = $isActive 
-                ? $activeClass . ' btn-lg' 
-                : getFilterButtonClass($dbValue);
-        ?>
-            <a href="?statut=<?= urlencode($currentFilter) ?>" 
-               class="btn fw-bold rounded-pill py-3 px-5 <?= $buttonClasses ?>">
-                <?= $label ?>
-            </a>
-        <?php endforeach; ?>
+    $filterClass = match ($dbValue) {
+        'toutes'           => 'filter-toutes',
+        'En attente'       => 'filter-attente',
+        'Validée Manager'  => 'filter-validees',
+        'Rejetée Manager'  => 'filter-rejetees',
+        default            => 'filter-toutes'
+    };
+?>
+    <a href="?statut=<?= urlencode($currentFilter) ?>"
+        class="filter-btn <?= $filterClass ?> <?= $isActive ? 'active' : '' ?>">
+        <?= $label ?>
+    </a>
+<?php endforeach; ?>
+
+
     </div>
 
     <div class="card shadow-sm border-0 custom-table-card">
@@ -142,7 +139,7 @@ function getFilterButtonClass(string $statut): string {
                                 <td colspan="6" class="text-center" style="height: 150px; vertical-align: middle;">
                                     <p class="p-4 text-muted">
                                         <i class="fas fa-search fa-2x mb-3"></i><br>
-                                        Aucune demande **<?= htmlspecialchars(strtolower($titre)) ?>** pour le moment.
+                                        Aucune demande <?= htmlspecialchars(strtolower($titre)) ?> pour le moment.
                                     </p>
                                 </td>
                             </tr>

@@ -1,5 +1,5 @@
 <?php
-// models/DemandeModel.php (Source unique de la logique de base de données)
+// models/DemandeModel.php (CORRIGÉ)
 
 class DemandeModel {
     
@@ -7,7 +7,7 @@ class DemandeModel {
     private $userTable = 'users';
     private $demandeTable = 'demande_frais';
     private $detailsTable = 'details_frais';
-    private $historyTable = 'historique_statuts'; // Nouvelle table pour l'historique
+    private $historyTable = 'historique_statuts'; 
 
     public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
@@ -44,10 +44,10 @@ class DemandeModel {
 
         // 4. Total Amount Pending
         $sql = "SELECT SUM(df.montant) 
-                 FROM {$this->detailsTable} df
-                 JOIN {$this->demandeTable} d ON df.demande_id = d.id
-                 JOIN {$this->userTable} u ON d.user_id = u.id
-                 WHERE d.statut = 'En attente' AND u.manager_id = :managerId";
+                     FROM {$this->detailsTable} df
+                     JOIN {$this->demandeTable} d ON df.demande_id = d.id
+                     JOIN {$this->userTable} u ON d.user_id = u.id
+                     WHERE d.statut = 'En attente' AND u.manager_id = :managerId";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':managerId' => $managerId]);
         $stats['amount_pending'] = (float) ($stmt->fetchColumn() ?? 0.00); 
@@ -72,11 +72,11 @@ class DemandeModel {
      */
     public function getDemandesByStatus(int $managerId, string $statut, ?int $limit = null): array {
         $sql = "SELECT d.*, u.first_name, u.last_name, u.email,
-                (SELECT SUM(montant) FROM {$this->detailsTable} WHERE demande_id = d.id) as total_calcule
-                FROM {$this->demandeTable} d
-                JOIN {$this->userTable} u ON d.user_id = u.id
-                WHERE d.statut = ? AND u.manager_id = ?
-                ORDER BY d.date_depart DESC";
+                 (SELECT SUM(montant) FROM {$this->detailsTable} WHERE demande_id = d.id) as total_calcule
+                 FROM {$this->demandeTable} d
+                 JOIN {$this->userTable} u ON d.user_id = u.id
+                 WHERE d.statut = ? AND u.manager_id = ?
+                 ORDER BY d.date_depart DESC";
 
         if ($limit !== null) {
             $sql .= " LIMIT " . intval($limit); 
@@ -89,6 +89,7 @@ class DemandeModel {
     
     /**
      * NOUVEAU: Récupère les demandes d'un manager qui correspondent à une liste de statuts (Historique).
+     * CORRIGÉ: ORDER BY
      */
     public function getDemandesByStatuses(int $managerId, array $statuses): array {
         if (empty($statuses)) {
@@ -112,7 +113,7 @@ class DemandeModel {
             AND 
                 d.statut IN ({$placeholders})
             ORDER BY 
-                d.date_traitement DESC, d.date_soumission DESC
+                d.date_traitement DESC, d.created_at DESC
         ";
 
         try {
@@ -132,6 +133,7 @@ class DemandeModel {
 
     /**
      * NOUVEAU: Exécute une recherche avancée avec des filtres optionnels.
+     * CORRIGÉ: Structure de la requête SQL et ORDER BY
      */
     public function rechercheAvancee(
         int $managerId, 
@@ -180,7 +182,8 @@ class DemandeModel {
             $params[':dateFin'] = $dateFin;
         }
         
-        $sql .= " ORDER BY d.date_depart DESC, d.date_soumission DESC";
+        // ORDER BY final avec la bonne colonne
+        $sql .= " ORDER BY d.date_depart DESC, d.created_at DESC";
 
         try {
             $stmt = $this->pdo->prepare($sql);
@@ -210,7 +213,6 @@ class DemandeModel {
         $stmt->execute([$id, $managerId]);
         $demande = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        // Suppression de l'alias d.statut AS current_statut qui n'était pas nécessaire.
         return $demande ?: null; 
     }
     
@@ -219,9 +221,9 @@ class DemandeModel {
      */
     public function getDetailsFrais(int $demandeId): array {
         $sql = "SELECT df.*, cf.nom AS nom_categorie 
-                FROM {$this->detailsTable} df 
-                JOIN categories_frais cf ON df.categorie_id = cf.id
-                WHERE df.demande_id = ?";
+                 FROM {$this->detailsTable} df 
+                 JOIN categories_frais cf ON df.categorie_id = cf.id
+                 WHERE df.demande_id = ?";
         
         $stmt = $this->pdo->prepare($sql); 
         $stmt->execute([$demandeId]);
@@ -233,10 +235,10 @@ class DemandeModel {
      */
     public function getAllDemandesForManager(int $managerId, ?string $statut = null): array {
         $sql = "SELECT d.*, u.first_name, u.last_name, u.email,
-                (SELECT SUM(montant) FROM {$this->detailsTable} WHERE demande_id = d.id) as total_calcule
-                FROM {$this->demandeTable} d
-                JOIN {$this->userTable} u ON d.user_id = u.id
-                WHERE u.manager_id = :managerId";
+                 (SELECT SUM(montant) FROM {$this->detailsTable} WHERE demande_id = d.id) as total_calcule
+                 FROM {$this->demandeTable} d
+                 JOIN {$this->userTable} u ON d.user_id = u.id
+                 WHERE u.manager_id = :managerId";
         
         $params = [':managerId' => $managerId];
 

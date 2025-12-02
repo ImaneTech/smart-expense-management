@@ -1,39 +1,55 @@
 <?php
-// views/manager/recherche_avancee.php
+// views/manager/recherche_avancee.php (CORRIGÉ)
 
 require_once __DIR__ . '/../../config.php';
-// Nous avons besoin de DemandeController pour la recherche
 require_once BASE_PATH . 'controllers/DemandeController.php'; 
-// Et de TeamController pour la liste des employés, si la logique y est
 require_once BASE_PATH . 'controllers/TeamController.php'; 
 require_once BASE_PATH . 'includes/header.php';
 
-// Assurez-vous que $pdo est disponible (généralement défini dans config.php)
 if (!isset($pdo)) {
     die("Erreur: La connexion à la base de données (\$pdo) est manquante.");
 }
 
 // 1. Initialisation des contrôleurs
 $demandeController = new DemandeController($pdo);
-// On suppose que TeamController existe et gère la liste des employés
 $teamController = new TeamController($pdo, $demandeController->getManagerId()); 
 
-// 2. Récupération des données via les contrôleurs
-$employes = $teamController->getAllTeamMembers(); // Assurez-vous que cette méthode existe
-$resultats = []; // Initialiser les résultats à vide
+$employes = $teamController->getAllTeamMembers(); 
+$resultats = []; 
 
-// Exécuter la recherche seulement si des paramètres sont soumis (méthode GET)
-if (!empty($_GET) && (isset($_GET['employe']) || isset($_GET['statut']) || isset($_GET['date_debut']) || isset($_GET['date_fin']))) {
-    // CORRECTION: Appeler la fonction de recherche sur le contrôleur de demande
-    // NOTE: Vous devez ajouter la méthode 'faireUneRecherche' à DemandeController
-    $resultats = $demandeController->faireUneRecherche($_GET); 
+// --- Logique pour déterminer si un filtre est actif ---
+$hasActiveFilter = false;
+$current_emp = isset($_GET['employe']) ? $_GET['employe'] : '';
+$current_stat = isset($_GET['statut']) ? $_GET['statut'] : '';
+$current_d1 = isset($_GET['date_debut']) ? $_GET['date_debut'] : '';
+$current_d2 = isset($_GET['date_fin']) ? $_GET['date_fin'] : '';
+
+// Vérification si au moins un champ de filtre est rempli
+if (!empty($current_emp) || !empty($current_stat) || !empty($current_d1) || !empty($current_d2)) {
+    $hasActiveFilter = true;
 }
 
-// 3. Persist Form Values
-$current_emp  = $_GET['employe'] ?? '';
-$current_stat = $_GET['statut'] ?? '';
-$current_d1   = $_GET['date_debut'] ?? '';
-$current_d2   = $_GET['date_fin'] ?? '';
+if ($hasActiveFilter) {
+    // Si des filtres sont soumis, exécuter la recherche avancée avec $_GET
+    $resultats = $demandeController->faireUneRecherche($_GET); 
+} else {
+    // Si AUCUN filtre n'est soumis, exécuter la recherche avancée avec un tableau vide
+    $resultats = $demandeController->faireUneRecherche([]); 
+}
+
+/**
+ * Fonction pour déterminer la classe de couleur SOFT pour les BADGES (Copie de demandes_liste.php).
+ */
+function getStatutClass(string $statut): string {
+    return match ($statut) {
+        'En attente' => 'badge-wait', 
+        'Validée Manager', 'Approuvée Compta' => 'badge-valid', 
+        'Rejetée Manager' => 'badge-reject', 
+        'Payée' => 'badge-info text-dark', // Ajoutez Payée ici pour la cohérence
+        default => 'badge-secondary',
+    };
+}
+
 ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_manager.css">
@@ -75,7 +91,6 @@ $current_d2   = $_GET['date_fin'] ?? '';
                         <select name="employe" class="form-select border-0 bg-light py-2">
                             <option value="">Tous les employés</option>
                             <?php 
-                            // SECURITE: Vérifier si $employes est un tableau avant de boucler
                             if (is_array($employes)):
                             foreach ($employes as $emp): ?>
                                 <option value="<?= htmlspecialchars($emp['id']) ?>" <?= ($current_emp == $emp['id']) ? 'selected' : '' ?>>
@@ -91,7 +106,6 @@ $current_d2   = $_GET['date_fin'] ?? '';
                         <select name="statut" class="form-select border-0 bg-light py-2">
                             <option value="">Tous les statuts</option>
                             <?php 
-                            // CORRECTION: Correction du statut 'Validé Manager'
                             $statuses = ['En attente', 'Validée Manager', 'Rejetée Manager', 'Approuvée Compta', 'Payée'];
                             foreach ($statuses as $st): ?>
                                 <option value="<?= htmlspecialchars($st) ?>" <?= ($current_stat == $st) ? 'selected' : '' ?>><?= $st ?></option>
@@ -115,7 +129,7 @@ $current_d2   = $_GET['date_fin'] ?? '';
                     </div>
                 </div>
 
-                <?php if (!empty($_GET)): ?>
+                <?php if ($hasActiveFilter): // Utiliser la variable corrigée pour l'affichage ?>
                     <div class="mt-3 text-end">
                         <a href="recherche_avancee.php" class="text-muted small text-decoration-none hover-underline">
                             <i class='bx bx-refresh'></i> Réinitialiser les filtres
@@ -176,24 +190,16 @@ $current_d2   = $_GET['date_fin'] ?? '';
                                 <td class="fw-bold text-primary">
                                     <?= number_format($d['total_calcule'] ?? 0, 2) ?> €
                                 </td>
-                                <td>
-                                    <?php
-                                    $statut = $d['statut'] ?? 'Inconnu';
-                                    $badgeClass = 'bg-secondary';
-                                    if (strpos($statut, 'Validée') !== false || strpos($statut, 'Approuvée') !== false) {
-                                        $badgeClass = 'bg-success';
-                                    } elseif (strpos($statut, 'Rejetée') !== false) {
-                                        $badgeClass = 'bg-danger';
-                                    } elseif ($statut == 'En attente') {
-                                        $badgeClass = 'bg-warning text-dark';
-                                    } elseif ($statut == 'Payée') {
-                                        $badgeClass = 'bg-info text-dark';
-                                    }
-                                    ?>
-                                    <span class="badge <?= $badgeClass ?> rounded-pill px-3">
-                                        <?= htmlspecialchars($statut) ?>
-                                    </span>
-                                </td>
+                             
+                  <td style="vertical-align: middle;">
+                                <?php 
+                                $statut = $d['statut'] ?? 'Inconnu'; 
+                                $badgeClass = getStatutClass($statut);
+                                ?>
+                                <span class="badge badge-theme <?= $badgeClass ?> fw-bold py-1 px-2">
+                                    <?= htmlspecialchars($statut) ?>
+                                </span>
+                            </td>
                                 <td class="text-end pe-4">
                                     <a href="details_demande.php?id=<?= (int)($d['id'] ?? 0) ?>" class="btn-action-icon" title="Voir les détails">
                                         <i class='bx bx-chevron-right fs-4'></i>

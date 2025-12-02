@@ -116,39 +116,57 @@ class DemandeController {
         return $this->managerId;
     }
     
-    // =========================================================
-    // SECTION 2: ACTIONS POST (Mise à jour avec PRG pattern)
-    // =========================================================
+// =========================================================
+// SECTION 2: ACTIONS POST (Mise à jour avec PRG pattern)
+// =========================================================
 
-    /**
-     * Traite l'action POST de validation ou de rejet d'une demande.
-     */
-    public function traiterDemandeAction($postData) {
-        if (isset($postData['action'], $postData['demande_id'])) {
-            
-            $id = (int) $postData['demande_id'];
-            $action = $postData['action'];
-            $motif = $postData['commentaire_manager'] ?? null; 
+/**
+ * Traite l'action POST de validation ou de rejet d'une demande.
+ */
+public function traiterDemandeAction($postData) {
+    if (isset($postData['action'], $postData['demande_id'])) {
+        
+        $id = (int) $postData['demande_id'];
+        $action = $postData['action'];
+        $motif = $postData['commentaire_manager'] ?? null; 
 
-            $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager'; 
-            
-            if ($action === 'rejeter' && empty(trim($motif))) {
-                $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
-                return;
-            }
+        // 🚨 NOUVEAU: Vérifier si la demande existe et est 'En attente'
+        // Nous réutilisons la méthode existante pour garantir que le manager a le droit de la voir
+        $demandeActuelle = $this->model->getDemandeById($id, $this->managerId);
 
-            if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
-                
-                $_SESSION['message'] = "Demande (ID: {$id}) traitée et statut mis à jour à '{$nouveauStatut}'.";
-                
-                header('Location: details_demande.php?id=' . $id);
-                exit;
-
-            } else {
-                $_SESSION['error_message'] = "Erreur lors de la mise à jour, demande non trouvée, statut déjà finalisé, ou erreur de base de données.";
-            }
-        } else {
-             $_SESSION['error_message'] = "Données d'action POST incomplètes.";
+        if (!$demandeActuelle || $demandeActuelle['statut'] !== 'En attente') {
+            $_SESSION['error_message'] = "Erreur: La demande n'est pas 'En attente' ou vous n'êtes pas le manager responsable.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
         }
+        
+        // --- Le reste de la logique ---
+
+        $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager'; 
+        
+        if ($action === 'rejeter' && empty(trim($motif))) {
+            $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
+            // Redirection ici, car le return ferait planter le PRG pattern sans redirection
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        }
+
+        if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
+            
+            $_SESSION['message'] = "Demande (ID: {$id}) traitée et statut mis à jour à '{$nouveauStatut}'.";
+            
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+
+        } else {
+            $_SESSION['error_message'] = "Erreur lors de la mise à jour (Modèle), vérifiez les journaux.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        }
+    } else {
+         $_SESSION['error_message'] = "Données d'action POST incomplètes.";
+         header('Location: demandes_liste.php'); // Rediriger vers la liste si les données POST sont incomplètes
+         exit;
     }
+}
 }
