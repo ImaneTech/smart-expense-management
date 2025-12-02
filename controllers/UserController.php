@@ -19,53 +19,75 @@ class UserController
     /* ============================================================
        REGISTER
        ============================================================ */
-    public function register($data)
-    {
-        $first_name   = trim($data['first_name']);
-        $last_name    = trim($data['last_name']);
-        $email        = trim($data['email']);
-        $phone        = trim($data['phone']);
-        $password     = $data['password'];
-        $confirm_pass = $data['confirm_password'];
-        $role         = $data['role'];
-        $department   = $data['department'];
+ public function register($data)
+{
+    $first_name   = trim($data['first_name']);
+    $last_name    = trim($data['last_name']);
+    $email        = trim($data['email']);
+    $phone        = trim($data['phone']);
+    $password     = $data['password'];
+    $confirm_pass = $data['confirm_password'];
+    $role         = $data['role'];
+    $department   = $data['department'];
 
-        if ($password !== $confirm_pass) {
-            setFlash('danger', 'Les mots de passe ne correspondent pas.');
-            return false;
-        }
-
-        if ($this->model->emailExists($email)) {
-            setFlash('warning', 'Email déjà utilisé.');
-            return false;
-        }
-
-        $user = new User($first_name, $last_name, $email, $phone, $password, $role, $department);
-
-        if ($this->model->createUser($user)) {
-            setFlash('success', 'Compte créé avec succès !');
-            return true;
-        }
-
-        setFlash('danger', 'Erreur lors de la création du compte.');
-        return false;
+    // 1. Vérification Mots de passe
+    if ($password !== $confirm_pass) {
+        // On retourne un tableau au lieu de faire setFlash + return false
+        return [
+            'type' => 'danger',
+            'message' => 'Les mots de passe ne correspondent pas.'
+        ];
     }
+
+    // 2. Vérification Email existant
+    if ($this->model->emailExists($email)) {
+        return [
+            'type' => 'warning',
+            'message' => 'Email déjà utilisé.'
+        ];
+    }
+
+    $user = new User($first_name, $last_name, $email, $phone, $password, $role, $department);
+
+    // 3. Création du User
+    if ($this->model->createUser($user)) {
+        return [
+            'type' => 'success',
+            'message' => 'Compte créé avec succès !'
+        ];
+    }
+
+    // 4. Erreur générale
+    return [
+        'type' => 'danger', 
+        'message' => 'Erreur lors de la création du compte.'
+    ];
+}
 
     /* ============================================================
        LOGIN
        ============================================================ */
-    public function login($email, $password)
-    {
-        $user = $this->model->findUserByEmail($email);
+   public function login($email, $password)
+{
+    // 1. Récupération de l'utilisateur
+    $user = $this->model->findUserByEmail($email);
 
-        if ($user && password_verify($password, $user['password'])) {
-            setFlash('success', 'Connexion réussie !');
-            return $user;
-        }
-
-        setFlash('danger', 'Email ou mot de passe incorrect.');
-        return false;
+    // 2. Vérification mot de passe
+    if ($user && password_verify($password, $user['password'])) {
+        // Succès : On retourne un tableau avec success = true
+        return [
+            'success' => true,
+            'user' => $user,
+            'message' => 'Connexion réussie !'
+        ];
     }
+
+    // 3. Échec : On retourne un tableau avec success = false
+    return [
+        'success' => false,
+        'message' => 'Email ou mot de passe incorrect.'
+    ];
+}
 
     /* ============================================================
        SEND RESET PASSWORD

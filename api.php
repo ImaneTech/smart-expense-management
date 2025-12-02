@@ -14,13 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config.php';
 
-
-
-// api.php
-header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/config.php'; // utilise TON config.php fourni
-// Assure-toi que $pdo est défini dans config.php
-
 require_once __DIR__ . '/models/User.php';
 require_once __DIR__ . '/models/CategorieFrais.php';
 require_once __DIR__ . '/models/DetailsFrais.php';
@@ -64,14 +57,21 @@ try {
 
             $rows = $demandeSrv->getAll($statutDB);
 
-            $out = array_map(function($d) {
+            $out = array_map(function($d) use ($pdo) {
                 $statutFront = $d['statut_actuel'] === 'en cours' ? 'en_attente' : ($d['statut_actuel'] === 'validé' ? 'validee_manager' : 'rejetee');
+                
+                // Récupérer le premier justificatif de la demande
+                $justifStmt = $pdo->prepare("SELECT justificatif FROM detailsfrais WHERE demande_id = ? AND justificatif IS NOT NULL LIMIT 1");
+                $justifStmt->execute([$d['id']]);
+                $justificatif = $justifStmt->fetchColumn();
+                
                 return [
                     'id' => (int)$d['id'],
                     'utilisateur' => $d['visiteur_nom'] ?? $d['visiteur_id'],
                     'objectif' => $d['objectif'],
                     'date' => $d['date_creation'],
                     'montant_total' => (float)$d['montant_total'],
+                    'justificatif' => $justificatif ?: null,
                     'statut' => $statutFront
                 ];
             }, $rows);
@@ -196,6 +196,11 @@ try {
                 echo json_encode(['success' => false, 'message' => 'Erreur upload']);
                 break;
             }
+            
+            // Mettre à jour le premier détail de la demande avec le justificatif
+            $updateStmt = $pdo->prepare("UPDATE detailsfrais SET justificatif = ? WHERE demande_id = ? LIMIT 1");
+            $updateStmt->execute([$filename, $demande_id]);
+            
             echo json_encode(['success' => true, 'filename' => $filename]);
             break;
 

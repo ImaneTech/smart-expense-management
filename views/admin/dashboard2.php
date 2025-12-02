@@ -1,38 +1,47 @@
+<?php
+session_start();
+// Définir le rôle (à adapter selon votre système d'authentification)
+$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
+
+// Définir BASE_URL si ce n'est pas déjà fait
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/smart-expense-management/');
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Demandes</title>
+    <title>Gestion des Demandes - GoTrackr</title>
+    
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Boxicons pour la sidebar -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Sidebar CSS -->
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/sidebar.css">
+
     <style>
-        :root {
-            --sidebar-width: 250px;
-        }
-
-        body {
-            background-color: #f8f9fa;
-        }
-
-        #sidebar-container {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background-color: #2c3e50;
-            color: white;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
+        /* Adaptation du contenu principal pour la sidebar */
         #main-content {
-            margin-left: var(--sidebar-width);
+            margin-left: 250px;
             padding: 20px;
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
+        .sidebar.close ~ #main-content {
+            margin-left: 88px;
+        }
+
+        /* Stats cards */
         .stat-card {
             border-radius: 10px;
             border: 2px solid;
@@ -104,53 +113,58 @@
             padding: 15px;
         }
 
-        .badge-statut {
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-
-        .action-btn {
-            padding: 5px 10px;
-            margin: 0 2px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            #sidebar-container {
-                transform: translateX(-100%);
-            }
-
-            #sidebar-container.show {
-                transform: translateX(0);
-            }
-
-            #main-content {
-                margin-left: 0;
-            }
-        }
-
         .loading {
             display: none;
             text-align: center;
             padding: 20px;
         }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .upload-zone.drag-over {
+            border-color: #28a745;
+            background-color: #e8f5e9;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar.close ~ #main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="sidebar-container">
-        <div class="p-3">
-            <h4 class="text-center mb-4">
-                <i class="bi bi-grid-fill"></i> Menu
-            </h4>
-            <div class="sidebar-placeholder">
-                <p class="text-center text-muted">Insérez votre sidebar ici</p>
-            </div>
-        </div>
-    </div>
 
+    <!-- SIDEBAR - Inclusion du sidebarA.php -->
+    <?php include('../../includes/sidebarA.php'); ?>
+
+    <!-- CONTENU PRINCIPAL -->
     <div id="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="bi bi-file-text"></i> Gestion des Demandes</h2>
@@ -172,6 +186,7 @@
             </div>
         </div>
 
+        <!-- Statistiques -->
         <div class="row mb-4">
             <div class="col-md-4 mb-3">
                 <div class="stat-card success">
@@ -214,6 +229,7 @@
             </div>
         </div>
 
+        <!-- Filtres -->
         <div class="mb-3">
             <button class="btn btn-dark filter-btn active" onclick="filterDemandes('all', event)">
                 <i class="bi bi-list"></i> Toutes
@@ -232,6 +248,7 @@
             </button>
         </div>
 
+        <!-- Tableau -->
         <div class="table-container">
             <h5 class="mb-3">
                 Toutes les demandes <span class="badge bg-secondary" id="total-demandes">0</span>
@@ -252,20 +269,22 @@
                             <th>Objectif</th>
                             <th>Date</th>
                             <th>Montant Total</th>
+                            <th>Justificatif</th>
                             <th>Statut</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="demandes-tbody">
-                        <!-- Les données seront chargées ici -->
+                        <tr><td colspan="8" class="text-center text-muted">Chargement des données...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- Modal Nouvelle Demande avec Upload -->
     <div class="modal fade" id="nouvelleDemandeModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Nouvelle Demande</h5>
@@ -285,35 +304,116 @@
                             <label class="form-label">Montant Total (€)</label>
                             <input type="number" step="0.01" class="form-control" id="montant" required>
                         </div>
+                        
+                        <!-- Zone d'upload du justificatif -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-paperclip"></i> Justificatif (optionnel)
+                            </label>
+                            <div class="upload-zone" id="uploadZone">
+                                <i class="bi bi-cloud-upload" style="font-size: 48px; color: #6c757d;"></i>
+                                <p class="mb-0 mt-2">Glissez un fichier ici ou cliquez pour sélectionner</p>
+                                <small class="text-muted">Formats acceptés: PDF, JPG, PNG (max 5MB)</small>
+                                <input type="file" id="justificatif" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+                            </div>
+                            <div class="file-preview" id="filePreview">
+                                <i class="bi bi-file-earmark-check text-success"></i>
+                                <span id="fileName"></span>
+                                <button type="button" class="btn btn-sm btn-danger float-end" onclick="removeFile()">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="createDemande()">Créer</button>
+                    <button type="button" class="btn btn-primary" onclick="createDemande()">
+                        <i class="bi bi-check-circle"></i> Créer
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/sidebar.js"></script>
     <script>
-        const API_URL = 'http://localhost:/smart-expense-management/api.php';
+        const API_URL = 'http://localhost/smart-expense-management/api.php';
         let currentFilter = 'all';
+        let selectedFile = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Application démarrée');
             loadStats();
             loadDemandes();
+            setupFileUpload();
         });
+
+        // Configuration de l'upload drag & drop
+        function setupFileUpload() {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('justificatif');
+            const filePreview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFile(file) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+
+            if (!allowedTypes.includes(file.type)) {
+                showAlert('Type de fichier non autorisé. Utilisez PDF, JPG ou PNG.', 'danger');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showAlert('Fichier trop volumineux (max 5MB)', 'danger');
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('filePreview').style.display = 'block';
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('justificatif').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+        }
 
         function loadStats() {
             fetch(`${API_URL}?action=get_stats`)
-                .then(response => {
-                    console.log('Stats response:', response);
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('📊 Stats reçues:', data);
                     document.getElementById('stat-validees').textContent = data.validees_manager || 0;
                     document.getElementById('stat-attente').textContent = data.en_attente || 0;
                     document.getElementById('stat-rejetees').textContent = data.rejetees || 0;
@@ -325,7 +425,6 @@
         }
 
         function loadDemandes(statut = null) {
-            console.log('📥 Chargement des demandes, statut:', statut);
             document.querySelector('.loading').style.display = 'block';
             
             let url = `${API_URL}?action=get_demandes`;
@@ -333,52 +432,29 @@
                 url += `&statut=${statut}`;
             }
 
-            console.log('🌐 URL appelée:', url);
-
             fetch(url)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('✅ Demandes reçues:', data);
-                    console.log('Nombre de demandes:', data.length);
                     displayDemandes(data);
                     document.querySelector('.loading').style.display = 'none';
                 })
                 .catch(error => {
                     console.error('❌ Erreur demandes:', error);
                     document.querySelector('.loading').style.display = 'none';
-                    showAlert('Erreur lors du chargement des demandes: ' + error.message, 'danger');
-                    // Afficher un message dans le tableau
-                    document.getElementById('demandes-tbody').innerHTML = 
-                        '<tr><td colspan="7" class="text-center text-danger">Erreur de chargement. Vérifiez la console.</td></tr>';
+                    showAlert('Erreur lors du chargement des demandes', 'danger');
                 });
         }
 
         function displayDemandes(demandes) {
-            console.log('🎨 Affichage de', demandes.length, 'demandes');
             const tbody = document.getElementById('demandes-tbody');
             document.getElementById('total-demandes').textContent = demandes.length;
 
-            if (!Array.isArray(demandes)) {
-                console.error('❌ demandes n\'est pas un tableau:', demandes);
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Format de données invalide</td></tr>';
-                return;
-            }
-
-            if (demandes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Aucune demande trouvée</td></tr>';
+            if (!Array.isArray(demandes) || demandes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Aucune demande trouvée</td></tr>';
                 return;
             }
 
             tbody.innerHTML = demandes.map(d => {
-                console.log('Demande:', d);
-                
-                // Formater la date de manière sûre
                 let dateFormatted = 'Date invalide';
                 try {
                     if (d.date) {
@@ -389,6 +465,14 @@
                     console.error('Erreur format date:', e);
                 }
 
+                // Gestion du justificatif
+                let justificatifBtn = '<span class="text-muted">-</span>';
+                if (d.justificatif) {
+                    justificatifBtn = `<button class="btn btn-sm btn-info" onclick="viewJustificatif('${d.justificatif}')" title="Voir le justificatif">
+                        <i class="bi bi-eye"></i>
+                    </button>`;
+                }
+
                 return `
                     <tr>
                         <td>${d.id || 'N/A'}</td>
@@ -396,6 +480,7 @@
                         <td>${d.objectif || 'N/A'}</td>
                         <td>${dateFormatted}</td>
                         <td>${parseFloat(d.montant_total || 0).toFixed(2)} €</td>
+                        <td>${justificatifBtn}</td>
                         <td>${getStatutBadge(d.statut)}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
@@ -405,8 +490,10 @@
                     </tr>
                 `;
             }).join('');
-            
-            console.log('✅ Affichage terminé');
+        }
+
+        function viewJustificatif(filename) {
+            window.open(`<?= BASE_URL ?>uploads/${filename}`, '_blank');
         }
 
         function getStatutBadge(statut) {
@@ -436,7 +523,6 @@
         }
 
         function filterDemandes(statut, event) {
-            console.log('🔍 Filtre appliqué:', statut);
             currentFilter = statut;
 
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -453,7 +539,7 @@
         }
 
         function updateStatus(id, statut) {
-            if (!confirm('Êtes-vous sûr de vouloir modifier le statut de cette demande ?')) return;
+            if (!confirm('Êtes-vous sûr de vouloir modifier le statut ?')) return;
 
             const formData = new FormData();
             formData.append('id', id);
@@ -468,24 +554,19 @@
                 if (data.success) {
                     loadStats();
                     loadDemandes(currentFilter === 'all' ? null : currentFilter);
-                    showAlert('Statut mis à jour avec succès', 'success');
-                } else {
-                    showAlert('Erreur lors de la mise à jour', 'danger');
+                    showAlert('Statut mis à jour', 'success');
                 }
             })
-            .catch(error => {
-                console.error('Erreur updateStatus:', error);
-                showAlert('Erreur lors de la mise à jour', 'danger');
-            });
+            .catch(error => console.error('Erreur:', error));
         }
 
-        function createDemande() {
+        async function createDemande() {
             const utilisateur = document.getElementById('utilisateur').value.trim();
             const objectif = document.getElementById('objectif').value.trim();
             const montant = document.getElementById('montant').value;
 
             if (!utilisateur || !objectif) {
-                showAlert('Veuillez remplir tous les champs', 'warning');
+                showAlert('Veuillez remplir tous les champs obligatoires', 'warning');
                 return;
             }
 
@@ -494,31 +575,36 @@
             formData.append('objectif', objectif);
             formData.append('montant', montant);
 
-            fetch(`${API_URL}?action=create`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
+            // Ajouter le justificatif s'il existe
+            if (selectedFile) {
+                formData.append('justificatif', selectedFile);
+            }
+
+            try {
+                const response = await fetch(`${API_URL}?action=create`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
                 if (data.success) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('nouvelleDemandeModal'));
-                    modal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('nouvelleDemandeModal')).hide();
                     document.getElementById('nouvelleDemandeForm').reset();
+                    removeFile();
                     loadStats();
-                    loadDemandes(currentFilter === 'all' ? null : currentFilter);
+                    loadDemandes();
                     showAlert('Demande créée avec succès', 'success');
                 } else {
                     showAlert('Erreur lors de la création', 'danger');
                 }
-            })
-            .catch(error => {
-                console.error('Erreur createDemande:', error);
+            } catch (error) {
+                console.error('Erreur:', error);
                 showAlert('Erreur lors de la création', 'danger');
-            });
+            }
         }
 
         function deleteDemande(id) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) return;
+            if (!confirm('Supprimer cette demande ?')) return;
 
             const formData = new FormData();
             formData.append('id', id);
@@ -531,16 +617,11 @@
             .then(data => {
                 if (data.success) {
                     loadStats();
-                    loadDemandes(currentFilter === 'all' ? null : currentFilter);
-                    showAlert('Demande supprimée avec succès', 'success');
-                } else {
-                    showAlert('Erreur lors de la suppression', 'danger');
+                    loadDemandes();
+                    showAlert('Demande supprimée', 'success');
                 }
             })
-            .catch(error => {
-                console.error('Erreur deleteDemande:', error);
-                showAlert('Erreur lors de la suppression', 'danger');
-            });
+            .catch(error => console.error('Erreur:', error));
         }
 
         function refreshData() {

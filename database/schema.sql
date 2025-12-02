@@ -27,3 +27,12 @@ ADD COLUMN reset_expires DATETIME NULL;
 
 USE gestion_frais_db;
 DESCRIBE users;
+
+
+-- Mot de passe "123456" haché pour tous : $2y$10$abcdefghijklmnopqrstuv
+-- Remplacez le hash par un vrai hash généré par votre signup si besoin
+
+INSERT INTO users (first_name, last_name, email, password, role, department, phone) VALUES 
+('Jean', 'Employé', 'employe@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employe', 'IT', '0600000001'),
+('Sarah', 'Manager', 'manager@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'manager', 'HR', '0600000002'),
+('Ali', 'Admin', 'admin@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Finance', '0600000003');
