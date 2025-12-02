@@ -1,15 +1,35 @@
 <?php
+// views/manager/recherche_avancee.php
+
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'controllers/ManagerController.php';
+// Nous avons besoin de DemandeController pour la recherche
+require_once BASE_PATH . 'controllers/DemandeController.php'; 
+// Et de TeamController pour la liste des employés, si la logique y est
+require_once BASE_PATH . 'controllers/TeamController.php'; 
 require_once BASE_PATH . 'includes/header.php';
 
-$controller = new ManagerController($pdo);
+// Assurez-vous que $pdo est disponible (généralement défini dans config.php)
+if (!isset($pdo)) {
+    die("Erreur: La connexion à la base de données (\$pdo) est manquante.");
+}
 
-// 1. Data Retrieval via Controller
-$employes = $controller->getListeEmployes();
-$resultats = $controller->faireUneRecherche($_GET);
+// 1. Initialisation des contrôleurs
+$demandeController = new DemandeController($pdo);
+// On suppose que TeamController existe et gère la liste des employés
+$teamController = new TeamController($pdo, $demandeController->getManagerId()); 
 
-// 2. Persist Form Values
+// 2. Récupération des données via les contrôleurs
+$employes = $teamController->getAllTeamMembers(); // Assurez-vous que cette méthode existe
+$resultats = []; // Initialiser les résultats à vide
+
+// Exécuter la recherche seulement si des paramètres sont soumis (méthode GET)
+if (!empty($_GET) && (isset($_GET['employe']) || isset($_GET['statut']) || isset($_GET['date_debut']) || isset($_GET['date_fin']))) {
+    // CORRECTION: Appeler la fonction de recherche sur le contrôleur de demande
+    // NOTE: Vous devez ajouter la méthode 'faireUneRecherche' à DemandeController
+    $resultats = $demandeController->faireUneRecherche($_GET); 
+}
+
+// 3. Persist Form Values
 $current_emp  = $_GET['employe'] ?? '';
 $current_stat = $_GET['statut'] ?? '';
 $current_d1   = $_GET['date_debut'] ?? '';
@@ -21,6 +41,21 @@ $current_d2   = $_GET['date_fin'] ?? '';
 
 <div class="container-fluid p-4">
 
+    <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+    <?php if (isset($_SESSION['message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['message']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['error_message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold" style="color: var(--secondary-color);">
             <i class='bx bx-search-alt me-2'></i>Recherche Avancée
@@ -39,11 +74,15 @@ $current_d2   = $_GET['date_fin'] ?? '';
                         <label class="form-label small fw-bold text-muted text-uppercase">Employé</label>
                         <select name="employe" class="form-select border-0 bg-light py-2">
                             <option value="">Tous les employés</option>
-                            <?php foreach ($employes as $emp): ?>
-                                <option value="<?= $emp['id'] ?>" <?= ($current_emp == $emp['id']) ? 'selected' : '' ?>>
+                            <?php 
+                            // SECURITE: Vérifier si $employes est un tableau avant de boucler
+                            if (is_array($employes)):
+                            foreach ($employes as $emp): ?>
+                                <option value="<?= htmlspecialchars($emp['id']) ?>" <?= ($current_emp == $emp['id']) ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($emp['first_name'] . ' ' . $emp['last_name']) ?>
                                 </option>
-                            <?php endforeach; ?>
+                            <?php endforeach; 
+                            endif; ?>
                         </select>
                     </div>
 
@@ -52,19 +91,20 @@ $current_d2   = $_GET['date_fin'] ?? '';
                         <select name="statut" class="form-select border-0 bg-light py-2">
                             <option value="">Tous les statuts</option>
                             <?php 
-                            $statuses = ['En attente', 'Validé Manager', 'Rejeté', 'Approuvé', 'Payé'];
+                            // CORRECTION: Correction du statut 'Validé Manager'
+                            $statuses = ['En attente', 'Validée Manager', 'Rejetée Manager', 'Approuvée Compta', 'Payée'];
                             foreach ($statuses as $st): ?>
-                                <option value="<?= $st ?>" <?= ($current_stat == $st) ? 'selected' : '' ?>><?= $st ?></option>
+                                <option value="<?= htmlspecialchars($st) ?>" <?= ($current_stat == $st) ? 'selected' : '' ?>><?= $st ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted text-uppercase">Du</label>
+                        <label class="form-label small fw-bold text-muted text-uppercase">Du (Date départ)</label>
                         <input type="date" name="date_debut" class="form-control border-0 bg-light py-2" value="<?= htmlspecialchars($current_d1) ?>">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted text-uppercase">Au</label>
+                        <label class="form-label small fw-bold text-muted text-uppercase">Au (Date départ)</label>
                         <input type="date" name="date_fin" class="form-control border-0 bg-light py-2" value="<?= htmlspecialchars($current_d2) ?>">
                     </div>
 
@@ -123,36 +163,39 @@ $current_d2   = $_GET['date_fin'] ?? '';
                         <?php foreach ($resultats as $d): ?>
                             <tr>
                                 <td class="ps-4">
-                                    <div class="fw-bold"><?= htmlspecialchars($d['first_name'] . ' ' . $d['last_name']) ?></div>
-                                    <div class="small text-muted"><?= htmlspecialchars($d['email']) ?></div>
+                                    <div class="fw-bold"><?= htmlspecialchars($d['first_name'] . ' ' . $d['last_name'] ?? 'N/A') ?></div>
+                                    <div class="small text-muted"><?= htmlspecialchars($d['email'] ?? 'N/A') ?></div>
                                 </td>
                                 <td>
-                                    <?= htmlspecialchars($d['objet_mission']) ?>
-                                    <div class="small text-muted"><i class='bx bx-map me-1'></i><?= htmlspecialchars($d['lieu_deplacement']) ?></div>
+                                    <?= htmlspecialchars($d['objet_mission'] ?? 'N/A') ?>
+                                    <div class="small text-muted"><i class='bx bx-map me-1'></i><?= htmlspecialchars($d['lieu_deplacement'] ?? 'N/A') ?></div>
                                 </td>
                                 <td>
-                                    <?= date('d/m/Y', strtotime($d['date_depart'])) ?>
+                                    <?= isset($d['date_depart']) ? date('d/m/Y', strtotime($d['date_depart'])) : 'N/A' ?>
                                 </td>
                                 <td class="fw-bold text-primary">
-                                    <?= number_format($d['total_calcule'], 2) ?> €
+                                    <?= number_format($d['total_calcule'] ?? 0, 2) ?> €
                                 </td>
                                 <td>
                                     <?php
+                                    $statut = $d['statut'] ?? 'Inconnu';
                                     $badgeClass = 'bg-secondary';
-                                    if (strpos($d['statut'], 'Validé') !== false || $d['statut'] == 'Approuvé') {
+                                    if (strpos($statut, 'Validée') !== false || strpos($statut, 'Approuvée') !== false) {
                                         $badgeClass = 'bg-success';
-                                    } elseif ($d['statut'] == 'Rejeté') {
+                                    } elseif (strpos($statut, 'Rejetée') !== false) {
                                         $badgeClass = 'bg-danger';
-                                    } elseif ($d['statut'] == 'En attente') {
+                                    } elseif ($statut == 'En attente') {
                                         $badgeClass = 'bg-warning text-dark';
+                                    } elseif ($statut == 'Payée') {
+                                        $badgeClass = 'bg-info text-dark';
                                     }
                                     ?>
                                     <span class="badge <?= $badgeClass ?> rounded-pill px-3">
-                                        <?= $d['statut'] ?>
+                                        <?= htmlspecialchars($statut) ?>
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a href="details_demande.php?id=<?= $d['id'] ?>" class="btn-action-icon" title="Voir les détails">
+                                    <a href="details_demande.php?id=<?= (int)($d['id'] ?? 0) ?>" class="btn-action-icon" title="Voir les détails">
                                         <i class='bx bx-chevron-right fs-4'></i>
                                     </a>
                                 </td>

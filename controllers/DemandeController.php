@@ -4,6 +4,7 @@
 require_once __DIR__ . '/../models/DemandeModel.php'; 
 // Assurez-vous que BASE_PATH est correctement défini dans votre environnement
 require_once BASE_PATH . 'controllers/TeamController.php'; 
+// Assurez-vous que BASE_URL est défini dans votre config.php
 
 class DemandeController {
 
@@ -17,9 +18,9 @@ class DemandeController {
         $this->model = new DemandeModel($this->db);
         $this->checkAuth();
         
-        // Initialiser les IDs après l'authentification
-        $this->userId = $_SESSION['user_id'];
-        $this->managerId = $this->userId; // Pour le contrôleur Manager, userId = managerId
+        // Assurer que l'ID est un entier après l'authentification
+        $this->userId = (int)($_SESSION['user_id'] ?? 0); 
+        $this->managerId = $this->userId; 
     }
     
     /**
@@ -29,21 +30,17 @@ class DemandeController {
         if (session_status() === PHP_SESSION_NONE) session_start();
         
         if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'manager') {
-            // Utiliser exit après header pour s'assurer que le script s'arrête
-            header('Location: ' . BASE_URL . 'views/auth/login.php'); 
+            $redirectUrl = (defined('BASE_URL') ? BASE_URL : '/') . 'views/auth/login.php';
+            header('Location: ' . $redirectUrl); 
             exit;
         }
     }
 
-// --- Les méthodes getDashboardData, getAllPendingDemandes, getDemandeDetails, getDemandesList 
-// --- sont conservées telles quelles car elles sont correctement implémentées.
-
     // =========================================================
-    // SECTION 1: DATA PROVIDERS (Aucun changement nécessaire)
+    // SECTION 1: DATA PROVIDERS
     // =========================================================
 
     public function getDashboardData() {
-        // ... (Code inchangé)
         $stats = $this->model->getDashboardStats($this->managerId);
 
         $teamController = new TeamController($this->db, $this->managerId);
@@ -83,8 +80,44 @@ class DemandeController {
         return $this->model->getAllDemandesForManager($this->managerId, $statut);
     }
     
+    /**
+     * Récupère l'historique des demandes traitées pour le manager.
+     */
+    public function getHistorique() {
+        $statuts_historique = ['Validée Manager', 'Rejetée Manager', 'Approuvée Compta', 'Payée'];
+        return $this->model->getDemandesByStatuses($this->managerId, $statuts_historique);
+    }
+    
+    /**
+     * AJOUTÉ: Effectue une recherche avancée sur les demandes gérées par le manager.
+     */
+    public function faireUneRecherche(array $searchParams): array {
+        
+        // Préparation des paramètres pour le modèle
+        $employeId = (int)($searchParams['employe'] ?? 0);
+        $statut    = trim($searchParams['statut'] ?? '');
+        $dateDebut = trim($searchParams['date_debut'] ?? '');
+        $dateFin   = trim($searchParams['date_fin'] ?? '');
+        
+        // Appel du modèle (qui gère la logique SQL)
+        return $this->model->rechercheAvancee(
+            $this->managerId, 
+            $employeId, 
+            $statut, 
+            $dateDebut, 
+            $dateFin
+        );
+    }
+    
+    /**
+     * Méthode utilitaire pour obtenir l'ID du Manager (pour TeamController)
+     */
+    public function getManagerId(): int {
+        return $this->managerId;
+    }
+    
     // =========================================================
-    // SECTION 2: ACTIONS POST (Mise à jour pour l'historique)
+    // SECTION 2: ACTIONS POST (Mise à jour avec PRG pattern)
     // =========================================================
 
     /**
@@ -97,24 +130,22 @@ class DemandeController {
             $action = $postData['action'];
             $motif = $postData['commentaire_manager'] ?? null; 
 
-            // 1. Déterminer le statut
             $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager'; 
             
-            // 2. Vérification des données entrantes (sécurité)
             if ($action === 'rejeter' && empty(trim($motif))) {
                 $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
-                return; // Arrête l'exécution
+                return;
             }
 
-            // 3. Appel du Modèle avec la signature CORRIGÉE pour l'Historique
-            // Signature: updateStatut($id, $nouveauStatut, $managerId, $userIdAction, $motif)
-            // L'ID du manager est à la fois l'ID pour la vérification des droits et pour l'enregistrement de l'action.
             if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
                 
-                // Mettre à jour l'état de la session (Flash message)
                 $_SESSION['message'] = "Demande (ID: {$id}) traitée et statut mis à jour à '{$nouveauStatut}'.";
+                
+                header('Location: details_demande.php?id=' . $id);
+                exit;
+
             } else {
-                $_SESSION['error_message'] = "Erreur lors de la mise à jour, demande non trouvée, ou statut déjà finalisé.";
+                $_SESSION['error_message'] = "Erreur lors de la mise à jour, demande non trouvée, statut déjà finalisé, ou erreur de base de données.";
             }
         } else {
              $_SESSION['error_message'] = "Données d'action POST incomplètes.";
