@@ -1,140 +1,203 @@
-/* ==========================================================
-   VARIABLES DE THÈME
-   ========================================================== */
+/* ===== Reset & Variables ===== */
 :root {
-    --primary-color: #76BD46; 
-    --secondary-color: #2566A1; 
-    --text-color: #5A5A5A;
-    --body-color: #e4e9f7; /* Fond clair de la page */
-    --card-bg: #fff;       /* Fond du conteneur/carte */
-    --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08); /* Ombre légère */
-    --light-color: rgba(255, 255, 255, 0.7); /* Couleur claire pour l'effet de mouvement */
+    --primary-green: #5ebc67; /* Matches the green in your image */
+    --dark-green: #4da055;
+    --text-dark: #1f2937;
+    --text-gray: #6b7280;
+    --white: #ffffff;
 }
 
-/* ==========================================================
-   STYLES GÉNÉRAUX ET MISE EN PAGE
-   ========================================================== */
-body {
+* {
+    box-sizing: border-box;
+}
+
+body, html {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
-    /* Fond uni, cohérent avec votre variable --body-color */
-    background-color: var(--body-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
     height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent scrolling */
 }
 
-/* ----------------------------------------------------------
-   Conteneur de Déconnexion (la "Carte")
-   ---------------------------------------------------------- */
-.logout-box {
-    width: 90%;
-    max-width: 400px; 
-    padding: 50px 30px; 
-    text-align: center;
-    color: var(--text-color); 
-    
-    /* Style de carte clean */
-    background-color: var(--card-bg); 
-    border-radius: 12px;
-    box-shadow: var(--shadow-light); 
-    border: 1px solid rgba(0, 0, 0, 0.05); 
+/* ===== Layout Container ===== */
+.split-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
 }
 
-/* ----------------------------------------------------------
-   Typographie et Icône
-   ---------------------------------------------------------- */
-.icon {
-    font-size: 3.5em;
-    margin-bottom: 20px;
-    color: var(--primary-color); /* Vert pour l'aspect "Succès" / "Terminé" */
+/* ===== LEFT PANEL (White) ===== */
+.left-panel {
+    width: 50%;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    padding: 40px 60px;
+    position: relative;
+    justify-content: space-between;
 }
 
-h2 {
-    font-weight: 600;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: var(--secondary-color); 
+.logo-area {
+    padding-top: 20px;
 }
 
-p {
-    font-size: 1em;
-    line-height: 1.5;
-    margin-bottom: 30px; /* Espace avant la barre de progression ou le message de redirection */
+.logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-green);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.redirect-info a {
-    color: var(--secondary-color); 
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 450px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+/* Button Styling */
+.btn-return {
+    display: inline-block;
+    background-color: var(--primary-green);
+    color: var(--white);
     text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 50px; /* Pill shape */
     font-weight: 600;
+    text-align: center;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 15px rgba(94, 188, 103, 0.3);
+    width: fit-content;
 }
 
-.redirect-info a:hover {
+.btn-return:hover {
+    background-color: var(--dark-green);
+    transform: translateY(-2px);
+}
+
+.redirect-info {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    font-style: italic;
+}
+
+.footer-link {
+    text-align: center;
+    padding-bottom: 20px;
+    width: 100%;
+    max-width: 450px; /* Align with content */
+}
+
+.footer-link a {
+    color: var(--text-gray);
     text-decoration: underline;
+    font-size: 0.9rem;
 }
 
-/* ==========================================================
-   BARRE DE PROGRESSION INDÉTERMINÉE (VA-ET-VIENT)
-   ========================================================== */
-
-.progress-bar-container {
-    width: 80%; 
-    height: 8px; 
-    border-radius: 4px;
-    margin: 25px auto 15px auto; 
-    overflow: hidden; 
-    position: relative; 
-    
-    /* Couleur de fond de la barre (discrète) */
-    background-color: rgba(0, 0, 0, 0.05); 
+/* ===== RIGHT PANEL (Green) ===== */
+.right-panel {
+    width: 50%;
+    background-color: var(--primary-green);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Masquer la balise HTML de remplissage si elle est toujours présente */
-.progress-bar-fill {
-    display: none; 
-}
-
-/* Création de l'élément en mouvement (la bande lumineuse) */
-.progress-bar-container::before {
+/* Background circles decoration (optional, adds depth) */
+.right-panel::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%; /* Commence à gauche de la vue */
-    width: 300%; /* Plus large pour un mouvement continu */
-    height: 100%;
-    border-radius: 4px;
-
-    /* Dégradé créant l'effet de lumière se déplaçant */
-    background: linear-gradient(
-        90deg, 
-        transparent 0%, /* Transparent au début */
-        var(--primary-color) 20%, /* Apparition de la couleur */
-        var(--light-color) 40%, 
-        var(--primary-color) 60%, 
-        transparent 100% /* Disparition à la fin */
-    );
-
-    /* Animation du mouvement: 1.5s en boucle */
-    animation: indeterminate-move 1.5s linear infinite; 
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
 }
 
-/* Définition de l'animation Keyframes */
-@keyframes indeterminate-move {
-    0% {
-        /* Déplace le dégradé de la gauche vers la droite sur sa propre largeur */
-        transform: translateX(0%);
+.main-illustration {
+    max-width: 80%;
+    height: auto;
+    object-fit: contain;
+    z-index: 2;
+    margin-bottom: 40px;
+}
+
+/* Features Row */
+.features-row {
+    display: flex;
+    gap: 40px;
+    z-index: 2;
+    margin-top: 20px;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--white);
+    gap: 10px;
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.feature-item span {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .split-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
     }
-    100% {
-        transform: translateX(33.33%); /* Déplacement de 1/3 de la largeur (300% / 3) */
+    .left-panel, .right-panel {
+        width: 100%;
+    }
+    .left-panel {
+        padding: 40px 30px;
+        order: 2; /* Move text below image on mobile */
+    }
+    .right-panel {
+        padding: 40px 20px;
+        order: 1;
+    }
+    .features-row {
+        gap: 20px;
+    }
+    .feature-item span {
+        font-size: 0.7rem;
     }
 }
