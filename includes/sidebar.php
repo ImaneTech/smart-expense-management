@@ -1,6 +1,22 @@
 <?php
-// On récupère le rôle s'il n'est pas défini (sécurité)
+// On récupère le rôle
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
+
+// DÉFINITION DYNAMIQUE DE L'URL DU PROFIL
+$profile_url = BASE_URL . 'views/profile.php'; 
+
+switch($role) {
+    case 'manager':
+        $profile_url = BASE_URL . 'views/manager/profile.php';
+        break;
+    case 'admin':
+        $profile_url = BASE_URL . 'views/admin/profile.php'; 
+        break;
+    case 'employe':
+    default:
+        $profile_url = BASE_URL . 'views/employe/profile.php';
+        break;
+}
 ?>
 
 <nav class="sidebar">
@@ -73,9 +89,8 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
         </div>
 
         <div class="bottom-content">
-            
-            <li>
-                <a href="<?= BASE_URL ?>views/profile.php">
+           <li>
+                <a href="<?= $profile_url ?>">
                     <i class='bx bx-user icon'></i>
                     <span class="text nav-text">Mon Profil</span>
                 </a>
@@ -84,6 +99,15 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
             <?php if($role == 'admin'): ?>
             <li>
                 <a href="<?= BASE_URL ?>views/admin/settings.php">
+                    <i class='bx bx-cog icon'></i>
+                    <span class="text nav-text">Configuration</span>
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if($role == 'manager'): ?>
+            <li>
+                <a href="<?= BASE_URL ?>views/manager/settings.php">
                     <i class='bx bx-cog icon'></i>
                     <span class="text nav-text">Configuration</span>
                 </a>

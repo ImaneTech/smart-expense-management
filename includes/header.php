@@ -34,6 +34,10 @@ if (!isset($_SESSION['user_id'])) {
 <body>
 
     <?php include BASE_PATH . 'includes/sidebar.php'; ?>
+       <?php
+    require_once __DIR__ . '/../includes/flash.php';
+    displayFlash();
+    ?>
 
     <section class="home-section">
         <div class="main-content">
