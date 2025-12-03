@@ -10,7 +10,7 @@ require_once BASE_PATH . 'includes/header.php';
 $controller = new DemandeController($pdo);
 
 // 1. Appel UNIQUE de la méthode correcte
-$data = $controller->getDashboardData(); 
+$data = $controller->getDashboardData();
 
 // 2. Extraction des variables en utilisant les clés du tableau retourné
 // Remarque : Le Contrôleur doit s'assurer que les clés ici correspondent à ce qu'il retourne.
@@ -19,13 +19,13 @@ $stats = $data['stats'];
 $latest = $data['latest']; // Liste des demandes récentes
 $team_members = $data['team']; // Liste des membres d'équipe
 
-// NOTE: Le bloc de code dupliqué a été supprimé.
 
 ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/settings.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_manager.css">
 <script src="<?= BASE_URL ?>assets/js/dashboard_manager.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
 
@@ -33,11 +33,11 @@ $team_members = $data['team']; // Liste des membres d'équipe
 
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h1 class="fw-bold m-0" style="color: #32325d;">Tableau de Bord</h1>
-        <span class="text-muted small">Aperçu de la semaine</span> 
+        <span class="text-muted small">Aperçu de la semaine</span>
     </div>
 
     <div class="row g-4 mb-5">
-<h3 class="fw-bold mb-3" style="color: #32325d;">Statistiques générales</h3>
+        <h3 class="fw-bold mb-3" style="color: #32325d;">Statistiques générales</h3>
         <div class="col-xl-3 col-md-6">
             <div class="card shadow-sm border-0 h-100" style="background-color: #FFF8E1; border-radius: 20px;">
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
@@ -45,8 +45,8 @@ $team_members = $data['team']; // Liste des membres d'équipe
                         <h2 class="fw-bold mb-1 counter" data-target="<?= $stats['pending'] ?? 0 ?>" style="color: #32325d; font-size: 2.5rem;">0</h2>
                         <p class="text-muted fw-bold mb-0 small text-uppercase" style="letter-spacing: 1px;">En Attente</p>
                         <small class="text-dark-warning fw-bold mt-2 d-block counter is-amount" data-target="<?= $stats['amount_pending'] ?? 0.00 ?>">
-    0 € est.
-</small>
+                            0 € est.
+                        </small>
                     </div>
                     <div class="icon-box">
                         <img src="<?= BASE_URL ?>assets/img/pending_icon.png" alt="Pending" width="80" style="opacity: 0.9;">
@@ -166,47 +166,61 @@ $team_members = $data['team']; // Liste des membres d'équipe
         </div>
 
         <div class="col-lg-4 mb-4 h-100">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold m-0" style="color: #32325d; font-size: 1.25rem;">Mon Équipe</h3>
-    </div>
-    <div class="card shadow-sm border-0 h-100" style="background-color: var(--card-bg); border-radius: 16px; max-height: 500px; overflow-y: auto;">
-        <div class="card-body p-4">
-            <?php 
-            if (!empty($team_members)): 
-            ?>
-                <?php foreach ($team_members as $member): 
-                ?>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold m-0" style="color: #32325d; font-size: 1.25rem;">Mon Équipe</h3>
+            </div>
+            <div class="card shadow-sm border-0 h-100" style="background-color: var(--card-bg); border-radius: 16px; max-height: 500px; overflow-y: auto;">
+                <div class="card-body p-4">
+                    <?php
+                    if (!empty($team_members)):
+                    ?>
+                        <?php foreach ($team_members as $member): ?>
 
-                    <div class="d-flex align-items-center p-3 mb-3 bg-theme-light-green team-member-card"
-                        style="border-radius: 12px; transition: transform 0.2s;">
+                            <div class="d-flex align-items-center p-3 mb-3 position-relative member-card shadow-sm"
+                                style="border-radius: 12px; transition: all 0.3s ease; background-color: #f1f8e9; border: 1px solid #dcedc8;">
 
-                        <div class="me-3 fw-bold bg-theme-primary-soft rounded-circle p-2 text-theme-primary border d-flex align-items-center justify-content-center"
-                            style="width: 45px; height: 45px; border-color: rgba(118, 189, 70, 0.2) !important;">
-                            <?= strtoupper(substr($member['first_name'], 0, 1) . substr($member['last_name'], 0, 1)) ?>
+                                <div class="me-3 fw-bold rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 50px; height: 50px; 
+                    background-color: #e8f5e9; 
+                    color: #43a047; 
+                    border: 1px solid #c8e6c9; 
+                    font-size: 1.1rem;">
+                                    <?= strtoupper(substr($member['first_name'], 0, 1) . substr($member['last_name'], 0, 1)) ?>
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                        <?= htmlspecialchars($member['first_name'] . ' ' . $member['last_name']) ?>
+                                    </div>
+                                    <div style="color: #6c757d; font-size: 0.85rem;">
+                                        <?= htmlspecialchars($member['email']) ?>
+                                    </div>
+                                </div>
+
+                                <a href="mailto:<?= htmlspecialchars($member['email']) ?>"
+                                    class="btn btn-sm bg-white rounded-circle shadow-sm border"
+                                    style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa fa-envelope-o text-muted"></i>
+                                </a>
+
+                            </div>
+
+                        <?php endforeach; ?>
+
+                    <?php else: ?>
+                        <div class="alert alert-info text-center">
+                            Votre équipe est vide. Veuillez ajouter des membres via la page de gestion d'équipe.
                         </div>
+                    <?php endif; ?>
 
-                        <div class="flex-grow-1">
-                            <div class="fw-bold text-dark"><?= htmlspecialchars($member['first_name'] . ' ' . $member['last_name']) ?></div>
-                            <div class="text-muted small"><?= htmlspecialchars($member['email']) ?></div>
-                        </div>
-                        <a href="#" class="text-theme-secondary"><i class="fa fa-envelope-o"></i></a>
+                    <div class="mt-4 text-center">
+                        <a href="manager/equipe.php" class="btn fw-bold rounded-pill px-4 py-2 btn-link-theme-primary" style="font-size: 0.9rem;">
+                            Voir toute l'équipe
+                        </a>
                     </div>
-                <?php endforeach; ?>
-
-            <?php else: ?>
-                <div class="alert alert-info text-center">
-                    Votre équipe est vide. Veuillez ajouter des membres via la page de gestion d'équipe.
                 </div>
-            <?php endif; ?>
-
-            <div class="mt-4 text-center">
-                <a href="equipe.php" class="btn fw-bold rounded-pill px-4 py-2 btn-link-theme-primary" style="font-size: 0.9rem;">
-                    Voir toute l'équipe
-                </a>
             </div>
         </div>
-    </div>
-</div>
     </div>
 </div>
 

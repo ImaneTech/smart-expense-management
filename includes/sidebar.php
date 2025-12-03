@@ -87,32 +87,21 @@ switch($role) {
 
             </ul>
         </div>
-
-        <div class="bottom-content">
-           <li>
-                <a href="<?= $profile_url ?>">
+<div class="bottom-content">
+            
+            <li>
+                <a href="<?= BASE_URL ?>views/manager/profile.php">
                     <i class='bx bx-user icon'></i>
                     <span class="text nav-text">Mon Profil</span>
                 </a>
             </li>
 
-            <?php if($role == 'admin'): ?>
             <li>
-                <a href="<?= BASE_URL ?>views/admin/settings.php">
+                <a href="<?= BASE_URL ?>views/settings.php">
                     <i class='bx bx-cog icon'></i>
-                    <span class="text nav-text">Configuration</span>
+                    <span class="text nav-text">Paramètres</span>
                 </a>
             </li>
-            <?php endif; ?>
-
-            <?php if($role == 'manager'): ?>
-            <li>
-                <a href="<?= BASE_URL ?>views/manager/settings.php">
-                    <i class='bx bx-cog icon'></i>
-                    <span class="text nav-text">Configuration</span>
-                </a>
-            </li>
-            <?php endif; ?>
 
             <li>
                 <a href="<?= BASE_URL ?>views/auth/logout.php">
@@ -120,7 +109,8 @@ switch($role) {
                     <span class="text nav-text">Déconnexion</span>
                 </a>
             </li>
-
+            
+ 
             <li class="mode">
                 <div class="sun-moon">
                     <i class='bx bx-moon icon moon'></i>
