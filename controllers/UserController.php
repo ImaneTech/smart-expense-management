@@ -135,4 +135,7 @@ class UserController
         setFlash('success', 'Mot de passe réinitialisé avec succès.');
         return true;
     }
+public function getPreferredCurrency(int $userId): string {
+        return $this->model->getPreferredCurrency($userId);
+    }
 }

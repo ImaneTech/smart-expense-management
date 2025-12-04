@@ -151,3 +151,23 @@ body.dark {
 /* Empty State */
 .empty-state-row:hover { transform: none !important; box-shadow: none !important; background: #fff !important; }
 .empty-state-card { padding: 40px; text-align: center; }
+
+
+
+
+
+/* Largeur contrôlée pour éviter l’écrasement */
+.col-objet {
+    max-width: 260px;
+}
+
+.col-email {
+    max-width: 220px;
+}
+
+.modern-table td, 
+.modern-table th {
+    white-space: normal !important;
+    word-break: break-word !important;
+    vertical-align: top;
+}

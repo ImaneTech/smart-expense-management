@@ -42,10 +42,10 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
 
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table.css">
+       <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
     
-    <link rel="icon" href="<?= BASE_URL ?>assets/img/logo3.png">
+    <link rel="icon" href="<?= BASE_URL ?>assets/img/logo.png">
 </head>
 
 <body class="<?= $themeClass ?>">
