@@ -96,4 +96,26 @@ class UserModel
         ");
         return $stmt->execute([$hashedPassword, $user_id]);
     }
+
+    /**
+     * Récupère le code de devise préféré de l'utilisateur.
+     * @param int $userId L'ID de l'utilisateur.
+     * @return string Le code de devise (ex: 'EUR', 'MAD').
+     */
+    public function getPreferredCurrency(int $userId): string {
+        try {
+            $sql = "SELECT preferred_currency FROM users WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['id' => $userId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Retourne la devise si trouvée, sinon 'EUR' par défaut.
+            return $result['preferred_currency'] ?? 'EUR';
+        } catch (\PDOException $e) {
+            // Loggez l'erreur de BDD
+            error_log("DB Error in UserModel::getPreferredCurrency: " . $e->getMessage());
+            return 'EUR';
+        }
+    }
+    
 }

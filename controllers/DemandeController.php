@@ -1,37 +1,42 @@
 <?php
-// controllers/DemandeController.php (CORRIGÉ)
+// controllers/DemandeController.php (VERSION FINALE CORRIGÉE ET HARMONISÉE)
 
-require_once __DIR__ . '/../models/DemandeModel.php'; 
-require_once BASE_PATH . 'controllers/TeamController.php'; 
+require_once __DIR__ . '/../models/DemandeModel.php';
+require_once __DIR__ . '/../controllers/TeamController.php';
 
 class DemandeController {
 
-    private $model;
-    private $db;
-    private $managerId; 
-    private $userId;    
+    private DemandeModel $model;
+    private \PDO $db;
+    private int $managerId;
+    private int $userId;
 
-    public function __construct($db) {
+    public function __construct(\PDO $db) {
         $this->db = $db;
-        $this->model = new DemandeModel($this->db);
+
+        // Démarrage de session si nécessaire
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $this->checkAuth();
-        
-        $this->userId = (int)($_SESSION['user_id'] ?? 0); 
-        $this->managerId = $this->userId; 
+
+        $this->userId = (int)($_SESSION['user_id'] ?? 0);
+        $this->managerId = $this->userId;
+
+        $this->model = new DemandeModel($this->db);
     }
-    
+
     private function checkAuth(): void {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'manager') {
+        if (!isset($_SESSION['user_id'])) {
             $redirectUrl = (defined('BASE_URL') ? BASE_URL : '/') . 'views/auth/login.php';
-            header('Location: ' . $redirectUrl); 
+            header('Location: ' . $redirectUrl);
             exit;
         }
     }
 
     // =========================================================
-    // SECTION 1: DATA PROVIDERS
+    // SECTION 1: DASHBOARD & LISTES
     // =========================================================
 
     public function getDashboardData(): array {
@@ -39,125 +44,148 @@ class DemandeController {
 
         $teamController = new TeamController($this->db, $this->managerId);
         $allTeamMembers = $teamController->getAllTeamMembers();
-        
-        // CORRECTION: Utiliser la méthode simple pour le tableau de bord
-        $latestDemandes = $this->model->getDemandesByStatus($this->managerId, 'En attente'); 
-        $latestDemandes = array_slice($latestDemandes, 0, 5); 
 
+        $allDemandes = $this->getDemandesList('En attente');
+        $latestDemandes = array_slice($allDemandes, 0, 5);
         $teamMembers = array_slice($allTeamMembers, 0, 5);
 
         return [
             'stats' => $stats,
-            'latest' => $latestDemandes, 
-            'team' => $teamMembers,     
+            'latest' => $latestDemandes,
+            'team' => $teamMembers,
         ];
     }
 
-    public function getAllPendingDemandes(): array {
-        return $this->model->getDemandesByStatus($this->managerId, 'En attente');
-    }
-    
-    public function getDemandeDetails($demandeId): ?array {
-        $demande_info = $this->model->getDemandeById((int)$demandeId, $this->managerId);
-        
-        if (!$demande_info) { return null; }
-
-        $demande_info['statut'] = $demande_info['statut'] ?? 'En attente'; 
-        
-        $lignes_frais = $this->model->getDetailsFrais((int)$demandeId);
-        $demande_info['lignes_frais'] = $lignes_frais;
-    
-        return $demande_info; 
-    }
-
-    public function getDemandesList(?string $statut = null): array {
-        if (strtolower($statut) === 'toutes') {
-            $statut = null;
-        }
-        return $this->model->getAllDemandesForManager($this->managerId, $statut);
-    }
-    
     /**
-     * Récupère l'historique des demandes traitées pour le manager.
+     * Récupère l'historique des demandes traitées par le manager.
      */
- // controllers/DemandeController.php
-
-// controllers/DemandeController.php
-
-// REMPLACEZ LA MÉTHODE getHistorique() actuelle par celle-ci:
-// Pour l'Historique
-public function getHistorique(): array {
-    $statuts_historique = ['Validée Manager', 'Rejetée Manager'];
-    return $this->model->getDemandesByStatuses($this->managerId, $statuts_historique); // SANS le 'true'
-}
-
-// Pour la Liste des demandes
-public function getAllDemandesForManager(int $managerId, ?string $statut = null): array {
-     $statuses = $statut !== null && strtolower($statut) !== 'toutes' 
-         ? [$statut] 
-         : ['En attente', 'Validée Manager', 'Rejetée Manager'];
-     return $this->model->getDemandesByStatuses($managerId, $statuses); // SANS le 'false'
-}
-    // ... (Le reste du contrôleur est inchangé)
-    public function faireUneRecherche(array $searchParams): array {
-        
-        $employeId = (int)($searchParams['employe'] ?? 0);
-        $statut    = trim($searchParams['statut'] ?? '');
-        $dateDebut = trim($searchParams['date_debut'] ?? '');
-        $dateFin   = trim($searchParams['date_fin'] ?? '');
-        
-        return $this->model->rechercheAvancee(
-            $this->managerId, 
-            $employeId, 
-            $statut, 
-            $dateDebut, 
-            $dateFin
-        );
+    public function getHistorique(): array {
+        $statuses = ['Validée Manager', 'Rejetée Manager'];
+        return $this->model->getDemandesByStatuses($this->managerId, $statuses);
     }
-    
+
+    /**
+     * Récupère la liste des demandes avec filtre de statut.
+     */
+    public function getDemandesList(?string $statut = 'toutes'): array {
+        if (strtolower($statut) === 'toutes') {
+            $statuses = ['En attente', 'Validée Manager', 'Rejetée Manager'];
+        } else {
+            $statuses = [$statut];
+        }
+
+        return $this->model->getDemandesByStatuses($this->managerId, $statuses);
+    }
+
+    // =========================================================
+    // SECTION 2: DÉTAILS ET ACTIONS
+    // =========================================================
+
+    public function getDemandeDetails(int $demandeId): ?array {
+        $demande_info = $this->model->getDemandeById($demandeId, $this->managerId);
+
+        if (!$demande_info) return null;
+
+        $demande_info['statut'] = $demande_info['statut'] ?? 'En attente';
+        $demande_info['lignes_frais'] = $this->model->getDetailsFrais($demandeId);
+
+        return $demande_info;
+    }
+
+    /**
+     * Traite la demande en validant ou rejetant avec éventuellement un motif.
+     */
+    public function traiterDemandeAction(array $postData): void {
+        if (!isset($postData['action'], $postData['demande_id'])) {
+            $_SESSION['error_message'] = "Données incomplètes.";
+            header('Location: demandes_liste.php');
+            exit;
+        }
+
+        $id = (int)$postData['demande_id'];
+        $action = $postData['action'];
+        $motif = $postData['commentaire_manager'] ?? null;
+
+        $demandeActuelle = $this->model->getDemandeById($id, $this->managerId);
+        if (!$demandeActuelle) {
+            $_SESSION['error_message'] = "Erreur: Demande introuvable ou accès refusé.";
+            header('Location: demandes_liste.php');
+            exit;
+        }
+
+        $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager';
+
+        if ($action === 'rejeter' && empty(trim($motif))) {
+            $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        }
+
+        // Mise à jour via le modèle
+        if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
+            $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        } else {
+            $_SESSION['error_message'] = "Erreur technique lors de la mise à jour.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        }
+    }
+
     public function getManagerId(): int {
         return $this->managerId;
     }
-    
-    public function traiterDemandeAction($postData): void {
-        if (isset($postData['action'], $postData['demande_id'])) {
-            
-            $id = (int) $postData['demande_id'];
-            $action = $postData['action'];
-            $motif = $postData['commentaire_manager'] ?? null; 
 
-            $demandeActuelle = $this->model->getDemandeById($id, $this->managerId);
+    /**
+     * Recherche avancée avec filtres multiples.
+     * Recommandé: déplacer la logique SQL complète dans le modèle pour un contrôleur plus léger.
+     */
+    public function faireUneRecherche(array $filters = []): array {
+        $sql = "
+            SELECT
+                d.*,
+                u.first_name,
+                u.last_name,
+                u.email,
+                COALESCE(SUM(df.montant), 0) AS total_calcule
+            FROM demande_frais d
+            JOIN users u ON d.user_id = u.id
+            LEFT JOIN details_frais df ON d.id = df.demande_id
+            WHERE (u.manager_id = :manager_id OR d.manager_id_validation = :manager_id)
+        ";
 
-            if (!$demandeActuelle || $demandeActuelle['statut'] !== 'En attente') {
-                $_SESSION['error_message'] = "Erreur: La demande n'est pas 'En attente' ou vous n'êtes pas le manager responsable.";
-                header('Location: details_demande.php?id=' . $id);
-                exit;
-            }
-            
-            $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager'; 
-            
-            if ($action === 'rejeter' && empty(trim($motif))) {
-                $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
-                header('Location: details_demande.php?id=' . $id);
-                exit;
-            }
+        $params = [':manager_id' => $this->managerId];
 
-            if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
-                
-                $_SESSION['message'] = "Demande (ID: {$id}) traitée et statut mis à jour à '{$nouveauStatut}'.";
-                
-                header('Location: details_demande.php?id=' . $id);
-                exit;
+        if (!empty($filters['employe'])) {
+            $sql .= " AND d.user_id = :emp_id";
+            $params[':emp_id'] = $filters['employe'];
+        }
 
-            } else {
-                $_SESSION['error_message'] = "Erreur lors de la mise à jour (Modèle), vérifiez les journaux.";
-                header('Location: details_demande.php?id=' . $id);
-                exit;
-            }
-        } else {
-            $_SESSION['error_message'] = "Données d'action POST incomplètes.";
-            header('Location: demandes_liste.php'); 
-            exit;
+        if (!empty($filters['statut'])) {
+            $sql .= " AND d.statut = :statut";
+            $params[':statut'] = $filters['statut'];
+        }
+
+        if (!empty($filters['date_debut'])) {
+            $sql .= " AND d.date_depart >= :date_debut";
+            $params[':date_debut'] = $filters['date_debut'];
+        }
+
+        if (!empty($filters['date_fin'])) {
+            $sql .= " AND d.date_depart <= :date_fin";
+            $params[':date_fin'] = $filters['date_fin'];
+        }
+
+        $sql .= " GROUP BY d.id ORDER BY d.created_at DESC";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur Recherche : " . $e->getMessage());
+            return [];
         }
     }
 }
