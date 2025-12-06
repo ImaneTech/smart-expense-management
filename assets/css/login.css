@@ -312,7 +312,7 @@ body {
 
 /* --- ILLUSTRATION CONTENT --- */
 .illustration-container {
-  display: flex;
+   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -341,11 +341,9 @@ body {
 }
 
 .illustration-image {
-  width: 100%;
-  height: auto;
-  max-width: 500px;
-  transform: scale(1.5);
-  margin: 50px 0;
+  transform-origin: center;
+  transform: scale(2.0);
+  margin: 15px 0;
 }
 
 

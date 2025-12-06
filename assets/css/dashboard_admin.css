@@ -1,0 +1,143 @@
+/* ==============================================================
+   Layout Principal
+   ============================================================== */
+
+/* Contenu principal */
+#main-content {
+    margin-left: 250px;
+    padding: 20px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+/* Ajustement quand la sidebar est fermée */
+.sidebar.close ~ #main-content {
+    margin-left: 88px;
+}
+
+
+/* ==============================================================
+   1. Cartes Statistiques (Stats Cards)
+   ============================================================== */
+.stat-card {
+    border-radius: 10px;
+    border: 2px solid;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Couleurs selon le type */
+.stat-card.success { border-color: #28a745; background-color: #f8fff9; }
+.stat-card.warning { border-color: #ffc107; background-color: #fffef8; }
+.stat-card.danger  { border-color: #dc3545; background-color: #fff8f8; }
+
+/* Icônes des cartes */
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+.stat-icon.success { background-color: #28a745; }
+.stat-icon.warning { background-color: #ffc107; }
+.stat-icon.danger  { background-color: #dc3545; }
+
+/* Nombre/statistique */
+.stat-number {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+
+/* ==============================================================
+   2. Boutons et Filtres
+   ============================================================== */
+.filter-btn {
+    margin: 5px;
+    border-radius: 5px;
+}
+
+
+/* ==============================================================
+   3. Tables et Conteneurs
+   ============================================================== */
+.table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.table thead {
+    background-color: #4a5f7f;
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    padding: 15px;
+}
+
+/* Zone de chargement */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+
+/* ==============================================================
+   4. Zone Upload de fichiers
+   ============================================================== */
+.upload-zone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.upload-zone.drag-over {
+    border-color: #28a745;
+    background-color: #e8f5e9;
+}
+
+/* Prévisualisation du fichier */
+.file-preview {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    display: none;
+}
+
+
+/* ==============================================================
+   5. Responsive
+   ============================================================== */
+@media (max-width: 768px) {
+    #main-content {
+        margin-left: 0;
+    }
+    
+    .sidebar.close ~ #main-content {
+        margin-left: 0;
+    }
+}

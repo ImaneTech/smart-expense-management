@@ -1,6 +1,11 @@
-/* --- 03_pages.css (Layout et Tableau) --- */
+/* ==========================================
+   03_pages.css
+   Layout et Tableau
+========================================== */
 
-/* Styles généraux du conteneur de carte de tableau */
+/* ================================
+   CONTAINER DE LA CARTE DE TABLEAU
+=============================================== */
 .custom-table-card {
     background-color: var(--card-bg);
     border-radius: 15px;
@@ -9,60 +14,100 @@
     overflow: hidden;
 }
 
-/* Configuration de la grille */
+/* ================================
+   TABLE MODERNE (Grille)
+=============================================== */
 .modern-table {
     width: 100%;
     border-collapse: collapse; 
     margin: 0;
-
 }
 
-/* En-tête (Head) - Style vert clair unifié */
+/* --- En-tête du tableau (thead) --- */
 .modern-table thead th {
-    background-color: rgba(var(--primary-color-rgb), 0.15) !important; 
-    color: var(--primary-color) !important; 
+    background-color: rgba(var(--primary-color-rgb), 0.15) !important;
+    color: var(--primary-color) !important;
     border: none;
-    font-size: 0.85rem; 
+    font-size: 0.85rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 18px 25px; 
+    padding: 18px 25px;
 }
-.modern-table thead tr th:first-child { border-top-left-radius: 16px; }
-.modern-table thead tr th:last-child { border-top-right-radius: 16px; }
 
-/* Corps (Body) - Lignes et Effet de Survol Dramatique */
+/* Arrondir les coins supérieurs des colonnes */
+.modern-table thead tr th:first-child { 
+    border-top-left-radius: 16px; 
+}
+.modern-table thead tr th:last-child { 
+    border-top-right-radius: 16px; 
+}
+
+/* --- Corps du tableau (tbody) --- */
 .modern-table tbody tr {
-    border-bottom: 1px solid #f0f0f0; 
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                box-shadow 0.3s ease, 
+    border-bottom: 1px solid #f0f0f0;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                box-shadow 0.3s ease,
                 background-color 0.2s ease;
 }
+
+/* Effet de survol dramatique sur les lignes */
 .modern-table tbody tr:hover {
     background-color: #f4f8f4 !important; /* Couleur de survol léger */
-    transform: translateY(-5px) scale(1.015); 
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 
-                0 5px 10px rgba(var(--primary-color-rgb), 0.1); 
-    position: relative; 
-    z-index: 10; 
+    transform: translateY(-5px) scale(1.015);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1),
+                0 5px 10px rgba(var(--primary-color-rgb), 0.1);
+    position: relative;
+    z-index: 10;
     cursor: pointer;
     border-radius: 12px;
 }
-.modern-table tbody td {
-    padding: 18px 25px; 
-    vertical-align: middle;
-    color: var(--text-color); 
-    font-size: 0.95rem;
-    border: none; 
 
+/* Cellules du tableau (td) */
+.modern-table tbody td {
+    padding: 18px 25px;
+    vertical-align: middle;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    border: none;
 }
 
-/* Styles Spécifiques aux Cellules */
-.table-primary-text { font-weight: 600; color: var(--text-color); display: block; }
-.table-sub-text { font-size: 0.8rem; color: #8898aa; display: block; margin-top: 3px; }
-.text-highlight { color: var(--primary-color); font-weight: 700; } 
-.modern-table td:last-child { text-align: center; vertical-align: middle; }
+/* ================================
+   STYLES SPÉCIFIQUES AUX CELLULES
+=============================================== */
+.table-primary-text { 
+    font-weight: 600; 
+    color: var(--text-color); 
+    display: block; 
+}
 
-/* Styles pour l'état Vide (Empty State) */
-.empty-state-card { padding: 40px; text-align: center; }
-/* ... (Autres styles de table spécifiques) ... */
+.table-sub-text { 
+    font-size: 0.8rem; 
+    color: #8898aa; 
+    display: block; 
+    margin-top: 3px; 
+}
+
+.text-highlight { 
+    color: var(--primary-color); 
+    font-weight: 700; 
+} 
+
+/* Alignement de la dernière colonne */
+.modern-table td:last-child { 
+    text-align: center; 
+    vertical-align: middle; 
+}
+
+/* ================================
+   ÉTAT VIDE (EMPTY STATE)
+=============================================== */
+.empty-state-card { 
+    padding: 40px; 
+    text-align: center; 
+}
+
+/* ==========================================
+   AUTRES STYLES SPÉCIFIQUES AUX TABLEAUX
+   (à compléter si nécessaire)
+========================================== */

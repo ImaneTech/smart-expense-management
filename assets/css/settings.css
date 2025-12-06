@@ -1,26 +1,177 @@
-/* --- 01_settings.css (Variables Globales) --- */
+/* ========================================
+   SETTINGS.CSS - STYLES GÉNÉRAUX ET THÉMES
+   ======================================== */
+
+/* ========================================
+   1. VARIABLES CSS (THEME LIGHT / DARK)
+   ======================================== */
 :root {
-    --primary-color: #76BD46; 
-    --secondary-color: #2566A1; 
-    --text-color: #5A5A5A;
-    --body-color: #e4e9f7;
-    --card-bg: #fff;
-    
-    --primary-color-rgb: 118, 189, 70; 
-    --secondary-color-rgb: 37, 102, 161; 
+    /* Couleurs de base (Mode Clair) */
+    --primary-color: #76BD46;
+    --secondary-color: #2566A1;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
+
+    --primary-color-rgb: 118, 189, 70;
+    --secondary-color-rgb: 37, 102, 161;
+
+    /* Variables de thème par défaut (Light) */
+    --body-bg: #e4e9f7;
+    --card-bg: #ffffff;
+    --text-color: #5A5A5A;
+    --text-muted: #6c757d;
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --table-border: #e3e6f0;
 }
 
-/* GLOBAL: Ajout de transition pour les animations de couleur (mode sombre) */
-* {
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
-}
-
+/* Mode sombre : surcharge des variables */
 body.dark {
-    --card-bg: #2A2A3D;
+    --body-bg: #18191a;
+    --card-bg: #242526;
     --text-color: #E0E0E0;
+    --text-muted: #b0b3b8;
+    --input-bg: #3a3b3c;
+    --input-border: #555;
+    --table-border: #444;
 }
-/* Styles de base pour la couleur du texte sur les cartes */
-.text-theme-primary { color: var(--primary-color); }
-.text-theme-secondary { color: var(--secondary-color); }
+
+/* ========================================
+   2. GLOBAL STYLES
+   ======================================== */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    background-color: var(--body-bg) !important;
+    color: var(--text-color) !important;
+}
+
+/* ========================================
+   3. CARTES ET CONTENEURS
+   ======================================== */
+.card, .settings-card, .profile-card, .bg-white {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+}
+
+/* ========================================
+   4. FORMULAIRES
+   ======================================== */
+.form-control, .form-select {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--text-color) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+}
+
+/* Groupes d'input avec icônes */
+.input-group-text {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--text-color) !important;
+}
+
+/* ========================================
+   5. TITRES
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color) !important;
+}
+
+/* ========================================
+   6. NAVIGATION TABS (SETTINGS)
+   ======================================== */
+.nav-tabs-custom {
+    background-color: var(--card-bg) !important;
+    border-bottom-color: var(--table-border) !important;
+}
+
+.nav-tabs-custom .nav-link {
+    color: var(--text-color) !important;
+}
+
+.nav-tabs-custom .nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+/* ========================================
+   7. UTILITAIRES DE TEXTE
+   ======================================== */
+.text-theme-primary { color: var(--primary-color) !important; }
+.text-theme-secondary { color: var(--secondary-color) !important; }
+.text-muted { color: var(--text-muted) !important; }
+
+/* ========================================
+   8. CARTES MEMBRES (MODAL)
+   ======================================== */
+.member-select-card {
+    background-color: #fff;
+    border: 1px solid #e4e9f7;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.member-select-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(118, 189, 70, 0.15);
+    border-color: var(--primary-color);
+}
+
+.member-select-card.selected {
+    background-color: #f1f8e9 !important;
+    border: 2px solid var(--primary-color) !important;
+}
+
+/* ========================================
+   9. AVATARS
+   ======================================== */
+.avatar-theme {
+    width: 45px;
+    height: 45px;
+    background-color: #e8f5e9;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: 1px solid #c8e6c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* ========================================
+   10. BADGES DE RÔLE
+   ======================================== */
+.badge-role-manager {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.badge-role-employe {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+/* ========================================
+   11. CHECKBOX CUSTOM
+   ======================================== */
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}

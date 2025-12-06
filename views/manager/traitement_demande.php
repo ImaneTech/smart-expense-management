@@ -16,17 +16,15 @@ $controller = new DemandeController($pdo);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['demande_id'], $_POST['action'])) {
     $demandeId = (int)$_POST['demande_id'];
     $action = $_POST['action']; // 'valider' ou 'rejeter'
-    
-    // Le motif de rejet est dans 'commentaire_manager' dans le formulaire
+
     $commentaire = $_POST['commentaire_manager'] ?? null; 
-    
-    // ATTENTION : Correction du nom de la méthode
-    $success = $controller->traiterDemandeAction($demandeId, $action, $commentaire);
+
+ $controller->traiterDemandeAction($_POST);
     
     if ($success) {
         $message = ($action === 'valider') 
-            ? "La demande #$demandeId a été **Validée** avec succès." 
-            : "La demande #$demandeId a été **Rejetée**.";
+            ? "La demande #$demandeId a été Validée avec succès." 
+            : "La demande #$demandeId a été Rejetée.";
         $_SESSION['message'] = $message; // Utilise 'message' pour l'affichage dans la page de détails
     } else {
         // Le contrôleur est censé gérer la validation avant d'appeler le modèle

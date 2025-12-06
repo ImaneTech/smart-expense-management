@@ -1,6 +1,6 @@
-/* ========================
-   RESET & VARIABLES
-======================== */
+/* ==========================================
+   RESET & VARIABLES GLOBALES
+========================================== */
 * {
     margin: 0;
     padding: 0;
@@ -9,6 +9,7 @@
 }
 
 :root {
+    /* Couleurs principales */
     --body-color: #e4e9f7;
     --sidebar-color: #fff;
     --primary-color: #76BD46;
@@ -17,11 +18,13 @@
     --toggle-color: #cdd1dc;
     --text-color: #5A5A5A;
 
+    /* Transitions */
     --tran-03: all 0.3s ease;
     --tran-04: all 0.4s ease;
     --tran-05: all 0.5s ease;
 }
 
+/* Body & Mode sombre */
 body {
     background: var(--body-color);
     transition: background 0.3s ease;
@@ -34,9 +37,9 @@ body.dark {
     --text-color: #E0E0E0;
 }
 
-/* ========================
+/* ==========================================
    SIDEBAR STRUCTURE
-======================== */
+========================================== */
 .sidebar {
     position: fixed;
     top: 0;
@@ -49,21 +52,19 @@ body.dark {
     display: flex;
     flex-direction: column;
     overflow: visible;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Petite ombre pour détacher du fond */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
 }
 
-
-
-/* ========================
-   HEADER : LOGO (CORRIGÉ)
-======================== */
+/* ==========================================
+   HEADER / LOGO
+========================================== */
 .sidebar-header {
     position: relative;
     display: flex;
     align-items: center;
     padding: 20px 15px;
-    min-height: 80px; 
-    white-space: nowrap; 
+    min-height: 80px;
+    white-space: nowrap;
 }
 
 .sidebar-brand {
@@ -74,39 +75,36 @@ body.dark {
     transition: var(--tran-03);
 }
 
-/* FIX DU LOGO GÉANT */
 .sidebar-brand img {
-    width: 50px;       /* Largeur forcée */
-    height: 50px;      /* Hauteur forcée */
-    min-width: 40px;   /* Empêche l'écrasement */
-    object-fit: contain; 
+    width: 50px;
+    height: 50px;
+    min-width: 40px;
+    object-fit: contain;
     border-radius: 6px;
     display: block;
 }
 
 .brand-text {
-    font-size: 2.3rem; /* Ajusté pour être propre */
+    font-size: 2.3rem;
     font-weight: 700;
     color: var(--primary-color);
     transition: opacity 0.2s ease;
     margin-top: 4px;
 }
 
-/* ========================
-   BOUTON TOGGLE (Flèche)
-======================== */
+/* ==========================================
+   BOUTON TOGGLE (SIDEBAR COLLAPSE)
+========================================== */
 .toggle-sidebar {
     position: absolute;
     top: 50%;
     right: -12.5px;
     transform: translateY(-50%) rotate(180deg);
-    
     height: 25px;
     width: 25px;
     background: var(--secondary-color);
     color: #fff;
     border-radius: 50%;
-    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -116,9 +114,9 @@ body.dark {
     z-index: 1000;
 }
 
-/* ========================
+/* ==========================================
    MENU & LIENS
-======================== */
+========================================== */
 .menu-bar {
     display: flex;
     flex-direction: column;
@@ -161,13 +159,13 @@ body.dark {
     border-radius: 6px;
     font-size: 16px;
     color: var(--text-color);
-    padding-left: 65px; 
+    padding-left: 65px;
     transition: var(--tran-05);
 }
 
 .search-box .icon {
     position: absolute;
-    left: 15px; 
+    left: 15px;
     color: var(--secondary-color);
     font-size: 20px;
     z-index: 10;
@@ -175,7 +173,7 @@ body.dark {
 }
 
 /* LIENS COMMUNS */
-.nav-link a, 
+.nav-link a,
 .bottom-content a {
     display: flex;
     align-items: center;
@@ -186,7 +184,7 @@ body.dark {
     transition: var(--tran-03);
 }
 
-.nav-link a:hover, 
+.nav-link a:hover,
 .bottom-content a:hover {
     background: var(--primary-color);
 }
@@ -198,7 +196,7 @@ body.dark {
 
 .menu-links .icon,
 .bottom-content .icon {
-    min-width: 50px; 
+    min-width: 50px;
     height: 50px;
     display: flex;
     align-items: center;
@@ -217,9 +215,9 @@ body.dark {
     transition: var(--tran-03);
 }
 
-/* ========================
-   BOTTOM CONTENT
-======================== */
+/* ==========================================
+   BOTTOM CONTENT (PARAMÈTRES / DARK MODE)
+========================================== */
 .bottom-content {
     border-top: 1px solid var(--toggle-color);
     padding-top: 10px;
@@ -287,32 +285,28 @@ body.dark .mode .moon { opacity: 0; pointer-events: none; }
 
 body.dark .switch::before { left: 20px; }
 
-
-/* ========================
-   CONTENU PRINCIPAL (HOME SECTION) - AJOUTÉ
-======================== */
+/* ==========================================
+   HOME SECTION / CONTENU PRINCIPAL
+========================================== */
 .home-section {
     position: relative;
     background: var(--body-color);
     min-height: 100vh;
     top: 0;
-    left: 250px; /* Pousse le contenu après la sidebar */
-    width: calc(100% - 250px); /* Réduit la largeur pour éviter le scroll horizontal */
+    left: 250px;
+    width: calc(100% - 250px);
     transition: all 0.3s ease;
     padding: 20px;
 }
 
-/* Ajustement quand la sidebar est fermée */
 .sidebar.close ~ .home-section {
     left: 88px;
     width: calc(100% - 88px);
 }
 
-
-/* ========================
-   ETAT FERMÉ (COLLAPSE)
-======================== */
-
+/* ==========================================
+   SIDEBAR COLLAPSÉ / ÉTAT FERMÉ
+========================================== */
 .sidebar.close {
     width: 88px;
 }
@@ -320,16 +314,11 @@ body.dark .switch::before { left: 20px; }
 .sidebar.close .sidebar-brand {
     justify-content: center;
 }
-.sidebar.close .brand-text {
-    display: none;
-}
+.sidebar.close .brand-text { display: none; }
 .sidebar.close .toggle-sidebar {
     transform: translateY(-50%) rotate(0deg);
 }
-
-.sidebar.close .menu-bar {
-    padding: 10px 0;
-}
+.sidebar.close .menu-bar { padding: 10px 0; }
 
 .sidebar.close .menu-links li,
 .sidebar.close .nav-link a,
@@ -342,11 +331,13 @@ body.dark .switch::before { left: 20px; }
 .sidebar.close .search-box {
     background: transparent;
 }
+
 .sidebar.close .search-box input {
     width: 0;
     padding: 0;
     opacity: 0;
 }
+
 .sidebar.close .search-box .icon {
     position: static;
     width: 50px;
@@ -354,55 +345,35 @@ body.dark .switch::before { left: 20px; }
     justify-content: center;
 }
 
-.sidebar.close .text {
-    display: none;
-}
-
+.sidebar.close .text { display: none; }
 .sidebar.close .bottom-content {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+.sidebar.close .mode { background: transparent; }
+.sidebar.close .toggle-switch { display: none; }
 
-.sidebar.close .mode {
-    background: transparent;
-}
-.sidebar.close .toggle-switch {
-    display: none;
-}
-
-/* =============================================
-   CORRECTIF BOOTSTRAP (ANTI-CONFLIT)
-============================================= */
-
-/* 1. Enlever le décalage à gauche des listes (padding-left) */
-.sidebar ul, 
-.sidebar .menu-links, 
+/* ==========================================
+   CORRECTIFS BOOTSTRAP / ANTI-CONFLIT
+========================================== */
+.sidebar ul,
+.sidebar .menu-links,
 .sidebar .bottom-content {
     padding-left: 0 !important;
     margin-bottom: 0 !important;
 }
 
-/* 2. Enlever les puces (points) si elles reviennent */
-.sidebar li {
-    list-style: none !important;
-}
-
-/* 3. Enlever le soulignement des liens (Bootstrap souligne parfois) */
+.sidebar li { list-style: none !important; }
 .sidebar a {
     text-decoration: none !important;
-    color: inherit; /* Garde ta couleur perso, pas le bleu Bootstrap */
+    color: inherit;
 }
+.sidebar * { box-sizing: border-box; }
 
-/* 4. Corriger le box-sizing si Bootstrap le change */
-.sidebar * {
-    box-sizing: border-box;
-}
-
-/* 5. Si tu utilises des inputs Bootstrap dans la sidebar, reset les styles */
 .sidebar .search-box input {
     background: transparent;
     border: none;
     outline: none;
-    box-shadow: none !important; /* Enlève le halo bleu de Bootstrap */
+    box-shadow: none !important;
 }

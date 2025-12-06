@@ -1,56 +1,91 @@
-/*
- * Styles spécifiques à la page 'Demandes en Attente' (demandes.php)
- * Ces styles concernent le design de l'état vide et l'alignement des éléments de table.
- */
+/* ==============================================================
+   BOUTONS DE FILTRAGE (Pastel + Hover + Bordure)
+   ============================================================== */
 
-/* 1. État Vide (Empty State) Design */
-/* Cibler la ligne vide du tableau pour assurer un bon espacement et centrage */
-.modern-table .empty-state-row {
-    /* La hauteur de 250px est définie dans le HTML. Ceci s'assure que le contenu est bien centré */
-    vertical-align: middle; 
-}
-
-.modern-table .empty-state-row .empty-state-card {
-    /* Assure que l'icône et le texte sont centrés dans la cellule */
-    text-align: center;
-    padding: 30px 0; /* Espacement autour du contenu de l'état vide */
-}
-
-.modern-table .empty-state-row .empty-state-card h6 {
-    /* Style du titre "Tout est calme !" */
-    font-size: 1.2rem;
-    margin-bottom: 5px;
-}
-
-/* 2. Style de l'Icône de Recherche (Loupe) */
-.empty-state-row .fa-search {
-    /* Le style est déjà appliqué en ligne, mais le définir ici est plus propre */
-    font-size: 2.5rem; 
-    color: #ccc; /* Gris clair */
-    margin-bottom: 15px;
-    display: block; /* S'assurer qu'il prend sa propre ligne */
-}
-
-
-/* 3. Styles Spécifiques aux Cellules de la Table */
-
-.modern-table .table-primary-text {
-    /* Style pour le nom de l'employé ou le sujet de la mission */
+/* --- Styles généraux pour tous les boutons de filtre --- */
+.filter-btn {
+    border-radius: 50px;
+    padding: 12px 28px;
     font-weight: 600;
-    color: var(--text-color);
-    display: block;
+    font-size: 1rem;
+    border: 2px solid rgba(0,0,0,0.1); /* Bordure légère par défaut */
+    transition: all 0.25s ease-in-out;
+    text-decoration: none !important;
 }
 
-.modern-table .table-sub-text {
-    /* Style pour l'email de l'employé */
-    font-size: 0.85rem;
-    color: var(--text-color);
-    opacity: 0.8;
-    display: block;
+/* S'assurer que toutes les variantes gardent la même déco de texte */
+.filter-btn,
+.filter-btn:hover,
+.filter-btn:focus,
+.filter-btn.active {
+    text-decoration: none !important;
 }
 
-.modern-table .text-highlight {
-    /* Style pour le montant (€) en surbrillance */
-    font-weight: 700;
-    color: var(--primary-color); /* Couleur verte primaire */
+/* Ombre subtile au hover */
+.filter-btn:hover {
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+
+/* ==============================================================
+   1. Bouton "Toutes" (Bleu clair)
+   ============================================================== */
+.filter-toutes {
+    background: #e6f0ff;      /* Bleu très clair */
+    color: #1a4fa3;           /* Bleu foncé lisible */
+    border-color: #bcd4ff;    /* Bordure assortie */
+}
+.filter-toutes:hover,
+.filter-toutes.active {
+    background: #d2e4ff;
+    color: #103a80;
+    border-color: #99c0ff;
+}
+
+
+/* ==============================================================
+   2. Bouton "En Attente" (Jaune pastel)
+   ============================================================== */
+.filter-attente {
+    background: #fff7cc;      /* Jaune très clair */
+    color: #8a6d00;           /* Jaune foncé lisible */
+    border-color: #ffe680;
+}
+.filter-attente:hover,
+.filter-attente.active {
+    background: #ffe680;
+    color: #5a4c00;
+    border-color: #ffd84d;
+}
+
+
+/* ==============================================================
+   3. Bouton "Validées" (Vert pastel)
+   ============================================================== */
+.filter-validees {
+    background: #d4f7df;      /* Vert très clair */
+    color: #1b7e3c;           /* Vert foncé lisible */
+    border-color: #b2ecc9;
+}
+.filter-validees:hover,
+.filter-validees.active {
+    background: #adefc4;
+    color: #145e2d;
+    border-color: #8de3af;
+}
+
+
+/* ==============================================================
+   4. Bouton "Rejetées" (Rouge pastel)
+   ============================================================== */
+.filter-rejetees {
+    background: #ffd6d6;      /* Rouge très clair */
+    color: #a62222;           /* Rouge foncé lisible */
+    border-color: #ffb3b3;
+}
+.filter-rejetees:hover,
+.filter-rejetees.active {
+    background: #ffb3b3;
+    color: #7a1717;
+    border-color: #ff9999;
 }

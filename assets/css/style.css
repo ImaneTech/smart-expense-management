@@ -1,58 +1,68 @@
-/* Container pour les popups */
+/* ==========================================
+   RESET GLOBAL
+========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f7fa;
+    color: #2d3748;
+}
+
+/* ==========================================
+   FLASH POPUPS (TOASTS / ALERTS)
+========================================== */
+
+/* --- Container pour les popups --- */
 .flash-container {
     position: fixed;
     top: 20px;
-    right: 20px;             /* Collé à droite avec une marge */
-    left: auto;              /* On annule le centrage */
-    transform: none;         /* On annule le centrage */
+    right: 20px;
+    left: auto;
+    transform: none;
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;   /* Aligne les alertes à droite */
+    align-items: flex-end;
     gap: 10px;
 }
 
-/* Style des popups */
+/* --- Style général des popups --- */
 .flash-popup {
-  display: flex;
+    display: flex;
     align-items: center;
-    width: 100%;           
-    min-width: 320px;      
+    width: 100%;
+    min-width: 320px;
     max-width: 500px;
     padding: 14px 18px;
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     position: relative;
-    /* Animation for smooth entry */
+    transition: all 0.3s ease;
     animation: slideDownFade 0.4s ease-out;
 }
+
+/* Animation alternative pour entrée depuis la droite */
 .flash-popup {
     animation: slideInRight 0.4s ease-out;
 }
 
+/* --- Animations --- */
 @keyframes slideDownFade {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%); /* Arrive depuis la droite */
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Taille des icônes */
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Icône dans les popups --- */
 .flash-popup svg.bi {
     width: 22px;
     height: 22px;
@@ -61,12 +71,12 @@
     fill: currentColor;
 }
 
-/* Bouton de fermeture */
+/* --- Bouton de fermeture --- */
 .flash-popup .btn-close {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     right: 15px;
+    transform: translateY(-50%);
     background: transparent;
     border: none;
     font-size: 20px;
@@ -76,23 +86,24 @@
     opacity: 0.6;
     padding: 0;
 }
+
 .flash-popup .btn-close:hover {
     opacity: 1;
 }
-/* Ajoutez !important pour forcer la couleur */
+
+/* --- Styles par type d'alerte --- */
 .flash-popup.alert-info {
-    background-color: #cff4fc !important; 
+    background-color: #cff4fc !important;
     color: #055160 !important;
     border: 1px solid #b6effb !important;
 }
 
-/* Faites de même pour l'icône si nécessaire */
 .flash-popup.alert-info svg {
     fill: #055160 !important;
 }
 
 .flash-popup.alert-success {
-    background-color: #dcfce7; 
+    background-color: #dcfce7;
     color: #15803d;
     border: 1px solid #bbf7d0;
 }
@@ -104,40 +115,57 @@
 }
 
 .flash-popup.alert-danger {
-    background-color: #fee2e2; 
+    background-color: #fee2e2;
     color: #b91c1c;
     border: 1px solid #fecaca;
 }
 
-
-/* =================== LAYOUT ==================== 
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-
-body {
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-background-color: #f5f7fa;
-color: #2d3748;
-}
-
+/* ==========================================
+   LAYOUT PRINCIPAL
+========================================== */
 .app-container {
-display: flex;
-min-height: 100vh;
+    display: flex;
+    min-height: 100vh;
 }
 
+/* --- Wrapper principal (content area) --- */
 .main-wrapper {
-flex: 1;
-display: flex;
-flex-direction: column;
-margin-left: 240px;
-transition: margin-left 0.3s ease;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 240px; /* largeur de la sidebar ouverte */
+    transition: margin-left 0.3s ease;
 }
 
 .main-wrapper.sidebar-collapsed {
-margin-left: 70px;
+    margin-left: 70px; /* largeur de la sidebar réduite */
 }
 
- =================== SIDEBAR ==================== */
+/* ==========================================
+   SIDEBAR
+   (prévu pour styles futurs)
+========================================== */
+/* .sidebar { ... } */
+
+/* ==========================================
+   RESPONSIVE
+   (prévoir adaptations pour mobile/tablette)
+========================================== */
+@media (max-width: 992px) {
+    .main-wrapper {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .flash-container {
+        right: 10px;
+        left: 10px;
+        align-items: center;
+    }
+
+    .flash-popup {
+        min-width: auto;
+        width: 100%;
+    }
+}

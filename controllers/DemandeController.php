@@ -1,123 +1,211 @@
 <?php
-// controllers/DemandeController.php
+// =============================================================
+// ================= DEMANDE CONTROLLER =======================
+// Fichier : controllers/DemandeController.php
+// Version finale corrigée et harmonisée
+// =============================================================
 
-require_once __DIR__ . '/../models/DemandeModel.php'; 
-// Assurez-vous que BASE_PATH est correctement défini dans votre environnement
-require_once BASE_PATH . 'controllers/TeamController.php'; 
+require_once __DIR__ . '/../models/DemandeModel.php';
+require_once __DIR__ . '/../controllers/TeamController.php';
 
+// =============================================================
+// =================== DEFINITION DE LA CLASSE =================
+// =============================================================
 class DemandeController {
 
-    private $model;
-    private $db;
-    private $managerId; // L'ID du manager connecté
-    private $userId;    // L'ID générique de l'utilisateur connecté
+    private DemandeModel $model;
+    private \PDO $pdo;
+    private int $managerId;
+    private int $userId;
 
-    public function __construct($db) {
-        $this->db = $db;
-        $this->model = new DemandeModel($this->db);
+    // =============================================================
+    // =================== CONSTRUCTEUR ===========================
+    // Initialise le modèle, démarre la session et vérifie auth
+    // =============================================================
+    public function __construct(\PDO $pdo) {
+        $this->pdo = $pdo;
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $this->checkAuth();
-        
-        // Initialiser les IDs après l'authentification
-        $this->userId = $_SESSION['user_id'];
-        $this->managerId = $this->userId; // Pour le contrôleur Manager, userId = managerId
+
+        $this->userId = (int)($_SESSION['user_id'] ?? 0);
+        $this->managerId = $this->userId;
+
+        $this->model = new DemandeModel($this->pdo);
     }
-    
-    /**
-     * Vérifie l'état d'authentification et le rôle 'manager'.
-     */
-    private function checkAuth() {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'manager') {
-            // Utiliser exit après header pour s'assurer que le script s'arrête
-            header('Location: ' . BASE_URL . 'views/auth/login.php'); 
+
+    // =============================================================
+    // =================== VERIFICATION AUTH ======================
+    // Redirige si l'utilisateur n'est pas connecté
+    // =============================================================
+    private function checkAuth(): void {
+        if (!isset($_SESSION['user_id'])) {
+            $redirectUrl = (defined('BASE_URL') ? BASE_URL : '/') . 'views/auth/login.php';
+            header('Location: ' . $redirectUrl);
             exit;
         }
     }
 
-// --- Les méthodes getDashboardData, getAllPendingDemandes, getDemandeDetails, getDemandesList 
-// --- sont conservées telles quelles car elles sont correctement implémentées.
+    // =============================================================
+    // =================== SECTION 1: DASHBOARD & LISTES ==========
+    // =============================================================
 
-    // =========================================================
-    // SECTION 1: DATA PROVIDERS (Aucun changement nécessaire)
-    // =========================================================
-
-    public function getDashboardData() {
-        // ... (Code inchangé)
+    /**
+     * Récupère les données pour le dashboard manager
+     */
+    public function getDashboardData(): array {
         $stats = $this->model->getDashboardStats($this->managerId);
 
-        $teamController = new TeamController($this->db, $this->managerId);
+        $teamController = new TeamController($this->pdo, $this->managerId);
         $allTeamMembers = $teamController->getAllTeamMembers();
-        
-        $latestDemandes = $this->model->getDemandesByStatus($this->managerId, 'En attente', 5);
+
+        $allDemandes = $this->getDemandesList('En attente');
+        $latestDemandes = array_slice($allDemandes, 0, 5);
         $teamMembers = array_slice($allTeamMembers, 0, 5);
 
         return [
             'stats' => $stats,
-            'latest' => $latestDemandes, 
-            'team' => $teamMembers,     
+            'latest' => $latestDemandes,
+            'team' => $teamMembers,
         ];
     }
 
-    public function getAllPendingDemandes() {
-        return $this->model->getDemandesByStatus($this->managerId, 'En attente');
+    /**
+     * Historique des demandes traitées par le manager
+     */
+    public function getHistorique(): array {
+        $statuses = ['Validée Manager', 'Rejetée Manager'];
+        return $this->model->getDemandesByStatuses($this->managerId, $statuses);
     }
-
-    public function getDemandeDetails($demandeId) {
-        $demande_info = $this->model->getDemandeById((int)$demandeId, $this->managerId);
-        
-        if (!$demande_info) { return null; }
-
-        $demande_info['statut'] = $demande_info['statut'] ?? 'En attente'; 
-        
-        $lignes_frais = $this->model->getDetailsFrais((int)$demandeId);
-        $demande_info['lignes_frais'] = $lignes_frais;
-    
-        return $demande_info; 
-    }
-
-    public function getDemandesList(?string $statut = null) {
-        if (strtolower($statut) === 'toutes') {
-            $statut = null;
-        }
-        return $this->model->getAllDemandesForManager($this->managerId, $statut);
-    }
-    
-    // =========================================================
-    // SECTION 2: ACTIONS POST (Mise à jour pour l'historique)
-    // =========================================================
 
     /**
-     * Traite l'action POST de validation ou de rejet d'une demande.
+     * Liste des demandes filtrées par statut
      */
-    public function traiterDemandeAction($postData) {
-        if (isset($postData['action'], $postData['demande_id'])) {
-            
-            $id = (int) $postData['demande_id'];
-            $action = $postData['action'];
-            $motif = $postData['commentaire_manager'] ?? null; 
+    public function getDemandesList(?string $statut = 'toutes'): array {
+        $statuses = (strtolower($statut) === 'toutes') 
+                    ? ['En attente', 'Validée Manager', 'Rejetée Manager'] 
+                    : [$statut];
 
-            // 1. Déterminer le statut
-            $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager'; 
-            
-            // 2. Vérification des données entrantes (sécurité)
-            if ($action === 'rejeter' && empty(trim($motif))) {
-                $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
-                return; // Arrête l'exécution
-            }
+        return $this->model->getDemandesByStatuses($this->managerId, $statuses);
+    }
 
-            // 3. Appel du Modèle avec la signature CORRIGÉE pour l'Historique
-            // Signature: updateStatut($id, $nouveauStatut, $managerId, $userIdAction, $motif)
-            // L'ID du manager est à la fois l'ID pour la vérification des droits et pour l'enregistrement de l'action.
-            if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
-                
-                // Mettre à jour l'état de la session (Flash message)
-                $_SESSION['message'] = "Demande (ID: {$id}) traitée et statut mis à jour à '{$nouveauStatut}'.";
-            } else {
-                $_SESSION['error_message'] = "Erreur lors de la mise à jour, demande non trouvée, ou statut déjà finalisé.";
-            }
+    // =============================================================
+    // =================== SECTION 2: DÉTAILS ET ACTIONS ==========
+    // =============================================================
+
+    /**
+     * Récupère les détails complets d'une demande
+     */
+    public function getDemandeDetails(int $demandeId): ?array {
+        $demande_info = $this->model->getDemandeById($demandeId, $this->managerId);
+
+        if (!$demande_info) return null;
+
+        $demande_info['statut'] = $demande_info['statut'] ?? 'En attente';
+        $demande_info['lignes_frais'] = $this->model->getDetailsFrais($demandeId);
+
+        return $demande_info;
+    }
+
+    /**
+     * Traite la demande: validation ou rejet avec motif
+     */
+    public function traiterDemandeAction(array $postData): void {
+        if (!isset($postData['action'], $postData['demande_id'])) {
+            $_SESSION['error_message'] = "Données incomplètes.";
+            header('Location: demandes_liste.php');
+            exit;
+        }
+
+        $id = (int)$postData['demande_id'];
+        $action = $postData['action'];
+        $motif = $postData['commentaire_manager'] ?? null;
+
+        $demandeActuelle = $this->model->getDemandeById($id, $this->managerId);
+        if (!$demandeActuelle) {
+            $_SESSION['error_message'] = "Erreur: Demande introuvable ou accès refusé.";
+            header('Location: demandes_liste.php');
+            exit;
+        }
+
+        $nouveauStatut = ($action === 'valider') ? 'Validée Manager' : 'Rejetée Manager';
+
+        if ($action === 'rejeter' && empty(trim($motif))) {
+            $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        }
+
+        if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
+            $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
         } else {
-             $_SESSION['error_message'] = "Données d'action POST incomplètes.";
+            $_SESSION['error_message'] = "Erreur technique lors de la mise à jour.";
+            header('Location: details_demande.php?id=' . $id);
+            exit;
+        }
+    }
+
+    // =============================================================
+    // =================== UTILITAIRES ============================
+    // =============================================================
+
+    public function getManagerId(): int {
+        return $this->managerId;
+    }
+
+    /**
+     * Recherche avancée avec filtres multiples
+     */
+    public function faireUneRecherche(array $filters = []): array {
+        $sql = "
+            SELECT
+                d.*,
+                u.first_name,
+                u.last_name,
+                u.email,
+                COALESCE(SUM(df.montant), 0) AS total_calcule
+            FROM demande_frais d
+            JOIN users u ON d.user_id = u.id
+            LEFT JOIN details_frais df ON d.id = df.demande_id
+            WHERE (u.manager_id = :manager_id OR d.manager_id_validation = :manager_id)
+        ";
+
+        $params = [':manager_id' => $this->managerId];
+
+        if (!empty($filters['employe'])) {
+            $sql .= " AND d.user_id = :emp_id";
+            $params[':emp_id'] = $filters['employe'];
+        }
+
+        if (!empty($filters['statut'])) {
+            $sql .= " AND d.statut = :statut";
+            $params[':statut'] = $filters['statut'];
+        }
+
+        if (!empty($filters['date_debut'])) {
+            $sql .= " AND d.date_depart >= :date_debut";
+            $params[':date_debut'] = $filters['date_debut'];
+        }
+
+        if (!empty($filters['date_fin'])) {
+            $sql .= " AND d.date_depart <= :date_fin";
+            $params[':date_fin'] = $filters['date_fin'];
+        }
+
+        $sql .= " GROUP BY d.id ORDER BY d.created_at DESC";
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur Recherche : " . $e->getMessage());
+            return [];
         }
     }
 }

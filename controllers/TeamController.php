@@ -1,35 +1,57 @@
 <?php
-// controllers/TeamController.php
+// =============================================================
+// ================= TEAM CONTROLLER ==========================
+// Fichier : controllers/TeamController.php
+// Gère la gestion des équipes d’un manager
+// =============================================================
 
 require_once BASE_PATH . 'models/TeamModel.php';
 
 class TeamController {
+
     private $model;
     private $currentManagerId;
 
+    // =============================================================
+    // =================== CONSTRUCTEUR ===========================
+    // Initialise le modèle et stocke l’ID du manager courant
+    // =============================================================
     public function __construct($pdo, int $managerId) {
         $this->model = new TeamModel($pdo);
         $this->currentManagerId = $managerId; 
     }
 
+    // =============================================================
+    // =================== LISTE DES MEMBRES ======================
+    // =============================================================
+
     /**
-     * Récupère la liste des membres actuels de l'équipe (Utilisé par equipe.php et Dashboard).
+     * Récupère tous les membres de l'équipe du manager courant.
+     * Utilisé par l’équipe et le dashboard.
+     * @return array Liste des membres
      */
-    public function getAllTeamMembers() {
+    public function getAllTeamMembers(): array {
         return $this->model->findAllTeamMembers($this->currentManagerId);
     }
     
     /**
-     * Récupère la liste des employés disponibles (Utilisé par ajouter_membre.php).
+     * Récupère les employés disponibles pour être ajoutés à l'équipe.
+     * Utilisé par ajouter_membre.php
+     * @return array Liste des employés disponibles
      */
-    public function getAvailableEmployees() {
+    public function getAvailableEmployees(): array {
         return $this->model->findAvailableEmployees($this->currentManagerId);
     }
-    
+
+    // =============================================================
+    // =================== AJOUT DE MEMBRES ========================
+    // =============================================================
     /**
-     * Gère l'association des membres à l'équipe.
+     * Ajoute des membres à l'équipe du manager.
+     * @param array $memberIds Liste des IDs des employés à ajouter
+     * @return array ['success' => true] ou ['error' => 'message']
      */
-    public function addMembersToTeam(array $memberIds) {
+    public function addMembersToTeam(array $memberIds): array {
         if (empty($memberIds)) {
             return ['error' => 'Veuillez sélectionner au moins un membre.'];
         }
@@ -43,16 +65,21 @@ class TeamController {
         return ['success' => true];
     }
 
- 
- /* Gère le retrait d'un membre de l'équipe du manager actuel.
- */
-public function removeMemberFromTeam(int $memberId) {
-    // L'ID du manager est déjà stocké dans $this->currentManagerId
-    $success = $this->model->removeMemberFromTeam($this->currentManagerId, $memberId);
-    
-    if (!$success) {
-        return ['error' => 'Erreur lors du retrait du membre. L\'entrée n\'a pas pu être supprimée.'];
+    // =============================================================
+    // =================== SUPPRESSION DE MEMBRE ==================
+    // =============================================================
+    /**
+     * Retire un membre de l'équipe du manager courant.
+     * @param int $memberId ID du membre à retirer
+     * @return array ['success' => true] ou ['error' => 'message']
+     */
+    public function removeMemberFromTeam(int $memberId): array {
+        $success = $this->model->removeMemberFromTeam($this->currentManagerId, $memberId);
+        
+        if (!$success) {
+            return ['error' => 'Erreur lors du retrait du membre. L\'entrée n\'a pas pu être supprimée.'];
+        }
+        return ['success' => true];
     }
-    return ['success' => true];
 }
-}
+?>

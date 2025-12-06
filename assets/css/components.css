@@ -1,6 +1,11 @@
-/* --- 02_components.css (Composants : Cartes, Badges, Boutons) --- */
+/* ==============================================================
+   02_components.css
+   Composants : Cartes, Badges, Boutons
+   ============================================================== */
 
-/* --- Cartes Statistiques (KPI) --- */
+/* ==============================================================
+   1. Cartes Statistiques (KPI)
+   ============================================================== */
 .stat-card {
     background-color: var(--card-bg);
     border-radius: 20px;
@@ -13,6 +18,7 @@
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(var(--primary-color-rgb), 0.15) !important;
 }
+/* Barre de couleur latérale selon le type */
 .stat-card::before {
     content: '';
     position: absolute;
@@ -27,19 +33,22 @@
 .stat-card.border-reject::before { background: var(--danger-color); }
 .stat-card.border-total::before { background: var(--secondary-color); }
 
-/* Couleurs de fond légères pour les cartes et blocs d'équipe */
+/* Couleurs de fond légères pour cartes ou blocs */
 .bg-theme-primary { background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color); }
 .bg-theme-secondary { background-color: rgba(var(--secondary-color-rgb), 0.1); color: var(--secondary-color); }
 .bg-theme-primary-soft { background-color: rgba(var(--primary-color-rgb), 0.15) !important; color: var(--primary-color) !important; }
 
-/* --- Badges (Statut) --- */
+
+/* ==============================================================
+   2. Badges (Statut)
+   ============================================================== */
 .badge-theme {
     padding: 6px 12px;
     border-radius: 6px;
     font-weight: 500;
     font-size: 0.75rem;
 }
-/* Styles des statuts LIGHT/SOFT */
+/* Styles légers pour statuts */
 .badge-wait { 
     background-color: rgba(255, 193, 7, 0.15); 
     color: #d6a100; /* Jaune foncé */
@@ -54,27 +63,14 @@
 }
 .text-dark-warning { color: #cc9900 !important; }
 
-/* --- Boutons de Filtre ACTIFS (Nouveaux styles clairs) --- */
-/* Note: On réutilise les couleurs des badges/cartes pour un look léger et cohérent */
-.bg-warning-light { 
-    background-color: rgba(255, 193, 7, 0.15) !important; 
-    color: #d6a100 !important; /* Texte Jaune foncé */
-    border-color: rgba(255, 193, 7, 0.5) !important; /* Bordure plus douce */
-}
-.bg-success-light { 
-    background-color: rgba(var(--primary-color-rgb), 0.15) !important; 
-    color: var(--primary-color) !important; /* Texte Vert foncé */
-    border-color: rgba(var(--primary-color-rgb), 0.5) !important; /* Bordure plus douce */
-}
-.bg-danger-light { 
-    background-color: rgba(220, 53, 69, 0.15) !important; 
-    color: var(--danger-color) !important; /* Texte Rouge foncé */
-    border-color: rgba(220, 53, 69, 0.5) !important; /* Bordure plus douce */
-}
 
+/* ==============================================================
+   3. Boutons
+   ============================================================== */
 
-/* --- Boutons et Liens --- */
-/* Bouton Vert Principal Arondi (Rempli, pour les actions d'ajout/primaire) */
+/* ------------------------------
+   3.1 Boutons principaux et liens
+   ------------------------------ */
 .btn-link-theme-primary {
     background-color: var(--primary-color);
     color: #fff;
@@ -90,7 +86,7 @@
     border-color: var(--primary-color);
     transform: translateY(-2px);
 }
-/* Bouton Bleu (Thème secondaire, généralement pour le retour) */
+
 .btn-theme {
     background-color: transparent;
     border: 1px solid var(--secondary-color);
@@ -100,7 +96,8 @@
     transition: all 0.3s;
     text-decoration: none !important;
 }
-/* Bouton de Flèche/Détails */
+
+/* Bouton d’action icône */
 .btn-action-icon {
     width: 40px; height: 40px; border-radius: 50%;
     color: var(--primary-color); 
@@ -117,71 +114,50 @@
 .btn-action-icon i { font-size: 1.4rem; }
 
 
-/* --- Boutons de Filtre ACTIFS (Couleurs Claires Personnalisées) --- */
-
-
-/* 1. Bouton Actif "En attente" */
+/* ------------------------------
+   3.2 Boutons de filtre ACTIFS (Couleurs Claires)
+   ------------------------------ */
+/* En attente */
 .bg-warning-light { 
-    /* Fond très clair */
     background-color: rgba(255, 193, 7, 0.10) !important; 
-    
-    /* Couleur du texte foncée pour contraste */
     color: var(--warning-text-color, #e0cb8a) !important; 
-    
-    /* Bordure légèrement plus douce */
     border-color: rgba(245, 192, 35, 0.4) !important; 
 }
-
-/* 2. Bouton Actif "Validée Manager" */
+/* Validée Manager */
 .bg-success-light { 
-    /* Fond très clair */
     background-color: rgba(var(--primary-color-rgb), 0.10) !important; 
-    
-    /* Couleur du texte vert foncé */
     color: var(--success-text-color, var(--primary-color)) !important; 
-    
-    /* Bordure légèrement plus douce */
     border-color: rgba(var(--primary-color-rgb), 0.4) !important; 
 }
-
-/* 3. Bouton Actif "Rejetée Manager" */
+/* Rejetée Manager */
 .bg-danger-light { 
-    /* Fond très clair */
     background-color: rgba(220, 53, 69, 0.10) !important; 
-    
-    /* Couleur du texte rouge foncé */
     color: var(--danger-color) !important; 
-    
-    /* Bordure légèrement plus douce */
     border-color: rgba(234, 127, 137, 0.4) !important; 
 }
-
-/* 4. Bouton Actif "Toutes" */
+/* Toutes */
 .btn-light.text-secondary.border {
-    background-color: #f8f9fa !important; /* Fond très clair */
-    color: var(--secondary-color) !important; /* Texte bleu/gris */
-    border-color: var(--secondary-color) !important; /* Bordure assortie */
+    background-color: #f8f9fa !important;
+    color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
 }
 
-/* --- Surcharges des Styles Outline pour les Boutons de Filtre (Pas de changement) --- */
 
-/* Bouton Outline Jaune (Inactif En attente) */
+/* ------------------------------
+   3.3 Boutons Outline (Inactifs)
+   ------------------------------ */
 .btn-outline-warning {
     --bs-btn-color: var(--warning-text-color, #cc9900);
     --bs-btn-border-color: var(--warning-color, #ffc107);
-    --bs-btn-hover-bg: rgba(255, 193, 7, 0.05); /* Léger survol */
+    --bs-btn-hover-bg: rgba(255, 193, 7, 0.05);
 }
-
-/* Bouton Outline Vert (Inactif Validée) */
 .btn-outline-success {
     --bs-btn-color: var(--primary-color);
     --bs-btn-border-color: var(--primary-color);
-    --bs-btn-hover-bg: rgba(var(--primary-color-rgb), 0.05); /* Léger survol */
+    --bs-btn-hover-bg: rgba(var(--primary-color-rgb), 0.05);
 }
-
-/* Bouton Outline Rouge (Inactif Rejetée) */
 .btn-outline-danger {
     --bs-btn-color: var(--danger-color);
     --bs-btn-border-color: var(--danger-color);
-    --bs-btn-hover-bg: rgba(220, 53, 69, 0.05); /* Léger survol */
+    --bs-btn-hover-bg: rgba(220, 53, 69, 0.05);
 }

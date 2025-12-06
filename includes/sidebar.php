@@ -1,6 +1,6 @@
 <?php
 // On récupère le rôle s'il n'est pas défini (sécurité)
-$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
+$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
 ?>
 
 <nav class="sidebar">
@@ -68,10 +68,9 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
                     </a>
                 </li>
                 <?php endif; ?>
-
             </ul>
         </div>
-
+        
         <div class="bottom-content">
             
             <li>
@@ -81,24 +80,59 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
                 </a>
             </li>
 
+            <?php if($role == 'admin'): ?>
             <li>
-                <a href="<?= BASE_URL ?>views/auth/logout.php">
-                    <i class='bx bx-log-out icon'></i>
-                    <span class="text nav-text">Déconnexion</span>
+                <a href="<?= BASE_URL ?>views/admin/settings.php">
+                    <i class='bx bx-cog icon'></i>
+                    <span class="text nav-text">Configuration</span>
                 </a>
             </li>
+            <?php endif; ?>
 
-            <li class="mode">
-                <div class="sun-moon">
-                    <i class='bx bx-moon icon moon'></i>
-                    <i class='bx bx-sun icon sun'></i>
-                </div>
-                <span class="mode-text text">Mode sombre</span>
+                <li>
+                    <a href="<?= BASE_URL ?>views/auth/logout.php">
+                        <i class='bx bx-log-out icon'></i>
+                        <span class="text nav-text">Déconnexion</span>
+                    </a>
+                </li>
+            
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Mode sombre</span>
 
-                <div class="toggle-switch">
-                    <span class="switch"></span>
-                </div>
-            </li>
-        </div>
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul> 
+        </div> 
     </div>
 </nav>
+
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content" style="background-color: var(--card-bg); color: var(--text-color);">
+            <div class="modal-header" style="border-bottom-color: var(--table-border);">
+                <h5 class="modal-title fw-bold" id="notificationModalLabel" style="color: var(--secondary-color);">
+                    <i class='bx bx-bell me-2'></i> Centre de Notifications
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="notif-modal-body">
+                <p class="text-center text-muted p-4">Chargement des notifications...</p>
+            </div>
+            <div class="modal-footer justify-content-center" style="border-top-color: var(--table-border);">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                
+                <a href="<?= BASE_URL . $settings_target ?>" 
+                   class="btn btn-sm" 
+                   style="background-color: var(--primary-color); color: white;">
+                   Voir tout l'historique
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

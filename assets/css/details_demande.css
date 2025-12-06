@@ -1,4 +1,6 @@
-/* Définition des couleurs thématiques */
+/* ==============================================================
+   DÉFINITION DES COULEURS THÉMATIQUES
+   ============================================================== */
 :root {
     --theme-primary: #76bd46;
     --theme-secondary: #2566a1;
@@ -8,13 +10,14 @@
     --bg-light-gray: #f5f7fa;
 }
 
-/* 1. Conteneur de la Page */
+/* ==============================================================
+   1. CONTENEUR DE LA PAGE
+   ============================================================== */
 .details-page-manager {
-
     padding: 30px !important;
 }
 
-/* Enhanced Page Title Area - No background */
+/* Page title area (sans fond ni bordure) */
 .details-page-manager > .d-flex.justify-content-between.align-items-center.mb-4.pb-2.border-bottom {
     background-color: transparent;
     border-color: transparent !important;
@@ -26,7 +29,9 @@
     letter-spacing: -0.5px;
 }
 
-/* Section Titles - Enhanced Outside Cards */
+/* ==============================================================
+   2. TITRES DE SECTION
+   ============================================================== */
 .section-title-custom {
     display: flex;
     align-items: center;
@@ -44,7 +49,9 @@
     font-size: 1.4rem;
 }
 
-/* 2. Style des Cartes (Cards) - Enhanced */
+/* ==============================================================
+   3. CARTES (CARDS)
+   ============================================================== */
 .detail-card {
     border: none;
     border-radius: 1rem;
@@ -59,7 +66,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* NEW LAYOUT: Status badge repositioned to top-right of card */
+/* Badge repositionné en haut à droite */
 .detail-card .card-body {
     position: relative;
     padding: 2rem !important;
@@ -72,6 +79,7 @@
     margin-bottom: 0;
 }
 
+/* Badges stylisés */
 .badge-lg {
     font-size: 0.85em;
     padding: 0.5rem 1rem;
@@ -97,7 +105,9 @@
     color: #fff;
 }
 
-/* 3. Liste d'informations - Enhanced with better spacing */
+/* ==============================================================
+   4. LISTE D'INFORMATIONS
+   ============================================================== */
 .detail-list {
     padding-top: 3rem !important;
 }
@@ -133,7 +143,9 @@
     text-align: right;
 }
 
-/* 4. NEW: Total box repositioned to bottom */
+/* ==============================================================
+   5. TOTAL BOX
+   ============================================================== */
 .total-frais-box {
     background: white;
     border: 3px solid transparent;
@@ -164,15 +176,12 @@
     color: var(--theme-secondary);
 }
 
-.text-theme-primary {
-    color: var(--theme-primary) !important;
-}
+.text-theme-primary { color: var(--theme-primary) !important; }
+.text-theme-secondary { color: var(--theme-secondary) !important; }
 
-.text-theme-secondary {
-    color: var(--theme-secondary) !important;
-}
-
-/* 5. Tableau des Lignes de Frais - Enhanced */
+/* ==============================================================
+   6. TABLEAU DES FRAIS
+   ============================================================== */
 .detail-table {
     margin: 0;
 }
@@ -228,6 +237,7 @@
 .no-frais {
     padding: 4rem 2rem !important;
     color: #adb5bd !important;
+    text-align: center;
 }
 
 .no-frais i {
@@ -240,7 +250,9 @@
     font-size: 1.1rem;
 }
 
-/* 6. NEW: Action section with gradient border and better styling */
+/* ==============================================================
+   7. ACTION CARD & BUTTONS
+   ============================================================== */
 .action-card {
     border: none;
     border-radius: 1rem;
@@ -312,7 +324,9 @@
     box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
 }
 
-/* Validation/Rejection info messages - Enhanced */
+/* ==============================================================
+   8. MESSAGES DE VALIDATION / REJET
+   ============================================================== */
 .validation-info {
     font-size: 1.05rem;
     font-weight: 500;
@@ -340,7 +354,6 @@
     color: #842029;
 }
 
-/* Rejection reason box - Enhanced */
 .rejection-reason {
     background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
     border-left: 4px solid var(--color-reject);
@@ -360,7 +373,9 @@
     line-height: 1.6;
 }
 
-/* Modal Enhancements */
+/* ==============================================================
+   9. MODAL & BACK BUTTON
+   ============================================================== */
 .modal-content {
     border-radius: 1rem;
     border: none;
@@ -381,7 +396,6 @@
     border-top: 1px solid #dee2e6;
 }
 
-/* Back button enhancement */
 .btn-outline-secondary.btn-sm {
     padding: 0.5rem 1.25rem;
     font-weight: 600;
@@ -400,7 +414,9 @@
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Responsive Adjustments */
+/* ==============================================================
+   10. ADAPTATION MOBILE
+   ============================================================== */
 @media (max-width: 768px) {
     .details-page-manager {
         padding: 20px !important;
