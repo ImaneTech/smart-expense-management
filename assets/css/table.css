@@ -1,12 +1,12 @@
 /* =========================================
    STYLE GLOBAL DES TABLEAUX (DRAMATIC HOVER)
    Fichier: assets/css/table.css
-   
-   Optimisé pour le thème GoTrackr.
+   Optimisé pour le thème GoTrackr
 ========================================= */
 
-/* Récupération des variables GoTrackr */
-
+/* ================================
+   VARIABLES GLOBALES
+=============================================== */
 :root {
     --primary-color: #76BD46; 
     --secondary-color: #2566A1; 
@@ -14,7 +14,7 @@
     --body-color: #e4e9f7;
     --card-bg: #fff;
     
-    /* FIX: Declare the RGB components for primary color for use in rgba() */
+    /* RGB components for primary color (used in rgba()) */
     --primary-color-rgb: 118, 189, 70; 
 }
 
@@ -23,20 +23,21 @@ body.dark {
     --text-color: #E0E0E0;
 }
 
-/* 1. Conteneur principal (THE WHITE BOX) */
+/* ================================
+   1. CONTENEUR PRINCIPAL (WHITE BOX)
+=============================================== */
 .table-responsive {
-    /* FORCE WHITE BACKGROUND (Utiliser la variable de carte si définie) */
     background-color: var(--card-bg, #ffffff) !important; 
-    
     border-radius: 16px; 
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); 
     padding: 0; 
     margin-bottom: 20px;
-    /* Permet à l'ombre de la ligne survolée d'être visible */
-    overflow: visible; 
+    overflow: visible; /* permet aux ombres de lignes survolées d'être visibles */
 }
 
-/* 2. Configuration de la grille */
+/* ================================
+   2. CONFIGURATION DE LA GRILLE
+=============================================== */
 .modern-table {
     width: 100%;
     border-collapse: collapse; 
@@ -45,9 +46,10 @@ body.dark {
     white-space: nowrap;
 }
 
-/* 3. En-tête (Head) */
+/* ================================
+   3. EN-TÊTE DU TABLEAU (THEAD)
+=============================================== */
 .modern-table thead th {
-    /* FIX APPLIED: Using the defined --primary-color-rgb variable */
     background-color: rgba(var(--primary-color-rgb), 0.15) !important; 
     color: var(--primary-color) !important; 
     border: none;
@@ -60,40 +62,35 @@ body.dark {
 
 /* Coins arrondis de l'en-tête */
 .modern-table thead tr th:first-child { border-top-left-radius: 16px; }
-.modern-table thead tr th:last-child { border-top-right-radius: 16px; }
+.modern-table thead tr th:last-child  { border-top-right-radius: 16px; }
 
-/* 4. Corps (Body) - Rows */
+/* ================================
+   4. CORPS DU TABLEAU (TBODY)
+=============================================== */
 .modern-table tbody tr {
     background-color: var(--card-bg, #ffffff);
-    /* Ligne séparatrice subtile */
     border-bottom: 1px solid #f0f0f0; 
-    
-    /* Animation pour le survol */
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                box-shadow 0.3s ease, 
-                background-color 0.2s ease;
-    
+                box-shadow 0.3s ease, 
+                background-color 0.2s ease;
     border-radius: 12px; 
 }
 
+/* Dernière ligne arrondie */
 .modern-table tbody tr:last-child {
     border-bottom: none;
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
 }
 
-/* 5. HOVER EFFECT (DRAMATIC POP) */
+/* ================================
+   5. EFFET DE SURVOL DRAMATIQUE
+=============================================== */
 .modern-table tbody tr:hover {
-    /* Utilisation d'une couleur de survol cohérente */
     background-color: #f4f8f4 !important; 
-    
-    /* Soulèvement + Agrandissement léger */
     transform: translateY(-5px) scale(1.015); 
-    
-    /* Ombre 3D profonde, teintée par la couleur primaire */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 
-                        0 5px 10px rgba(118, 189, 70, 0.1); 
-    
+                0 5px 10px rgba(var(--primary-color-rgb), 0.1); 
     position: relative; 
     z-index: 10; 
     cursor: pointer;
@@ -101,11 +98,12 @@ body.dark {
     border-radius: 12px; 
 }
 
-/* 6. Cellules (Cells) */
+/* ================================
+   6. CELLULES (TD)
+=============================================== */
 .modern-table tbody td {
     padding: 18px 25px; 
     vertical-align: middle;
-    /* Couleur de texte harmonisée */
     color: var(--text-color, #525f7f); 
     font-size: 0.95rem;
     border: none; 
@@ -113,58 +111,85 @@ body.dark {
 
 /* Coins arrondis des cellules */
 .modern-table tbody tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-.modern-table tbody tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+.modern-table tbody tr td:last-child  { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
 
+/* ================================
+   7. TEXTES ET ICONES
+=============================================== */
+.table-primary-text { 
+    font-weight: 600; 
+    color: var(--text-color); 
+    display: block; 
+}
 
-/* --- TEXT & ICONS --- */
-/* Utilisation de la couleur de texte pour harmoniser */
-.table-primary-text { font-weight: 600; color: var(--text-color); display: block; }
-.table-sub-text     { font-size: 0.8rem; color: #8898aa; display: block; margin-top: 3px; }
-.text-highlight     { color: var(--primary-color); font-weight: 700; } /* Couleur primaire pour les highlights */
+.table-sub-text { 
+    font-size: 0.8rem; 
+    color: #8898aa; 
+    display: block; 
+    margin-top: 3px; 
+}
+
+.text-highlight { 
+    color: var(--primary-color); 
+    font-weight: 700; 
+}
 
 /* Avatar */
 .table-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    /* FIX APPLIED: Using the defined --primary-color-rgb variable */
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%;
     background-color: rgba(var(--primary-color-rgb), 0.1); 
     color: var(--primary-color);
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.9rem; margin-right: 15px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-weight: 700; 
+    font-size: 0.9rem; 
+    margin-right: 15px;
 }
 
-/* Action Button */
+/* Boutons d'action */
 .btn-action-icon {
-    width: 35px; height: 35px; border-radius: 50%;
-    /* Utilisation de la couleur primaire */
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%;
     color: var(--primary-color); 
-    background: #fff; border: 1px solid #e9ecef;
-    transition: all 0.2s; text-decoration: none;
+    background: #fff; 
+    border: 1px solid #e9ecef;
+    transition: all 0.2s; 
+    text-decoration: none;
 }
+
 .btn-action-icon:hover {
     background-color: var(--primary-color); 
-    color: #fff; border-color: var(--primary-color);
+    color: #fff; 
+    border-color: var(--primary-color);
     transform: translateX(3px) scale(1.1); 
-    /* Utilisation de l'ombre teintée par la couleur primaire */
-    box-shadow: 0 4px 6px rgba(118, 189, 70, 0.3);
+    box-shadow: 0 4px 6px rgba(var(--primary-color-rgb), 0.3);
 }
 
-/* Empty State */
-.empty-state-row:hover { transform: none !important; box-shadow: none !important; background: #fff !important; }
-.empty-state-card { padding: 40px; text-align: center; }
-
-
-
-
-
-/* Largeur contrôlée pour éviter l’écrasement */
-.col-objet {
-    max-width: 260px;
+/* ================================
+   8. ÉTAT VIDE (EMPTY STATE)
+=============================================== */
+.empty-state-row:hover { 
+    transform: none !important; 
+    box-shadow: none !important; 
+    background: #fff !important; 
 }
 
-.col-email {
-    max-width: 220px;
+.empty-state-card { 
+    padding: 40px; 
+    text-align: center; 
 }
 
+/* ================================
+   9. LARGEUR DES COLONNES SPÉCIFIQUES
+=============================================== */
+.col-objet { max-width: 260px; }
+.col-email { max-width: 220px; }
+
+/* Assurer le retour à la ligne et alignement haut */
 .modern-table td, 
 .modern-table th {
     white-space: normal !important;

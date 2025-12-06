@@ -1,5 +1,5 @@
 <?php
-// Fichier: views/employe/settings_employe.php
+// Fichier: views/admin/settings_admin.php
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../config.php';
@@ -8,16 +8,17 @@ require_once __DIR__ . '/../../config.php';
 // 1. CHARGEMENT DES DÉPENDANCES ET CLASSE PDO
 // ---------------------------------------------------------------------
 
+// Les contrôleurs et modèles sont chargés AVANT le header pour garantir la disponibilité de $pdo
 require_once BASE_PATH . 'controllers/SettingsController.php';
-require_once BASE_PATH . 'models/NotificationModel.php'; // Nécessaire pour l'historique
+require_once BASE_PATH . 'models/NotificationModel.php'; 
 
 // Header et Utilitaires
 require_once BASE_PATH . 'includes/header.php';
 require_once BASE_PATH . 'includes/flash.php';
 
 
-// Vérification Rôle Employé
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employe') {
+// Vérification Rôle Admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'views/settings.php'); 
     exit;
 }
@@ -26,6 +27,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employe') {
 // 2. LOGIQUE DE LA PAGE
 // ---------------------------------------------------------------------
 
+// Chargement des données de l'utilisateur
 $settingsController = new SettingsController($pdo);
 $userSettings = $settingsController->getSettings($_SESSION['user_id']);
 $currentTheme = $userSettings['theme'] ?? 'light';
@@ -34,7 +36,7 @@ $currentCurrency = $userSettings['preferred_currency'] ?? 'MAD';
 // Gestion des onglets
 $activeTab = $_GET['tab'] ?? 'display';
 
-// --- TRAITEMENT POST ---
+// --- TRAITEMENT POST --- (Pour les thèmes et préférences)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // 1. THEME
@@ -42,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $theme = $_POST['theme'] ?? 'light';
         $settingsController->updateDisplaySettings($_SESSION['user_id'], $theme);
         setFlash('success', 'Thème mis à jour.');
-        header('Location: settings_employe.php?tab=display'); exit;
+        header('Location: settings_admin.php?tab=display'); exit;
     }
 
     // 2. DEVISE
@@ -50,22 +52,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $currency = $_POST['currency'] ?? 'MAD';
         $settingsController->updateInputPreferences($_SESSION['user_id'], $currency);
         setFlash('success', 'Devise enregistrée.');
-        header('Location: settings_employe.php?tab=prefs'); exit;
+        header('Location: settings_admin.php?tab=prefs'); exit;
     }
 }
 ?>
 
 <style>
-    /* Styles CSS réutilisés du code fourni */
+    /* Styles généraux */
     .page-header-title { color: var(--text-color); font-weight: 700; margin-bottom: 1.5rem; }
     .settings-card { background-color: var(--card-bg); border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; }
+    
+    /* Tabs */
     .nav-tabs-custom { border-bottom: 2px solid #eaecf4; padding: 0 1rem; background-color: var(--card-bg); }
     .nav-tabs-custom .nav-link { border: none; color: var(--text-color); font-weight: 600; padding: 1rem 1.5rem; transition: all 0.3s ease; background: transparent; position: relative; }
-    .nav-tabs-custom .nav-link:hover { color: var(--primary-color); background-color: rgba(118, 189, 70, 0.05); }
+    .nav-tabs-custom .nav-link:hover { color: var(--primary-color); background-color: rgba(var(--primary-color-rgb), 0.05); }
     .nav-tabs-custom .nav-link.active { color: var(--primary-color); }
     .nav-tabs-custom .nav-link.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background-color: var(--primary-color); border-top-left-radius: 3px; border-top-right-radius: 3px; }
-    .theme-selector-label { cursor: pointer; border: 2px solid #e4e9f7; border-radius: 12px; padding: 15px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; color: var(--text-color); }
-    .btn-check:checked + .theme-selector-label { border-color: var(--primary-color); background-color: rgba(118, 189, 70, 0.05); color: var(--primary-color); }
+    
+    /* Theme buttons */
+    .theme-selector-label { cursor: pointer; border: 2px solid #e4e9f7; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; color: var(--text-color); transition: all 0.3s; }
+    .btn-check:checked + .theme-selector-label { border-color: var(--primary-color); background-color: rgba(var(--primary-color-rgb), 0.05); color: var(--primary-color); }
     .btn-theme { background-color: var(--primary-color); color: #fff; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 600; transition: transform 0.2s, background-color 0.2s; }
     .btn-theme:hover { background-color: #65a63b; color: #fff; transform: translateY(-2px); }
     .tab-content-area { padding: 2rem; }
@@ -74,10 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container mt-4 mb-5">
     <div class="d-flex align-items-center mb-4">
-        <h2 class="page-header-title mb-0"><i class="bi bi-gear-fill text-theme-primary me-2"></i> Paramètres Employé</h2>
+        <h2 class="page-header-title mb-0"><i class="bi bi-gear-fill text-theme-primary me-2"></i> Paramètres Administrateur</h2>
     </div>
     
     <div class="card settings-card">
+        
         <ul class="nav nav-tabs nav-tabs-custom" id="settingsTab" role="tablist">
             <li class="nav-item">
                 <button class="nav-link <?= $activeTab=='display'?'active':'' ?>" id="display-tab" data-bs-toggle="tab" data-bs-target="#display" type="button"><i class="fas fa-palette me-2"></i> Affichage</button>
@@ -86,7 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button class="nav-link <?= $activeTab=='prefs'?'active':'' ?>" id="prefs-tab" data-bs-toggle="tab" data-bs-target="#prefs" type="button"><i class="fas fa-sliders-h me-2"></i> Préférences</button>
             </li>
             <li class="nav-item">
-                <a href="settings_employe.php?tab=notifications" class="nav-link <?= $activeTab=='notifications'?'active':'' ?>" id="notifications-tab"><i class="fas fa-bell me-2"></i> Notifications</a>
+                <a href="settings_admin.php?tab=categories" class="nav-link <?= $activeTab=='categories'?'active':'' ?>" id="categories-tab"><i class="fas fa-tags me-2"></i> Gestion Catégories</a>
+            </li>
+            <li class="nav-item">
+                <a href="settings_admin.php?tab=notifications" class="nav-link <?= $activeTab=='notifications'?'active':'' ?>" id="notifications-tab"><i class="fas fa-bell me-2"></i> Notifications</a>
             </li>
         </ul>
 
@@ -136,9 +146,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
 
+            <div class="tab-pane fade <?= $activeTab=='categories'?'show active':'' ?>" id="categories" role="tabpanel">
+                <h5 class="fw-bold mb-4" style="color: var(--text-color);">Gestion des Catégories de Frais</h5>
+                <div class="alert alert-warning text-center" role="alert">
+                    <i class="fas fa-tools me-2"></i> **Fonctionnalité en développement.** <br>
+                    Le CRUD des catégories sera inséré ici (Ajout/Modification/Suppression des types de frais).
+                </div>
+            </div>
+
             <div class="tab-pane fade <?= $activeTab=='notifications'?'show active':'' ?>" id="notifications" role="tabpanel">
                  <?php 
                     // Inclusion du contenu de la page d'historique de notification
+                    // Assurez-vous que historique_notif.php est à la racine de /views/
                     require_once BASE_PATH . 'views/historique_notif.php';
                 ?>
             </div>

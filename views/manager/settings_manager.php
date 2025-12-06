@@ -1,11 +1,34 @@
 <?php
+// Fichier: views/manager/settings_manager.php (CORRIGÉ)
+
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+// ---------------------------------------------------------------------
+// 1. INCLUSIONS CRUCIALES & DÉFINITION DE LA CONNEXION PDO
+// ---------------------------------------------------------------------
+
+// CHARGE CONFIG.PHP: DOIT définir $pdo immédiatement.
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'includes/header.php';
-require_once BASE_PATH . 'includes/flash.php';
+
+// Si $pdo n'est pas encore défini après config.php, cela signifie que
+// config.php n'initialise pas la connexion directement. Si c'est le cas,
+// le problème vient de config.php lui-même. 
+
+// ---------------------------------------------------------------------
+// 2. CHARGEMENT DES CLASSES QUI DÉPENDENT DE $pdo
+// ---------------------------------------------------------------------
+
+// Nous chargeons les classes avant les includes de la vue pour garantir que la classe est connue.
 require_once BASE_PATH . 'controllers/SettingsController.php';
 require_once BASE_PATH . 'controllers/TeamController.php';
+require_once BASE_PATH . 'models/NotificationModel.php'; 
+
+// ---------------------------------------------------------------------
+// 3. CHARGEMENT DES VUES ET UTILITAIRES RESTANTS
+// ---------------------------------------------------------------------
+
+require_once BASE_PATH . 'includes/header.php'; // Header et sidebar
+require_once BASE_PATH . 'includes/flash.php'; 
 
 // --- SÉCURITÉ ---
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'manager') { 
@@ -13,7 +36,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'manager') {
     exit; 
 }
 
-$settingsController = new SettingsController($pdo);
+// MAINTENANT $pdo est garanti d'être défini (par config.php):
+$settingsController = new SettingsController($pdo); 
 $teamController = new TeamController($pdo, $_SESSION['user_id']);
 
 // --- TRAITEMENT POST ---
@@ -85,11 +109,13 @@ $activeTab = $_GET['tab'] ?? 'display';
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-    /* Styles page */
+/* ========================================
+    STYLES CSS (Réutilisés du code fourni)
+    ========================================
+*/
     .page-header-title { color: var(--text-color); font-weight: 700; margin-bottom: 1.5rem; }
     .settings-card { background-color: var(--card-bg); border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; }
     
@@ -145,6 +171,9 @@ $activeTab = $_GET['tab'] ?? 'display';
             </li>
             <li class="nav-item">
                 <button class="nav-link <?= $activeTab=='team'?'active':'' ?>" id="team-tab" data-bs-toggle="tab" data-bs-target="#team" type="button"><i class="bi bi-people-fill me-2"></i> Mon Équipe</button>
+            </li>
+            <li class="nav-item">
+                <a href="settings_manager.php?tab=notifications" class="nav-link <?= $activeTab=='notifications'?'active':'' ?>" id="notifications-tab"><i class="fas fa-bell me-2"></i> Notifications</a>
             </li>
         </ul>
 
@@ -250,7 +279,7 @@ $activeTab = $_GET['tab'] ?? 'display';
                                             <a href="settings_manager.php?action=remove&id=<?= $member['id'] ?>"
                                                title="Retirer de l'équipe"
                                                class="btn-icon-soft text-danger btn-delete-member">
-                                                <i class="fas fa-user-times"></i>
+                                                 <i class="fas fa-user-times"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -260,6 +289,13 @@ $activeTab = $_GET['tab'] ?? 'display';
                     </table>
                 </div>
             </div>
+            
+            <div class="tab-pane fade <?= $activeTab=='notifications'?'show active':'' ?>" id="notifications" role="tabpanel">
+                <?php 
+                    // Inclusion du contenu de la page d'historique de notification
+                    require_once BASE_PATH . 'views/historique_notif.php';
+                ?>
+             </div>
 
         </div>
     </div>
@@ -277,41 +313,41 @@ $activeTab = $_GET['tab'] ?? 'display';
                 <form method="POST">
                     <input type="hidden" name="add_members_action" value="1">
                     
-                  <?php if (empty($availableEmployees)): ?>
+                    <?php if (empty($availableEmployees)): ?>
     
-    <div class="text-center py-5 px-3 rounded-4" style="background-color: #f1f8e9; border: 2px dashed #aed581;">
-        <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-circle shadow-sm" 
-             style="width: 70px; height: 70px; background-color: #fff;">
-            <i class="bi bi-person-check-fill" style="font-size: 2rem; color: #76BD46;"></i>
-        </div>
-        
-        <h5 class="fw-bold" style="color: #2e7d32;">Tout est à jour !</h5>
-        <p class="text-muted mb-0 small">
-            Tous les employés sont déjà affectés à une équipe.<br>
-            Aucun collaborateur n'est disponible pour le moment.
-        </p>
-    </div>
-
-<?php else: ?>
+                        <div class="text-center py-5 px-3 rounded-4" style="background-color: #f1f8e9; border: 2px dashed #aed581;">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-circle shadow-sm" 
+                                style="width: 70px; height: 70px; background-color: #fff;">
+                                <i class="bi bi-person-check-fill" style="font-size: 2rem; color: #76BD46;"></i>
+                            </div>
+                            
+                            <h5 class="fw-bold" style="color: #2e7d32;">Tout est à jour !</h5>
+                            <p class="text-muted mb-0 small">
+                                Tous les employés sont déjà affectés à une équipe.<br>
+                                Aucun collaborateur n'est disponible pour le moment.
+                            </p>
+                        </div>
+    
+                    <?php else: ?>
                         <p class="text-muted mb-3">Sélectionnez les employés à ajouter :</p>
                         
                         <div class="row g-3" style="max-height: 400px; overflow-y: auto;">
                             <?php foreach ($availableEmployees as $employee): ?>
                                 <div class="col-md-6">
                                     <label for="member_<?= $employee['id'] ?>" class="d-flex p-3 bg-theme-light-green team-member-card w-100"
-                                           style="border-radius: 12px; cursor: pointer; height: 100%; position: relative; border: 1px solid #eee;">
+                                            style="border-radius: 12px; cursor: pointer; height: 100%; position: relative; border: 1px solid #eee;">
                                         
                                         <input class="form-check-input position-absolute top-0 end-0 mt-2 me-2" 
-                                               type="checkbox" 
-                                               name="member_ids[]" 
-                                               value="<?= $employee['id'] ?>" 
-                                               id="member_<?= $employee['id'] ?>"
-                                               onchange="this.closest('label').classList.toggle('selected-card')">
+                                                type="checkbox" 
+                                                name="member_ids[]" 
+                                                value="<?= $employee['id'] ?>" 
+                                                id="member_<?= $employee['id'] ?>"
+                                                onchange="this.closest('label').classList.toggle('selected-card')">
                                         
                                         <div class="d-flex align-items-center justify-content-between w-100">
                                             <div class="d-flex align-items-center">
                                                 <div class="me-3 fw-bold bg-theme-primary-soft rounded-circle p-2 text-theme-primary border d-flex align-items-center justify-content-center"
-                                                     style="width: 38px; height: 38px;">
+                                                        style="width: 38px; height: 38px;">
                                                     <?= strtoupper(substr($employee['first_name'], 0, 1) . substr($employee['last_name'], 0, 1)) ?>
                                                 </div>
                                                 <div>
@@ -362,14 +398,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'Oui, retirer',
                 cancelButtonText: 'Annuler',
                 
-                // Fond Rouge Clair
                 background: '#fff5f5', 
                 
                 customClass: {
                     popup: 'rounded-4 shadow-lg border border-danger', 
                     title: 'fw-bold text-danger',
                     
-                    // Boutons AGRANDIS (py-3, px-5, fs-5) et ESPACÉS (me-3)
                     confirmButton: 'btn btn-danger rounded-pill px-5 py-3 fs-5 me-3 fw-bold shadow-sm', 
                     cancelButton: 'btn btn-secondary rounded-pill px-5 py-3 fs-5 fw-bold shadow-sm'
                 },

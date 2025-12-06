@@ -1,23 +1,39 @@
 <?php
-// On récupère le rôle
-$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
+// ---------------------------------------------------------
+// Sécurité : Démarrer la session en premier
+// ---------------------------------------------------------
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// DÉFINITION DYNAMIQUE DE L'URL DU PROFIL
-$profile_url = BASE_URL . 'views/profile.php'; 
+// ---------------------------------------------------------
+// Rôle utilisateur (fallback = employe)
+// ---------------------------------------------------------
+$role = $_SESSION['role'] ?? 'employe';
 
-switch($role) {
+// ---------------------------------------------------------
+// URL dynamique du profil selon le rôle
+// ---------------------------------------------------------
+switch ($role) {
     case 'manager':
         $profile_url = BASE_URL . 'views/manager/profile.php';
+        $settings_target = 'views/manager/settings_manager.php?tab=notifications';
         break;
+
     case 'admin':
-        $profile_url = BASE_URL . 'views/admin/profile.php'; 
+        $profile_url = BASE_URL . 'views/admin/profile.php';
+        $settings_target = 'views/admin/settings_admin.php?tab=notifications'; 
         break;
+
     case 'employe':
     default:
         $profile_url = BASE_URL . 'views/employe/profile.php';
+        $settings_target = 'views/employe/settings_employe.php?tab=notifications'; 
         break;
 }
 ?>
+?>
+
 
 <nav class="sidebar">
     <div class="sidebar-header">
@@ -84,44 +100,81 @@ switch($role) {
                     </a>
                 </li>
                 <?php endif; ?>
-
             </ul>
         </div>
-<div class="bottom-content">
+        
+        <div class="bottom-content">
+            <ul class="menu-links"> 
+                
+                <li>
+                    <a href="<?= $profile_url ?>">
+                        <i class='bx bx-user icon'></i>
+                        <span class="text nav-text">Mon Profil</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="#" id="notif-sidebar-link" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                        <i class='bx bx-bell icon'></i>
+                        <span class="text nav-text">Notifications</span>
+                        <span class="badge rounded-pill bg-danger" 
+                              id="notif-count" 
+                              style="display: none; position: absolute; right: 20px;">
+                        </span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="<?= BASE_URL ?>views/settings.php">
+                        <i class='bx bx-cog icon'></i>
+                        <span class="text nav-text">Paramètres</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?= BASE_URL ?>views/auth/logout.php">
+                        <i class='bx bx-log-out icon'></i>
+                        <span class="text nav-text">Déconnexion</span>
+                    </a>
+                </li>
             
-            <li>
-                <a href="<?= BASE_URL ?>views/manager/profile.php">
-                    <i class='bx bx-user icon'></i>
-                    <span class="text nav-text">Mon Profil</span>
-                </a>
-            </li>
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Mode sombre</span>
 
-            <li>
-                <a href="<?= BASE_URL ?>views/settings.php">
-                    <i class='bx bx-cog icon'></i>
-                    <span class="text nav-text">Paramètres</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="<?= BASE_URL ?>views/auth/logout.php">
-                    <i class='bx bx-log-out icon'></i>
-                    <span class="text nav-text">Déconnexion</span>
-                </a>
-            </li>
-            
- 
-            <li class="mode">
-                <div class="sun-moon">
-                    <i class='bx bx-moon icon moon'></i>
-                    <i class='bx bx-sun icon sun'></i>
-                </div>
-                <span class="mode-text text">Mode sombre</span>
-
-                <div class="toggle-switch">
-                    <span class="switch"></span>
-                </div>
-            </li>
-        </div>
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul> 
+        </div> 
     </div>
 </nav>
+
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content" style="background-color: var(--card-bg); color: var(--text-color);">
+            <div class="modal-header" style="border-bottom-color: var(--table-border);">
+                <h5 class="modal-title fw-bold" id="notificationModalLabel" style="color: var(--secondary-color);">
+                    <i class='bx bx-bell me-2'></i> Centre de Notifications
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="notif-modal-body">
+                <p class="text-center text-muted p-4">Chargement des notifications...</p>
+            </div>
+            <div class="modal-footer justify-content-center" style="border-top-color: var(--table-border);">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                
+                <a href="<?= BASE_URL . $settings_target ?>" 
+                   class="btn btn-sm" 
+                   style="background-color: var(--primary-color); color: white;">
+                   Voir tout l'historique
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

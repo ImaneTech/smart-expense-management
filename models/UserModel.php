@@ -23,6 +23,16 @@ class UserModel
         return $stmt->rowCount() > 0;
     }
 
+
+    /* ----------------------------------------------------------------
+    Récupère un utilisateur par ID
+    ---------------------------------------------------------------- */
+    public function findById(int $userId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     /* -----------------------------------------------------------
        Crée un nouvel utilisateur
        ----------------------------------------------------------- */

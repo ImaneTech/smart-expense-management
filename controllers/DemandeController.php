@@ -1,20 +1,30 @@
 <?php
-// controllers/DemandeController.php (VERSION FINALE CORRIGÉE ET HARMONISÉE)
+// =============================================================
+// ================= DEMANDE CONTROLLER =======================
+// Fichier : controllers/DemandeController.php
+// Version finale corrigée et harmonisée
+// =============================================================
 
 require_once __DIR__ . '/../models/DemandeModel.php';
 require_once __DIR__ . '/../controllers/TeamController.php';
 
+// =============================================================
+// =================== DEFINITION DE LA CLASSE =================
+// =============================================================
 class DemandeController {
 
     private DemandeModel $model;
-    private \PDO $db;
+    private \PDO $pdo;
     private int $managerId;
     private int $userId;
 
-    public function __construct(\PDO $db) {
-        $this->db = $db;
+    // =============================================================
+    // =================== CONSTRUCTEUR ===========================
+    // Initialise le modèle, démarre la session et vérifie auth
+    // =============================================================
+    public function __construct(\PDO $pdo) {
+        $this->pdo = $pdo;
 
-        // Démarrage de session si nécessaire
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -24,9 +34,13 @@ class DemandeController {
         $this->userId = (int)($_SESSION['user_id'] ?? 0);
         $this->managerId = $this->userId;
 
-        $this->model = new DemandeModel($this->db);
+        $this->model = new DemandeModel($this->pdo);
     }
 
+    // =============================================================
+    // =================== VERIFICATION AUTH ======================
+    // Redirige si l'utilisateur n'est pas connecté
+    // =============================================================
     private function checkAuth(): void {
         if (!isset($_SESSION['user_id'])) {
             $redirectUrl = (defined('BASE_URL') ? BASE_URL : '/') . 'views/auth/login.php';
@@ -35,14 +49,17 @@ class DemandeController {
         }
     }
 
-    // =========================================================
-    // SECTION 1: DASHBOARD & LISTES
-    // =========================================================
+    // =============================================================
+    // =================== SECTION 1: DASHBOARD & LISTES ==========
+    // =============================================================
 
+    /**
+     * Récupère les données pour le dashboard manager
+     */
     public function getDashboardData(): array {
         $stats = $this->model->getDashboardStats($this->managerId);
 
-        $teamController = new TeamController($this->db, $this->managerId);
+        $teamController = new TeamController($this->pdo, $this->managerId);
         $allTeamMembers = $teamController->getAllTeamMembers();
 
         $allDemandes = $this->getDemandesList('En attente');
@@ -57,7 +74,7 @@ class DemandeController {
     }
 
     /**
-     * Récupère l'historique des demandes traitées par le manager.
+     * Historique des demandes traitées par le manager
      */
     public function getHistorique(): array {
         $statuses = ['Validée Manager', 'Rejetée Manager'];
@@ -65,22 +82,23 @@ class DemandeController {
     }
 
     /**
-     * Récupère la liste des demandes avec filtre de statut.
+     * Liste des demandes filtrées par statut
      */
     public function getDemandesList(?string $statut = 'toutes'): array {
-        if (strtolower($statut) === 'toutes') {
-            $statuses = ['En attente', 'Validée Manager', 'Rejetée Manager'];
-        } else {
-            $statuses = [$statut];
-        }
+        $statuses = (strtolower($statut) === 'toutes') 
+                    ? ['En attente', 'Validée Manager', 'Rejetée Manager'] 
+                    : [$statut];
 
         return $this->model->getDemandesByStatuses($this->managerId, $statuses);
     }
 
-    // =========================================================
-    // SECTION 2: DÉTAILS ET ACTIONS
-    // =========================================================
+    // =============================================================
+    // =================== SECTION 2: DÉTAILS ET ACTIONS ==========
+    // =============================================================
 
+    /**
+     * Récupère les détails complets d'une demande
+     */
     public function getDemandeDetails(int $demandeId): ?array {
         $demande_info = $this->model->getDemandeById($demandeId, $this->managerId);
 
@@ -93,7 +111,7 @@ class DemandeController {
     }
 
     /**
-     * Traite la demande en validant ou rejetant avec éventuellement un motif.
+     * Traite la demande: validation ou rejet avec motif
      */
     public function traiterDemandeAction(array $postData): void {
         if (!isset($postData['action'], $postData['demande_id'])) {
@@ -121,7 +139,6 @@ class DemandeController {
             exit;
         }
 
-        // Mise à jour via le modèle
         if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
             $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès.";
             header('Location: details_demande.php?id=' . $id);
@@ -133,13 +150,16 @@ class DemandeController {
         }
     }
 
+    // =============================================================
+    // =================== UTILITAIRES ============================
+    // =============================================================
+
     public function getManagerId(): int {
         return $this->managerId;
     }
 
     /**
-     * Recherche avancée avec filtres multiples.
-     * Recommandé: déplacer la logique SQL complète dans le modèle pour un contrôleur plus léger.
+     * Recherche avancée avec filtres multiples
      */
     public function faireUneRecherche(array $filters = []): array {
         $sql = "
@@ -180,7 +200,7 @@ class DemandeController {
         $sql .= " GROUP BY d.id ORDER BY d.created_at DESC";
 
         try {
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

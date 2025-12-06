@@ -63,6 +63,10 @@ CREATE TABLE categories_frais (
     description TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+ALTER TABLE categories_frais
+ADD COLUMN actif BOOLEAN NOT NULL DEFAULT 1;
+
 USE gestion_frais_db;
 -- Insertion des CATÉGORIES
 INSERT INTO categories_frais (nom) VALUES 
@@ -130,6 +134,26 @@ CREATE TABLE historique_statuts (
 ---
 
 
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    -- À qui s'adresse la notification : Employé, Manager ou Admin
+    user_id_cible INT NOT NULL, 
+    -- Lien vers la demande de frais concernée
+    demande_id INT, 
+    
+    message VARCHAR(255) NOT NULL,
+    -- URL de redirection pour cliquer sur la notification (ex: '/employe/demande_detail.php?id=123')
+    lien_url VARCHAR(255), 
+    
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    -- Statut : 0 = Non lue (unread), 1 = Lue (read)
+    lue BOOLEAN NOT NULL DEFAULT 0,
+    
+    -- Clé étrangère vers la table users
+    FOREIGN KEY (user_id_cible) REFERENCES users(id) 
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- -----------------------------------------------------------------------------------------------------------
 USE gestion_frais_db;
 CREATE TABLE manager_team (
     id INT AUTO_INCREMENT PRIMARY KEY,

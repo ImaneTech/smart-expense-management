@@ -29,7 +29,6 @@ $statuts = [
     'En attente' => 'En attente', 
     'Validée Manager' => 'Validées', 
     'Rejetée Manager' => 'Rejetées',
-    'Approuvée Compta' => 'Approuvées Compta'
 ];
 
 function getBadgeStyle(string $statut): string {

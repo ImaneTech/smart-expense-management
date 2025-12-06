@@ -1,56 +1,64 @@
-/* --- assets/css/settings.css --- */
+/* ========================================
+   SETTINGS.CSS - STYLES GÉNÉRAUX ET THÉMES
+   ======================================== */
 
+/* ========================================
+   1. VARIABLES CSS (THEME LIGHT / DARK)
+   ======================================== */
 :root {
-    /* Couleurs de base (Mode CLAIR) */
-    --primary-color: #76BD46; 
-    --secondary-color: #2566A1; 
+    /* Couleurs de base (Mode Clair) */
+    --primary-color: #76BD46;
+    --secondary-color: #2566A1;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
-    
-    --primary-color-rgb: 118, 189, 70; 
-    --secondary-color-rgb: 37, 102, 161; 
 
-    /* Variables de Thème (Défaut: Light) */
-    --body-bg: #e4e9f7;       /* Fond gris clair */
-    --card-bg: #ffffff;       /* Fond blanc */
-    --text-color: #5A5A5A;    /* Texte gris foncé */
+    --primary-color-rgb: 118, 189, 70;
+    --secondary-color-rgb: 37, 102, 161;
+
+    /* Variables de thème par défaut (Light) */
+    --body-bg: #e4e9f7;
+    --card-bg: #ffffff;
+    --text-color: #5A5A5A;
     --text-muted: #6c757d;
     --input-bg: #ffffff;
     --input-border: #ced4da;
     --table-border: #e3e6f0;
 }
 
-/* GLOBAL: Transitions douces */
+/* Mode sombre : surcharge des variables */
+body.dark {
+    --body-bg: #18191a;
+    --card-bg: #242526;
+    --text-color: #E0E0E0;
+    --text-muted: #b0b3b8;
+    --input-bg: #3a3b3c;
+    --input-border: #555;
+    --table-border: #444;
+}
+
+/* ========================================
+   2. GLOBAL STYLES
+   ======================================== */
 * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* --- MODE SOMBRE (Surcharge des variables) --- */
-body.dark {
-    --body-bg: #18191a;       /* Fond très sombre */
-    --card-bg: #242526;       /* Fond des cartes gris foncé */
-    --text-color: #E0E0E0;    /* Texte presque blanc */
-    --text-muted: #b0b3b8;
-    --input-bg: #3a3b3c;      /* Fond des inputs */
-    --input-border: #555;     /* Bordure des inputs */
-    --table-border: #444;
-}
-
-/* --- APPLICATION DES VARIABLES --- */
-
-/* 1. Fond de page et texte global */
 body {
     background-color: var(--body-bg) !important;
     color: var(--text-color) !important;
 }
 
-/* 2. Cartes et Conteneurs */
+/* ========================================
+   3. CARTES ET CONTENEURS
+   ======================================== */
 .card, .settings-card, .profile-card, .bg-white {
     background-color: var(--card-bg) !important;
     color: var(--text-color) !important;
 }
 
-/* 3. Formulaires (Inputs, Selects) */
+/* ========================================
+   4. FORMULAIRES
+   ======================================== */
 .form-control, .form-select {
     background-color: var(--input-bg) !important;
     border-color: var(--input-border) !important;
@@ -62,65 +70,74 @@ body {
     color: var(--text-color) !important;
 }
 
-/* 4. Groupes d'input (les icônes à gauche) */
+/* Groupes d'input avec icônes */
 .input-group-text {
     background-color: var(--input-bg) !important;
     border-color: var(--input-border) !important;
     color: var(--text-color) !important;
 }
 
-/* 5. Titres */
+/* ========================================
+   5. TITRES
+   ======================================== */
 h1, h2, h3, h4, h5, h6 {
     color: var(--text-color) !important;
 }
 
-/* 6. Navigation Tabs (Settings) */
+/* ========================================
+   6. NAVIGATION TABS (SETTINGS)
+   ======================================== */
 .nav-tabs-custom {
     background-color: var(--card-bg) !important;
     border-bottom-color: var(--table-border) !important;
 }
+
 .nav-tabs-custom .nav-link {
     color: var(--text-color) !important;
 }
+
 .nav-tabs-custom .nav-link.active {
     color: var(--primary-color) !important;
 }
 
-/* Classes utilitaires de texte */
+/* ========================================
+   7. UTILITAIRES DE TEXTE
+   ======================================== */
 .text-theme-primary { color: var(--primary-color) !important; }
 .text-theme-secondary { color: var(--secondary-color) !important; }
 .text-muted { color: var(--text-muted) !important; }
 
-
-/* --- DESIGN DES CARTES MEMBRES (MODAL) --- */
+/* ========================================
+   8. CARTES MEMBRES (MODAL)
+   ======================================== */
 .member-select-card {
     background-color: #fff;
-    border: 1px solid #e4e9f7; /* Bordure grise très légère par défaut */
+    border: 1px solid #e4e9f7;
     border-radius: 12px;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
-/* Effet au survol : Légère montée + Ombre verte */
 .member-select-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(118, 189, 70, 0.15); /* Ombre verte douce */
+    box-shadow: 0 5px 15px rgba(118, 189, 70, 0.15);
     border-color: var(--primary-color);
 }
 
-/* État SÉLECTIONNÉ (Quand la checkbox est cochée) */
 .member-select-card.selected {
-    background-color: #f1f8e9 !important; /* Fond Vert très clair */
-    border: 2px solid var(--primary-color) !important; /* Bordure Verte épaisse */
+    background-color: #f1f8e9 !important;
+    border: 2px solid var(--primary-color) !important;
 }
 
-/* --- DESIGN DES AVATARS --- */
+/* ========================================
+   9. AVATARS
+   ======================================== */
 .avatar-theme {
     width: 45px;
     height: 45px;
-    background-color: #e8f5e9; /* Vert pâle */
-    color: var(--primary-color); /* Vert logo */
+    background-color: #e8f5e9;
+    color: var(--primary-color);
     font-weight: 700;
     font-size: 1.1rem;
     border: 1px solid #c8e6c9;
@@ -130,9 +147,11 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 50%;
 }
 
-/* --- DESIGN DES BADGES (Rôle) --- */
+/* ========================================
+   10. BADGES DE RÔLE
+   ======================================== */
 .badge-role-manager {
-    background-color: #fff3cd; /* Jaune pâle */
+    background-color: #fff3cd;
     color: #856404;
     border: 1px solid #ffeeba;
     padding: 5px 10px;
@@ -141,15 +160,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .badge-role-employe {
-    background-color: #e8f5e9; /* Vert pâle */
-    color: #2e7d32; /* Vert foncé */
+    background-color: #e8f5e9;
+    color: #2e7d32;
     border: 1px solid #c8e6c9;
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 0.75rem;
 }
 
-/* Custom Checkbox (Rond vert) */
+/* ========================================
+   11. CHECKBOX CUSTOM
+   ======================================== */
 .form-check-input:checked {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
