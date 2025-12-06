@@ -91,7 +91,7 @@ function updateCategorie($pdo) {
             return;
         }
 
-        $stmt = $pdo->prepare("UPDATE categoriefrais SET nom = ?, description = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE categories_frais SET nom = ?, description = ? WHERE id = ?");
         $result = $stmt->execute([$nom, $description, $id]);
 
         if ($result) {
@@ -113,7 +113,7 @@ function deleteCategorie($pdo) {
             return;
         }
 
-        $stmt = $pdo->prepare("DELETE FROM categoriefrais WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM categories_frais WHERE id = ?");
         $result = $stmt->execute([$id]);
 
         if ($result) {

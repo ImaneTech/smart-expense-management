@@ -1,6 +1,6 @@
 <?php
 // On récupère le rôle s'il n'est pas défini (sécurité)
-$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
+$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
 ?>
 
 <nav class="sidebar">
@@ -50,19 +50,19 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
 
                 <?php if($role == 'admin'): ?>
                 <li class="nav-link">
-                    <a href="<?= BASE_URL ?>views/admin/all-requests.php">
-                        <i class='bx bx-file icon'></i>
-                        <span class="text nav-text">Toutes Demandes</span>
+                    <a href="<?= BASE_URL ?>views/admin/gestionusers.php">
+                        <i class='bx bx-group icon'></i>
+                        <span class="text nav-text"></span>
                     </a>
                 </li>
                 <li class="nav-link">
                     <a href="<?= BASE_URL ?>views/admin/users.php">
                         <i class='bx bx-user-plus icon'></i>
-                        <span class="text nav-text">Utilisateurs</span>
+                        <span class="text nav-text">Gestion Des Utilisateurs</span>
                     </a>
                 </li>
                 <li class="nav-link">
-                    <a href="<?= BASE_URL ?>views/admin/categories.php">
+                    <a href="<?= BASE_URL ?>views/admin/gestion_des_categories.php">
                         <i class='bx bx-category icon'></i>
                         <span class="text nav-text">Catégories Frais</span>
                     </a>
@@ -80,15 +80,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'employe';
                     <span class="text nav-text">Mon Profil</span>
                 </a>
             </li>
-
-            <?php if($role == 'admin'): ?>
-            <li>
-                <a href="<?= BASE_URL ?>views/admin/settings.php">
-                    <i class='bx bx-cog icon'></i>
-                    <span class="text nav-text">Configuration</span>
-                </a>
-            </li>
-            <?php endif; ?>
 
             <li>
                 <a href="<?= BASE_URL ?>views/auth/logout.php">

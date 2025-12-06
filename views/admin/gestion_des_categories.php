@@ -35,7 +35,7 @@ if (!defined('BASE_URL')) {
             margin-left: 250px;
             padding: 20px;
             min-height: 100vh;
-            transition: margin-left 0.3s ease;
+            transition: margin-left 0.3s ease, background-color 0.3s ease;
             background-color: #f5f7fa;
         }
 
@@ -48,7 +48,7 @@ if (!defined('BASE_URL')) {
             border-radius: 10px;
             border: 2px solid #007bff;
             padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
             background: white;
             background-color: #f8f9ff;
         }
@@ -82,6 +82,7 @@ if (!defined('BASE_URL')) {
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-top: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .table thead {
@@ -100,12 +101,14 @@ if (!defined('BASE_URL')) {
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            transition: background-color 0.3s ease;
         }
 
         .search-box-main input {
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 10px 15px;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         .btn-action {
@@ -121,6 +124,90 @@ if (!defined('BASE_URL')) {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+        }
+
+        /* MODE SOMBRE */
+        body.dark #main-content {
+            background-color: #0b1437;
+        }
+
+        body.dark .stat-card {
+            background-color: #1d2951;
+            border-color: #3d5a80;
+        }
+
+        body.dark .stat-card .text-muted {
+            color: #a8b2c1 !important;
+        }
+
+        body.dark .table-container {
+            background-color: #1d2951;
+            color: #e0e0e0;
+        }
+
+        body.dark .table-container h5 {
+            color: #e0e0e0;
+        }
+
+        body.dark .table {
+            color: #e0e0e0;
+        }
+
+        body.dark .table tbody tr {
+            border-color: #3d5a80;
+        }
+
+        body.dark .table tbody tr:hover {
+            background-color: #2a3f5f;
+        }
+
+        body.dark .search-box-main {
+            background-color: #1d2951;
+        }
+
+        body.dark .search-box-main input {
+            background-color: #0b1437;
+            color: #e0e0e0;
+            border-color: #3d5a80;
+        }
+
+        body.dark .search-box-main .input-group-text {
+            background-color: #0b1437;
+            border-color: #3d5a80;
+            color: #e0e0e0;
+        }
+
+        body.dark .modal-content {
+            background-color: #1d2951;
+            color: #e0e0e0;
+        }
+
+        body.dark .modal-header {
+            border-bottom-color: #3d5a80;
+        }
+
+        body.dark .modal-footer {
+            border-top-color: #3d5a80;
+        }
+
+        body.dark .form-control {
+            background-color: #0b1437;
+            color: #e0e0e0;
+            border-color: #3d5a80;
+        }
+
+        body.dark .form-control:focus {
+            background-color: #0b1437;
+            color: #e0e0e0;
+            border-color: #667eea;
+        }
+
+        body.dark .form-label {
+            color: #e0e0e0;
+        }
+
+        body.dark h2 {
+            color: #e0e0e0;
         }
 
         @media (max-width: 768px) {

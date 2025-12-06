@@ -35,8 +35,13 @@ if (!defined('BASE_URL')) {
             margin-left: 250px;
             padding: 20px;
             min-height: 100vh;
-            transition: margin-left 0.3s ease;
+            transition: margin-left 0.3s ease, background-color 0.3s ease, color 0.3s ease;
             background-color: #f5f7fa;
+        }
+
+        body.dark #main-content {
+            background-color: #0b1437;
+            color: #e0e0e0;
         }
 
         .sidebar.close ~ #main-content {
@@ -48,13 +53,22 @@ if (!defined('BASE_URL')) {
             border-radius: 10px;
             border: 2px solid;
             padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
             background: white;
+        }
+
+        body.dark .stat-card {
+            background: #1d2951;
+            border-color: #3d5a80 !important;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        body.dark .stat-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         .stat-card.primary {
@@ -75,6 +89,10 @@ if (!defined('BASE_URL')) {
         .stat-card.danger {
             border-color: #dc3545;
             background-color: #fff8f8;
+        }
+
+        body.dark .stat-card .text-muted {
+            color: #a8b2c1 !important;
         }
 
         .stat-icon {
@@ -110,11 +128,34 @@ if (!defined('BASE_URL')) {
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-top: 20px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark .table-container {
+            background: #1d2951;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: #e0e0e0;
+        }
+
+        body.dark .table-container h5 {
+            color: #e0e0e0;
         }
 
         .table thead {
             background-color: #4a5f7f;
             color: white;
+        }
+
+        body.dark .table {
+            color: #e0e0e0;
+        }
+
+        body.dark .table tbody tr {
+            border-color: #3d5a80;
+        }
+
+        body.dark .table tbody tr:hover {
+            background-color: #2a3f5f;
         }
 
         .table thead th {
@@ -128,12 +169,31 @@ if (!defined('BASE_URL')) {
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark .search-box-main {
+            background: #1d2951;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .search-box-main input {
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 10px 15px;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark .search-box-main input {
+            background-color: #0b1437;
+            color: #e0e0e0;
+            border-color: #3d5a80;
+        }
+
+        body.dark .search-box-main .input-group-text {
+            background-color: #0b1437 !important;
+            border-color: #3d5a80;
+            color: #e0e0e0;
         }
 
         .btn-action {
@@ -151,7 +211,63 @@ if (!defined('BASE_URL')) {
 
         .role-admin { background-color: #dc3545; color: white; }
         .role-manager { background-color: #007bff; color: white; }
-        .role-visiteur { background-color: #28a745; color: white; }
+        .role-employe { background-color: #28a745; color: white; }
+
+        /* Mode sombre pour les modals */
+        body.dark .modal-content {
+            background-color: #1d2951;
+            color: #e0e0e0;
+        }
+
+        body.dark .modal-header {
+            border-bottom-color: #3d5a80;
+        }
+
+        body.dark .modal-footer {
+            border-top-color: #3d5a80;
+        }
+
+        body.dark .form-control,
+        body.dark .form-select {
+            background-color: #0b1437;
+            color: #e0e0e0;
+            border-color: #3d5a80;
+        }
+
+        body.dark .form-control:focus,
+        body.dark .form-select:focus {
+            background-color: #0b1437;
+            color: #e0e0e0;
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        body.dark .form-label {
+            color: #e0e0e0;
+        }
+
+        body.dark h2,
+        body.dark h5 {
+            color: #e0e0e0;
+        }
+
+        body.dark .btn-close {
+            filter: invert(1);
+        }
+
+        body.dark .dropdown-menu {
+            background-color: #1d2951;
+            border-color: #3d5a80;
+        }
+
+        body.dark .dropdown-item {
+            color: #e0e0e0;
+        }
+
+        body.dark .dropdown-item:hover {
+            background-color: #2a3f5f;
+            color: #fff;
+        }
 
         @media (max-width: 768px) {
             #main-content {
@@ -213,8 +329,8 @@ if (!defined('BASE_URL')) {
                             <i class="bi bi-person-check"></i>
                         </div>
                         <div class="ms-3 flex-grow-1">
-                            <div class="stat-number" id="stat-visiteurs">0</div>
-                            <div class="text-muted">Visiteurs</div>
+                            <div class="stat-number" id="stat-employes">0</div>
+                            <div class="text-muted">Employés</div>
                         </div>
                     </div>
                 </div>
@@ -262,8 +378,8 @@ if (!defined('BASE_URL')) {
             <button class="btn btn-dark filter-btn active" onclick="filterUsers('all', event)">
                 <i class="bi bi-list"></i> Tous
             </button>
-            <button class="btn btn-outline-success filter-btn" onclick="filterUsers('visiteur', event)">
-                <i class="bi bi-person"></i> Visiteurs
+            <button class="btn btn-outline-success filter-btn" onclick="filterUsers('employe', event)">
+                <i class="bi bi-person"></i> Employés
             </button>
             <button class="btn btn-outline-warning filter-btn" onclick="filterUsers('manager', event)">
                 <i class="bi bi-person-badge"></i> Managers
@@ -284,14 +400,17 @@ if (!defined('BASE_URL')) {
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Prénom</th>
                             <th>Nom</th>
                             <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Département</th>
                             <th>Rôle</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="users-tbody">
-                        <tr><td colspan="5" class="text-center text-muted">Chargement des données...</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted">Chargement des données...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -308,19 +427,33 @@ if (!defined('BASE_URL')) {
                 </div>
                 <div class="modal-body">
                     <form id="nouvelUtilisateurForm">
-                        <div class="mb-3">
-                            <label class="form-label">Nom complet *</label>
-                            <input type="text" class="form-control" id="nom" required placeholder="Ex: Jean Dupont">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Prénom *</label>
+                                <input type="text" class="form-control" id="first_name" required placeholder="Ex: Jean">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom *</label>
+                                <input type="text" class="form-control" id="last_name" required placeholder="Ex: Dupont">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email *</label>
                             <input type="email" class="form-control" id="email" required placeholder="exemple@email.com">
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Téléphone *</label>
+                            <input type="tel" class="form-control" id="phone" required placeholder="0600000000">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Département *</label>
+                            <input type="text" class="form-control" id="department" required placeholder="Ex: IT, Finance, RH">
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Rôle *</label>
                             <select class="form-select" id="role" required>
                                 <option value="">Sélectionner...</option>
-                                <option value="visiteur">Visiteur</option>
+                                <option value="employe">Employé</option>
                                 <option value="manager">Manager</option>
                                 <option value="admin">Admin</option>
                             </select>
@@ -358,18 +491,32 @@ if (!defined('BASE_URL')) {
                 <div class="modal-body">
                     <form id="modifierUtilisateurForm">
                         <input type="hidden" id="edit-id">
-                        <div class="mb-3">
-                            <label class="form-label">Nom complet *</label>
-                            <input type="text" class="form-control" id="edit-nom" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Prénom *</label>
+                                <input type="text" class="form-control" id="edit-first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom *</label>
+                                <input type="text" class="form-control" id="edit-last_name" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email *</label>
                             <input type="email" class="form-control" id="edit-email" required>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Téléphone *</label>
+                            <input type="tel" class="form-control" id="edit-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Département *</label>
+                            <input type="text" class="form-control" id="edit-department" required>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Rôle *</label>
                             <select class="form-select" id="edit-role" required>
-                                <option value="visiteur">Visiteur</option>
+                                <option value="employe">Employé</option>
                                 <option value="manager">Manager</option>
                                 <option value="admin">Admin</option>
                             </select>
@@ -399,7 +546,6 @@ if (!defined('BASE_URL')) {
             loadStats();
             loadUsers();
 
-            // Recherche en temps réel
             document.getElementById('searchInput').addEventListener('input', function() {
                 filterUsersBySearch(this.value);
             });
@@ -410,7 +556,7 @@ if (!defined('BASE_URL')) {
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('stat-total').textContent = data.total || 0;
-                    document.getElementById('stat-visiteurs').textContent = data.visiteurs || 0;
+                    document.getElementById('stat-employes').textContent = data.employes || 0;
                     document.getElementById('stat-managers').textContent = data.managers || 0;
                     document.getElementById('stat-admins').textContent = data.admins || 0;
                 })
@@ -442,21 +588,24 @@ if (!defined('BASE_URL')) {
             document.getElementById('total-users').textContent = users.length;
 
             if (!Array.isArray(users) || users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Aucun utilisateur trouvé</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Aucun utilisateur trouvé</td></tr>';
                 return;
             }
 
             tbody.innerHTML = users.map(u => `
                 <tr>
                     <td>${u.id || 'N/A'}</td>
-                    <td>${u.nom || 'N/A'}</td>
+                    <td>${u.first_name || 'N/A'}</td>
+                    <td>${u.last_name || 'N/A'}</td>
                     <td>${u.email || 'N/A'}</td>
+                    <td>${u.phone || 'N/A'}</td>
+                    <td>${u.department || 'N/A'}</td>
                     <td>${getRoleBadge(u.role)}</td>
                     <td>
                         <button class="btn btn-sm btn-primary btn-action" onclick='editUser(${u.id})' title="Modifier">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger btn-action" onclick='deleteUser(${u.id}, "${u.role}")' title="Supprimer">
+                        <button class="btn btn-sm btn-danger btn-action" onclick='deleteUser(${u.id})' title="Supprimer">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -468,7 +617,7 @@ if (!defined('BASE_URL')) {
             const badges = {
                 'admin': '<span class="role-badge role-admin">Admin</span>',
                 'manager': '<span class="role-badge role-manager">Manager</span>',
-                'visiteur': '<span class="role-badge role-visiteur">Visiteur</span>'
+                'employe': '<span class="role-badge role-employe">Employé</span>'
             };
             return badges[role] || `<span class="role-badge bg-secondary">${role}</span>`;
         }
@@ -496,25 +645,29 @@ if (!defined('BASE_URL')) {
             }
 
             const filtered = allUsers.filter(u => {
-                const nom = (u.nom || '').toLowerCase();
+                const firstName = (u.first_name || '').toLowerCase();
+                const lastName = (u.last_name || '').toLowerCase();
                 const email = (u.email || '').toLowerCase();
                 const id = String(u.id || '');
                 const term = searchTerm.toLowerCase();
                 
-                return nom.includes(term) || email.includes(term) || id.includes(term);
+                return firstName.includes(term) || lastName.includes(term) || email.includes(term) || id.includes(term);
             });
 
             displayUsers(filtered);
         }
 
         async function createUser() {
-            const nom = document.getElementById('nom').value.trim();
+            const first_name = document.getElementById('first_name').value.trim();
+            const last_name = document.getElementById('last_name').value.trim();
             const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const department = document.getElementById('department').value.trim();
             const role = document.getElementById('role').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if (!nom || !email || !role || !password) {
+            if (!first_name || !last_name || !email || !phone || !department || !role || !password) {
                 showAlert('Veuillez remplir tous les champs obligatoires', 'warning');
                 return;
             }
@@ -525,8 +678,11 @@ if (!defined('BASE_URL')) {
             }
 
             const formData = new FormData();
-            formData.append('nom', nom);
+            formData.append('first_name', first_name);
+            formData.append('last_name', last_name);
             formData.append('email', email);
+            formData.append('phone', phone);
+            formData.append('department', department);
             formData.append('role', role);
             formData.append('password', password);
 
@@ -557,34 +713,38 @@ if (!defined('BASE_URL')) {
             if (!user) return;
 
             document.getElementById('edit-id').value = user.id;
-            document.getElementById('edit-nom').value = user.nom;
+            document.getElementById('edit-first_name').value = user.first_name;
+            document.getElementById('edit-last_name').value = user.last_name;
             document.getElementById('edit-email').value = user.email;
+            document.getElementById('edit-phone').value = user.phone;
+            document.getElementById('edit-department').value = user.department;
             document.getElementById('edit-role').value = user.role;
-            
-            // Stocker le rôle actuel pour savoir si on change de table
-            document.getElementById('modifierUtilisateurForm').dataset.oldRole = user.role;
 
             new bootstrap.Modal(document.getElementById('modifierUtilisateurModal')).show();
         }
 
         async function updateUser() {
             const id = document.getElementById('edit-id').value;
-            const nom = document.getElementById('edit-nom').value.trim();
+            const first_name = document.getElementById('edit-first_name').value.trim();
+            const last_name = document.getElementById('edit-last_name').value.trim();
             const email = document.getElementById('edit-email').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const department = document.getElementById('edit-department').value.trim();
             const role = document.getElementById('edit-role').value;
-            const oldRole = document.getElementById('modifierUtilisateurForm').dataset.oldRole;
 
-            if (!nom || !email || !role) {
+            if (!first_name || !last_name || !email || !phone || !department || !role) {
                 showAlert('Veuillez remplir tous les champs obligatoires', 'warning');
                 return;
             }
 
             const formData = new FormData();
             formData.append('id', id);
-            formData.append('nom', nom);
+            formData.append('first_name', first_name);
+            formData.append('last_name', last_name);
             formData.append('email', email);
+            formData.append('phone', phone);
+            formData.append('department', department);
             formData.append('role', role);
-            formData.append('old_role', oldRole);
 
             try {
                 const response = await fetch(`${API_URL}?action=update`, {
@@ -607,12 +767,11 @@ if (!defined('BASE_URL')) {
             }
         }
 
-        function deleteUser(id, role) {
+        function deleteUser(id) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
 
             const formData = new FormData();
             formData.append('id', id);
-            formData.append('role', role);
 
             fetch(`${API_URL}?action=delete`, {
                 method: 'POST',
