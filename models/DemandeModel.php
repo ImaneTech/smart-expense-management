@@ -208,4 +208,160 @@ class DemandeModel {
         $stmt->execute([$id, $managerId, $managerId]);
         return $stmt->fetchColumn() ?: null;
     }
+
+
+// =========================================================
+// SECTION 2: READ OPERATIONS (Suite - Vue Employé)
+// =========================================================
+
+/**
+ * Récupère les demandes d'un employé spécifique, avec le total calculé.
+ * @param int $employeId
+ * @param int|null $limit Limite optionnelle pour le dashboard.
+ * @return array
+ */
+public function getDemandesByEmployeId(int $employeId, ?int $limit = null): array {
+    $sql = "
+        SELECT d.id, d.objet_mission, d.date_depart, d.date_retour, d.statut, d.created_at AS date_soumission,
+               (SELECT COALESCE(SUM(montant), 0) FROM {$this->detailsTable} WHERE demande_id = d.id) AS total_calcule
+        FROM {$this->demandeTable} d
+        WHERE d.user_id = :employeId
+        ORDER BY d.created_at DESC
+    ";
+
+    if ($limit !== null) {
+        $sql .= " LIMIT :limit";
+    }
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':employeId', $employeId, PDO::PARAM_INT);
+    if ($limit !== null) {
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    }
+    
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+/**
+ * Récupère une demande spécifique, uniquement si elle appartient à l'employé.
+ * @param int $demandeId
+ * @param int $employeId
+ * @return array|null
+ */
+public function getDemandeByIdForEmploye(int $demandeId, int $employeId): ?array {
+    $sql = "SELECT d.* FROM {$this->demandeTable} d WHERE d.id = ? AND d.user_id = ?";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([$demandeId, $employeId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
+
+/**
+ * Montant total remboursé pour un employé (Basé sur le statut 'Payée').
+ * @param int $employe_id
+ * @return float
+ */
+public function getTotalReimbursedAmount(int $employe_id): float {
+    $sql = "
+        SELECT COALESCE(SUM(df.montant), 0) AS total_amount
+        FROM {$this->demandeTable} d
+        JOIN {$this->detailsTable} df ON df.demande_id = d.id
+        WHERE d.user_id = :employe_id 
+        AND d.statut = 'Payée'
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute(['employe_id' => $employe_id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return (float) $result['total_amount'];
+}
+
+/**
+ * Statistiques de demandes par statut pour un employé.
+ * @param int $employe_id
+ * @return array ['pending'=>int, 'validated'=>int, 'rejected'=>int]
+ */
+public function getDemandeStatsByEmploye(int $employe_id): array {
+    $sql = "
+        SELECT 
+            SUM(CASE WHEN statut = 'En attente' THEN 1 ELSE 0 END) AS pending,
+            SUM(CASE WHEN statut IN ('Validée Manager', 'Approuvée Compta', 'Payée') THEN 1 ELSE 0 END) AS validated,
+            SUM(CASE WHEN statut = 'Rejetée Manager' THEN 1 ELSE 0 END) AS rejected
+        FROM {$this->demandeTable}
+        WHERE user_id = :employe_id
+    ";
+    
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute(['employe_id' => $employe_id]);
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: ['pending' => 0, 'validated' => 0, 'rejected' => 0];
+}
+// ... (Dans SECTION 3: WRITE OPERATIONS) ...
+
+/**
+ * Crée une nouvelle demande de frais principale (en-tête de mission).
+ * @param int $userId ID de l'employé.
+ * @param array $data Données de la mission (objet_mission, lieu_deplacement, date_depart, date_retour).
+ * @return int|false L'ID de la nouvelle demande insérée, ou false en cas d'échec.
+ */
+public function createDemande(int $userId, array $data) {
+    $sql = "INSERT INTO {$this->demandeTable} 
+            (user_id, objet_mission, lieu_deplacement, date_depart, date_retour, statut)
+            VALUES (:user_id, :objet_mission, :lieu_deplacement, :date_depart, :date_retour, 'En attente')";
+    
+    $stmt = $this->pdo->prepare($sql);
+    
+    try {
+        $stmt->execute([
+            ':user_id' => $userId,
+            ':objet_mission' => $data['objet_mission'],
+            ':lieu_deplacement' => $data['lieu_deplacement'],
+            ':date_depart' => $data['date_depart'],
+            ':date_retour' => $data['date_retour']
+        ]);
+        
+        $demandeId = $this->pdo->lastInsertId();
+        // Optionnel: loguer la création dans historique_statuts
+        // $this->logStatutChange($demandeId, $userId, 'Création', 'En attente', 'Demande soumise.'); 
+        
+        return (int)$demandeId;
+    } catch (PDOException $e) {
+        error_log("Erreur PDO dans createDemande : " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Ajoute une ligne de détail de frais à une demande existante.
+ * @param int $demandeId L'ID de la demande parent.
+ * @param array $detail Les données du détail.
+ * @return bool Succès ou échec.
+ */
+public function addDetailFrais(int $demandeId, array $detail) {
+    $sql = "INSERT INTO {$this->detailsTable} 
+            (demande_id, categorie_id, date_depense, montant, description, justificatif_path)
+            VALUES (:demande_id, :categorie_id, :date_depense, :montant, :description, :justificatif_path)";
+
+    $stmt = $this->pdo->prepare($sql);
+    
+    try {
+        $justificatif_path = $detail['justificatif_path'] ?? null;
+
+        return $stmt->execute([
+            ':demande_id' => $demandeId,
+            ':categorie_id' => $detail['categorie_id'],
+            ':date_depense' => $detail['date_depense'],
+            ':montant' => $detail['montant'],
+            ':description' => $detail['description'],
+            ':justificatif_path' => $justificatif_path
+        ]);
+    } catch (PDOException $e) {
+        error_log("Erreur PDO dans addDetailFrais : " . $e->getMessage());
+        return false;
+    }
+}
+
+
 }
