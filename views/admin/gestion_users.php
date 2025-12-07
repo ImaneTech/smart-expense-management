@@ -1,7 +1,7 @@
+
 <?php
 session_start();
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
-
 if (!defined('BASE_URL')) {
     define('BASE_URL', '/smart-expense-management/');
 }
@@ -12,405 +12,764 @@ if (!defined('BASE_URL')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Utilisateurs - GoTrackr</title>
-    
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
-    <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Sidebar CSS -->
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/sidebar.css">
-
     <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
+        /* ==================== VARIABLES CSS ==================== */
+:root {
+    /* Mode Clair */
+    --body-color: #e4e9f7;
+    --sidebar-color: #fff;
+    --primary-color: #4a5f7f;
+    --primary-color-light: #f6f5ff;
+    --toggle-color: #ddd;
+    --text-color: #707070;
+    --card-bg: #ffffff;
+    --success-color: #43a047;
+    --warning-color: #ffa726;
+    --danger-color: #e53935;
+    --text-primary: #32325d;
+    --text-muted: #6c757d;
+    --border-color: #e9ecef;
+    --hover-bg: #f8f9fa;
+    
+    /* Gradients for cards */
+    --gradient-primary-start: #E3F2FD;
+    --gradient-primary-end: #BBDEFB;
+    --gradient-success-start: #E8F5E9;
+    --gradient-success-end: #C8E6C9;
+    --gradient-warning-start: #FFF8E1;
+    --gradient-warning-end: #FFECB3;
+    --gradient-danger-start: #FFEBEE;
+    --gradient-danger-end: #FFCDD2;
+    
+    /* Transitions */
+    --tran-02: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
 
-        #main-content {
-            margin-left: 250px;
-            padding: 20px;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-            background-color: #f5f7fa;
-        }
+/* Mode Sombre */
+body.dark {
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #6c8cb4;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+    --card-bg: #242526;
+    --text-primary: #e4e6eb;
+    --text-muted: #b0b3b8;
+    --border-color: #3a3b3c;
+    --hover-bg: #3a3b3c;
+    
+    /* Gradients for cards - dark mode */
+    --gradient-primary-start: #1e3a5f;
+    --gradient-primary-end: #2c5282;
+    --gradient-success-start: #1b3a1c;
+    --gradient-success-end: #2e5d2f;
+    --gradient-warning-start: #3a2f1a;
+    --gradient-warning-end: #5d4a2e;
+    --gradient-danger-start: #3a1a1b;
+    --gradient-danger-end: #5d2e2f;
+}
 
-        body.dark #main-content {
-            background-color: #0b1437;
-            color: #e0e0e0;
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--body-color);
+    transition: var(--tran-03);
+}
 
-        .sidebar.close ~ #main-content {
-            margin-left: 88px;
-        }
+#main-content {
+    margin-left: 250px;
+    padding: 30px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+    background-color: var(--body-color);
+}
 
-        /* Stats cards */
-        .stat-card {
-            border-radius: 10px;
-            border: 2px solid;
-            padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-            background: white;
-        }
+.sidebar.close ~ #main-content {
+    margin-left: 88px;
+}
 
-        body.dark .stat-card {
-            background: #1d2951;
-            border-color: #3d5a80 !important;
-        }
+/* ==================== STATS CARDS ==================== */
+.stat-card {
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    height: 100%;
+}
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+body.dark .stat-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
 
-        body.dark .stat-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
 
-        .stat-card.primary {
-            border-color: #007bff;
-            background-color: #f8f9ff;
-        }
+body.dark .stat-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
 
-        .stat-card.success {
-            border-color: #28a745;
-            background-color: #f8fff9;
-        }
+.stat-card.primary {
+    background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%) !important;
+}
 
-        .stat-card.warning {
-            border-color: #ffc107;
-            background-color: #fffef8;
-        }
+.stat-card.success {
+    background: linear-gradient(135deg, var(--gradient-success-start) 0%, var(--gradient-success-end) 100%) !important;
+}
 
-        .stat-card.danger {
-            border-color: #dc3545;
-            background-color: #fff8f8;
-        }
+.stat-card.warning {
+    background: linear-gradient(135deg, var(--gradient-warning-start) 0%, var(--gradient-warning-end) 100%) !important;
+}
 
-        body.dark .stat-card .text-muted {
-            color: #a8b2c1 !important;
-        }
+.stat-card.danger {
+    background: linear-gradient(135deg, var(--gradient-danger-start) 0%, var(--gradient-danger-end) 100%) !important;
+}
 
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    opacity: 0.9;
+}
 
-        .stat-icon.primary { background-color: #007bff; }
-        .stat-icon.success { background-color: #28a745; }
-        .stat-icon.warning { background-color: #ffc107; }
-        .stat-icon.danger { background-color: #dc3545; }
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+    color: var(--text-primary);
+}
 
-        .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
+.stat-label {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-        .filter-btn {
-            margin: 5px;
-            border-radius: 5px;
-        }
+/* Icons in stats cards */
+.stat-card .bi-people,
+.stat-card .bi-person-check,
+.stat-card .bi-person-badge,
+.stat-card .bi-shield-check {
+    opacity: 0.3;
+}
 
-        .table-container {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-top: 20px;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-        }
+/* ==================== SEARCH AND FILTER SECTION ==================== */
+.search-filter-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+}
 
-        body.dark .table-container {
-            background: #1d2951;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            color: #e0e0e0;
-        }
+body.dark .search-filter-section {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
 
-        body.dark .table-container h5 {
-            color: #e0e0e0;
-        }
+.search-box-main {
+    margin-bottom: 15px;
+}
 
-        .table thead {
-            background-color: #4a5f7f;
-            color: white;
-        }
+.search-box-main .input-group-text {
+    background-color: transparent;
+    border-right: none;
+    border: 2px solid var(--border-color);
+    border-radius: 8px 0 0 8px;
+    color: var(--text-muted);
+}
 
-        body.dark .table {
-            color: #e0e0e0;
-        }
+.search-box-main .form-control {
+    border-left: none;
+    border: 2px solid var(--border-color);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 15px;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
 
-        body.dark .table tbody tr {
-            border-color: #3d5a80;
-        }
+.search-box-main .form-control:focus {
+    box-shadow: none;
+    border-color: var(--primary-color);
+    background-color: var(--card-bg);
+}
 
-        body.dark .table tbody tr:hover {
-            background-color: #2a3f5f;
-        }
+.search-box-main .input-group-text:focus-within {
+    border-color: var(--primary-color);
+}
 
-        .table thead th {
-            border: none;
-            padding: 15px;
-        }
+body.dark .search-box-main .form-control {
+    background-color: var(--primary-color-light);
+}
 
-        .search-box-main {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
+body.dark .search-box-main .form-control:focus {
+    background-color: var(--primary-color-light);
+}
 
-        body.dark .search-box-main {
-            background: #1d2951;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
+/* Filter Buttons */
+.filter-btn {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
 
-        .search-box-main input {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px 15px;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
+.filter-btn.active {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color);
+}
 
-        body.dark .search-box-main input {
-            background-color: #0b1437;
-            color: #e0e0e0;
-            border-color: #3d5a80;
-        }
+.filter-btn:not(.active) {
+    background-color: var(--hover-bg);
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
 
-        body.dark .search-box-main .input-group-text {
-            background-color: #0b1437 !important;
-            border-color: #3d5a80;
-            color: #e0e0e0;
-        }
+.filter-btn:not(.active):hover {
+    background-color: var(--primary-color-light);
+    border-color: var(--primary-color);
+}
 
-        .btn-action {
-            padding: 5px 10px;
-            margin: 2px;
-            border-radius: 5px;
-        }
+/* ==================== TABLE ==================== */
+.table-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+}
 
-        .role-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-        }
+body.dark .table-container {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
 
-        .role-admin { background-color: #dc3545; color: white; }
-        .role-manager { background-color: #007bff; color: white; }
-        .role-employe { background-color: #28a745; color: white; }
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
 
-        /* Mode sombre pour les modals */
-        body.dark .modal-content {
-            background-color: #1d2951;
-            color: #e0e0e0;
-        }
+.modern-table thead {
+    background-color: var(--hover-bg);
+}
 
-        body.dark .modal-header {
-            border-bottom-color: #3d5a80;
-        }
+.modern-table thead th {
+    border: none;
+    padding: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
 
-        body.dark .modal-footer {
-            border-top-color: #3d5a80;
-        }
+.modern-table tbody td {
+    padding: 15px;
+    font-size: 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
 
-        body.dark .form-control,
-        body.dark .form-select {
-            background-color: #0b1437;
-            color: #e0e0e0;
-            border-color: #3d5a80;
-        }
+.modern-table tbody tr {
+    transition: background-color 0.2s ease;
+}
 
-        body.dark .form-control:focus,
-        body.dark .form-select:focus {
-            background-color: #0b1437;
-            color: #e0e0e0;
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-        }
+.modern-table tbody tr:hover {
+    background-color: var(--hover-bg);
+}
 
-        body.dark .form-label {
-            color: #e0e0e0;
-        }
+/* ==================== ROLE BADGES ==================== */
+.role-badge {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    display: inline-block;
+    transition: var(--tran-03);
+}
 
-        body.dark h2,
-        body.dark h5 {
-            color: #e0e0e0;
-        }
+.role-admin {
+    background-color: #FFEBEE;
+    color: #e53935;
+}
 
-        body.dark .btn-close {
-            filter: invert(1);
-        }
+body.dark .role-admin {
+    background-color: #3a1a1b;
+    color: #ef5350;
+}
 
-        body.dark .dropdown-menu {
-            background-color: #1d2951;
-            border-color: #3d5a80;
-        }
+.role-manager {
+    background-color: #E3F2FD;
+    color: #1976d2;
+}
 
-        body.dark .dropdown-item {
-            color: #e0e0e0;
-        }
+body.dark .role-manager {
+    background-color: #1e3a5f;
+    color: #64b5f6;
+}
 
-        body.dark .dropdown-item:hover {
-            background-color: #2a3f5f;
-            color: #fff;
-        }
+.role-employe {
+    background-color: #E8F5E9;
+    color: #43a047;
+}
 
-        @media (max-width: 768px) {
-            #main-content {
-                margin-left: 0;
-            }
-            
-            .sidebar.close ~ #main-content {
-                margin-left: 0;
-            }
-        }
+body.dark .role-employe {
+    background-color: #1b3a1c;
+    color: #66bb6a;
+}
+
+.role-badge:hover {
+    transform: scale(1.05);
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.btn-action {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin: 0 2px;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-action.btn-edit {
+    background-color: #FFF8E1;
+    color: #f57c00;
+}
+
+body.dark .btn-action.btn-edit {
+    background-color: #3a2f1a;
+    color: #ffa726;
+}
+
+.btn-action.btn-delete {
+    background-color: #FFEBEE;
+    color: #e53935;
+}
+
+body.dark .btn-action.btn-delete {
+    background-color: #3a1a1b;
+    color: #ef5350;
+}
+
+/* ==================== HEADER ==================== */
+.page-header {
+    margin-bottom: 40px;
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: #3d4f68;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 95, 127, 0.3);
+}
+
+/* ==================== MODAL ==================== */
+.modal-content {
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    background-color: var(--card-bg);
+}
+
+body.dark .modal-content {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+    border-radius: 20px 20px 0 0;
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-body {
+    padding: 30px;
+    background-color: var(--card-bg);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+body.dark .form-control,
+body.dark .form-select {
+    background-color: var(--primary-color-light);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 95, 127, 0.15);
+    background-color: var(--card-bg);
+}
+
+body.dark .form-control:focus,
+body.dark .form-select:focus {
+    background-color: var(--primary-color-light);
+}
+
+.btn-close-white {
+    filter: brightness(0) invert(1);
+}
+
+body.dark .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* ==================== DROPDOWN ==================== */
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 12px;
+}
+
+body.dark .dropdown-menu {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    transition: var(--tran-02);
+    padding: 10px 20px;
+}
+
+.dropdown-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--primary-color);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==================== BADGES ==================== */
+.badge {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+/* ==================== TEXT UTILITIES ==================== */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+small.text-primary,
+small.text-success,
+small.text-warning,
+small.text-danger {
+    font-size: 0.85rem;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    #main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .sidebar.close ~ #main-content {
+        margin-left: 0;
+    }
+
+    .stat-card {
+        margin-bottom: 15px;
+    }
+
+    .filter-btn {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.search-filter-section,
+.table-container {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Notification de changement de mode */
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.mode-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.mode-notification .mode-icon {
+    font-size: 1.5rem;
+}
+
+.mode-notification .mode-message {
+    font-size: 0.95rem;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--body-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3d4f68;
+}
+
+body.dark ::-webkit-scrollbar-thumb {
+    background: var(--primary-color-light);
+}
+
+body.dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--toggle-color);
+}
+
+/* ==================== ALERT PERSONNALISÉE ==================== */
+.alert {
+    border-radius: 12px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+/* ==================== LOADING STATE ==================== */
+.table-container .text-center.text-muted {
+    color: var(--text-muted);
+    padding: 40px;
+    font-size: 1rem;
+}
     </style>
 </head>
 <body>
-
-    <!-- SIDEBAR -->
-    <?php include('../../includes/sidebarA.php'); ?>
-
-    <!-- CONTENU PRINCIPAL -->
+    <?php include('../../includes/sidebar.php'); ?>
+    
     <div id="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="bi bi-people"></i> Gestion des Utilisateurs</h2>
+        <!-- Header -->
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title"><i class="bi bi-people me-2"></i>Gestion des Utilisateurs</h1>
+                <span class="text-muted small">Administration des comptes utilisateurs</span>
+            </div>
             <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="actionsDropdown" data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots-vertical"></i> Actions
+                <button class="btn btn-primary-custom dropdown-toggle" type="button" id="actionsDropdown" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots-vertical me-1"></i> Actions
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
-                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#nouvelUtilisateurModal">
-                        <i class="bi bi-person-plus"></i> Nouvel utilisateur
-                    </a></li>
-                    <li><a class="dropdown-item" href="#" onclick="exportUsers()">
-                        <i class="bi bi-download"></i> Exporter
-                    </a></li>
-                    <li><a class="dropdown-item" href="#" onclick="refreshData()">
-                        <i class="bi bi-arrow-clockwise"></i> Actualiser
-                    </a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#nouvelUtilisateurModal"><i class="bi bi-person-plus me-2"></i> Nouvel utilisateur</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportUsers()"><i class="bi bi-download me-2"></i> Exporter</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="refreshData()"><i class="bi bi-arrow-clockwise me-2"></i> Actualiser</a></li>
                 </ul>
             </div>
         </div>
 
         <!-- Statistiques -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
                 <div class="stat-card primary">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon primary">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <div class="ms-3 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
                             <div class="stat-number" id="stat-total">0</div>
-                            <div class="text-muted">Total Utilisateurs</div>
+                            <div class="stat-label">Total</div>
+                            <small class="text-primary fw-bold mt-2 d-block">Utilisateurs</small>
                         </div>
+                        <div><i class="bi bi-people" style="font-size: 3rem; color: #1976d2; opacity: 0.3;"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-xl-3 col-md-6">
                 <div class="stat-card success">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon success">
-                            <i class="bi bi-person-check"></i>
-                        </div>
-                        <div class="ms-3 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
                             <div class="stat-number" id="stat-employes">0</div>
-                            <div class="text-muted">Employés</div>
+                            <div class="stat-label">Employés</div>
+                            <small class="text-success fw-bold mt-2 d-block">Actifs</small>
                         </div>
+                        <div><i class="bi bi-person-check" style="font-size: 3rem; color: #43a047; opacity: 0.3;"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-xl-3 col-md-6">
                 <div class="stat-card warning">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon warning">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                        <div class="ms-3 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
                             <div class="stat-number" id="stat-managers">0</div>
-                            <div class="text-muted">Managers</div>
+                            <div class="stat-label">Managers</div>
+                            <small class="text-warning fw-bold mt-2 d-block">Superviseurs</small>
                         </div>
+                        <div><i class="bi bi-person-badge" style="font-size: 3rem; color: #ffa726; opacity: 0.3;"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-xl-3 col-md-6">
                 <div class="stat-card danger">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon danger">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <div class="ms-3 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
                             <div class="stat-number" id="stat-admins">0</div>
-                            <div class="text-muted">Administrateurs</div>
+                            <div class="stat-label">Administrateurs</div>
+                            <small class="text-danger fw-bold mt-2 d-block">Système</small>
                         </div>
+                        <div><i class="bi bi-shield-check" style="font-size: 3rem; color: #e53935; opacity: 0.3;"></i></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Barre de recherche -->
-        <div class="search-box-main">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Rechercher par nom, email ou ID...">
+        <!-- Search and Filters -->
+        <div class="search-filter-section">
+            <div class="search-box-main">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Rechercher par nom, email ou ID...">
+                </div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center">
+                <span class="me-3 fw-semibold text-muted small text-uppercase">Filtrer par:</span>
+                <button class="btn filter-btn active" onclick="filterUsers('all', event)"><i class="bi bi-list me-1"></i> Tous</button>
+                <button class="btn filter-btn" onclick="filterUsers('employe', event)"><i class="bi bi-person me-1"></i> Employés</button>
+                <button class="btn filter-btn" onclick="filterUsers('manager', event)"><i class="bi bi-person-badge me-1"></i> Managers</button>
+                <button class="btn filter-btn" onclick="filterUsers('admin', event)"><i class="bi bi-shield-check me-1"></i> Admins</button>
             </div>
         </div>
 
-        <!-- Filtres -->
-        <div class="mb-3">
-            <button class="btn btn-dark filter-btn active" onclick="filterUsers('all', event)">
-                <i class="bi bi-list"></i> Tous
-            </button>
-            <button class="btn btn-outline-success filter-btn" onclick="filterUsers('employe', event)">
-                <i class="bi bi-person"></i> Employés
-            </button>
-            <button class="btn btn-outline-warning filter-btn" onclick="filterUsers('manager', event)">
-                <i class="bi bi-person-badge"></i> Managers
-            </button>
-            <button class="btn btn-outline-danger filter-btn" onclick="filterUsers('admin', event)">
-                <i class="bi bi-shield-check"></i> Admins
-            </button>
-        </div>
-
-        <!-- Tableau -->
+        <!-- Table -->
         <div class="table-container">
-            <h5 class="mb-3">
-                Tous les utilisateurs <span class="badge bg-secondary" id="total-users">0</span>
-            </h5>
-
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0" style="color: var(--text-primary);">Liste des utilisateurs <span class="badge bg-secondary" id="total-users">0</span></h5>
+            </div>
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="modern-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Prénom</th>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Téléphone</th>
-                            <th>Département</th>
-                            <th>Rôle</th>
-                            <th>Actions</th>
+                            <th class="ps-4">ID</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Département</th><th>Rôle</th><th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="users-tbody">
-                        <tr><td colspan="8" class="text-center text-muted">Chargement des données...</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted py-5">Chargement des données...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -421,9 +780,9 @@ if (!defined('BASE_URL')) {
     <div class="modal fade" id="nouvelUtilisateurModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Nouvel Utilisateur</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Nouvel Utilisateur</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="nouvelUtilisateurForm">
@@ -471,10 +830,8 @@ if (!defined('BASE_URL')) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="createUser()">
-                        <i class="bi bi-check-circle"></i> Créer
-                    </button>
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i> Annuler</button>
+                    <button type="button" class="btn btn-primary-custom rounded-pill" onclick="createUser()"><i class="bi bi-check-circle me-1"></i> Créer</button>
                 </div>
             </div>
         </div>
@@ -484,9 +841,9 @@ if (!defined('BASE_URL')) {
     <div class="modal fade" id="modifierUtilisateurModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modifier Utilisateur</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Modifier Utilisateur</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="modifierUtilisateurForm">
@@ -524,14 +881,13 @@ if (!defined('BASE_URL')) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="updateUser()">
-                        <i class="bi bi-save"></i> Enregistrer
-                    </button>
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i> Annuler</button>
+                    <button type="button" class="btn btn-warning rounded-pill" onclick="updateUser()"><i class="bi bi-save me-1"></i> Enregistrer</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

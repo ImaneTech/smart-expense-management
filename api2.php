@@ -221,10 +221,8 @@ try {
             $user_id = (int)($_POST['user_id'] ?? 0);
 
             if ($statut === 'validee_manager') $statutDB = 'Validée Manager';
-            elseif ($statut === 'validee_admin') $statutDB = 'Approuvée Compta';
             elseif ($statut === 'en_attente') $statutDB = 'En attente';
             elseif ($statut === 'rejetee') $statutDB = 'Rejetée Manager';
-            elseif ($statut === 'payee') $statutDB = 'Payée';
             else $statutDB = $statut;
 
             $ok = $demandeSrv->changerStatut($id, $statutDB, $user_id);
