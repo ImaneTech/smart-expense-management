@@ -1,6 +1,12 @@
 <?php
 // Fichier: includes/footer.php (CORRIGÉ)
 
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
+    // Your existing code follows...
+
 // Inclus config.php pour BASE_URL si ce n'est pas déjà fait
 // NOTE: L'inclusion ici est redondante si le fichier principal l'a fait, mais ne cause pas d'erreur.
 // include_once(BASE_PATH . '/config.php');

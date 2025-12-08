@@ -1,5 +1,6 @@
 <?php
 // classes/HistoriqueStatus.php
+
 class HistoriqueStatus {
     private $pdo;
     public function __construct(PDO $pdo){ $this->pdo = $pdo; }

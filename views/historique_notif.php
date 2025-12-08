@@ -13,7 +13,7 @@ ini_set('display_startup_errors', 1);
 // ----------------------------------------------------------------------
 // CORRECTION CLÉ 1 : RETIRER L'INCLUSION DEPLACÉE DE CONFIG.PHP
 // ----------------------------------------------------------------------
-// require_once __DIR__ . '/config.php'; // ❌ LIGNE ENLEVER/SUPPRIMER
+
 $erreur_dependance = null;
 
 // ----------------------------------------------------------------------

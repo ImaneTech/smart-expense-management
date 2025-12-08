@@ -1,5 +1,6 @@
 <?php
 // includes/header.php
+require_once __DIR__ . '/../config.php'; 
 
 // 1. Vérification que la config est chargée
 if (!defined('BASE_URL') || !defined('BASE_PATH')) {
@@ -29,7 +30,7 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title><?php echo $page_title ?? 'GoTrackr'; ?></title>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -42,7 +43,7 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
 
-       <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table.css">
+
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
     
     <link rel="icon" href="<?= BASE_URL ?>assets/img/logo.png">

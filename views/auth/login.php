@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 // Inclusion unique des fichiers
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../includes/flash.php';
-require_once __DIR__ . '/../../controllers/UserController.php';
+require_once __DIR__ . '/../../Controllers/UserController.php';
 
 // Gestion du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

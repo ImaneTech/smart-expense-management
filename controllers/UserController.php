@@ -6,8 +6,8 @@
 // et les préférences utilisateur.
 // =============================================================
 
-require_once(__DIR__ . '/../models/User.php');
-require_once(__DIR__ . '/../models/UserModel.php');
+require_once(__DIR__ . '/../Models/User.php');
+require_once(__DIR__ . '/../Models/UserModel.php');
 require_once __DIR__ . '/../includes/sendMail.php';
 require_once __DIR__ . '/../includes/flash.php'; 
 

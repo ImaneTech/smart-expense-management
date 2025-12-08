@@ -1,8 +1,15 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+
+
+// --- Initialisation PHP ---
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
 // 1. INCLUSIONS
-require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../config.php';
 require_once BASE_PATH . 'models/UserModel.php';
 require_once BASE_PATH . 'controllers/ProfileController.php';
 require_once BASE_PATH . 'includes/header.php';

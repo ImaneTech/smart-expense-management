@@ -1,6 +1,5 @@
 <?php
-// models/DemandeModel.php (VERSION CORRIGÉE ET HARMONISÉE)
-
+// models/DemandeModel.php 
 class DemandeModel {
 
     private PDO $pdo;

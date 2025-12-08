@@ -1,0 +1,545 @@
+/* ========================================================= */
+/* === CODE CSS UNIFIÉ ET CORRIGÉ POUR LE THÈME ET L'UX === */
+/* ========================================================= */
+
+/* --- GENERAL LAYOUT & SIDEBAR --- */
+#main-content {
+    margin-left: 250px;
+    padding: 30px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+    background-color: var(--body-color);
+}
+
+.sidebar.close ~ #main-content {
+    margin-left: 88px;
+}
+
+/* ==================== STATS CARDS (Compact Design) ==================== */
+.stat-card {
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    height: 100%;
+    /* 🚨 SUPPRIMÉ: background: linear-gradient(...) pour utiliser les couleurs spécifiques du thème ailleurs */
+    /* Utilisé pour la gestion des catégories */
+    background-color: var(--card-bg); 
+}
+
+body.dark .stat-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+body.dark .stat-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    opacity: 0.3;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ==================== SEARCH SECTION ==================== */
+.search-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+}
+
+body.dark .search-section {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.search-section .input-group-text {
+    background-color: transparent;
+    border-right: none;
+    border: 2px solid var(--border-color);
+    border-radius: 8px 0 0 8px;
+    color: var(--text-muted);
+}
+
+.search-section .form-control {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.search-section .form-control:focus {
+    box-shadow: none;
+    border-color: var(--primary-color);
+    background-color: var(--card-bg);
+}
+
+.search-section .input-group-text:focus-within {
+    border-color: var(--primary-color);
+}
+
+body.dark .search-section .form-control {
+    background-color: var(--primary-color-light);
+}
+
+body.dark .search-section .form-control:focus {
+    background-color: var(--primary-color-light);
+}
+
+/* ==================== TABLE ==================== */
+.table-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+}
+
+body.dark .table-container {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.modern-table thead {
+    background-color: var(--hover-bg);
+}
+
+.modern-table thead th {
+    border: none;
+    padding: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    /* 🚨 CORRECTION: Autoriser le retour à la ligne pour le nom des colonnes */
+    white-space: normal; 
+}
+
+.modern-table tbody td {
+    padding: 15px;
+    font-size: 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.modern-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.modern-table tbody tr:hover {
+    background-color: var(--hover-bg);
+}
+
+
+/* ==================== CATEGORY BADGE (Vérifié pour la visibilité) ==================== */
+.category-badge {
+    /* 🎯 CORRECTION CRITIQUE: Supprimer les propriétés de fond et de padding excessives */
+    background: none; 
+    padding: 0; /* Réduire le padding pour éviter d'étirer la ligne inutilement */
+    border-radius: 0; 
+    
+    /* Garantie de la couleur du texte */
+    color: var(--text-color); 
+    font-weight: 600; 
+    font-size: 0.9rem;
+    display: inline; /* Remplacer inline-block par inline si vous voulez qu'il se comporte comme du texte normal */
+    
+    /* Retirer les effets de transition/ombre si vous ne voulez pas d'un bouton */
+    transition: none; 
+    box-shadow: none;
+}
+
+.category-badge:hover {
+    transform: none; 
+    box-shadow: none;
+}
+
+body.dark .category-badge {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+body.dark .category-badge:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.btn-action {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin: 0 2px;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-action.btn-edit {
+    background-color: #FFF8E1;
+    color: #f57c00;
+}
+
+body.dark .btn-action.btn-edit {
+    background-color: #3a2f1a;
+    color: #ffa726;
+}
+
+.btn-action.btn-delete {
+    background-color: #FFEBEE;
+    color: #e53935;
+}
+
+body.dark .btn-action.btn-delete {
+    background-color: #3a1a1b;
+    color: #ef5350;
+}
+
+/* ==================== HEADER ==================== */
+.page-header {
+    margin-bottom: 40px;
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: #3d4f68;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 95, 127, 0.3);
+}
+
+/* ==================== MODAL ==================== */
+.modal-content {
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    background-color: var(--card-bg);
+}
+
+body.dark .modal-content {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+    border-radius: 20px 20px 0 0;
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-body {
+    padding: 30px;
+    background-color: var(--card-bg);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+body.dark .form-control,
+body.dark .form-select {
+    background-color: var(--primary-color-light);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 95, 127, 0.15);
+    background-color: var(--card-bg);
+}
+
+body.dark .form-control:focus,
+body.dark .form-select:focus {
+    background-color: var(--primary-color-light);
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+.btn-close-white {
+    filter: brightness(0) invert(1);
+}
+
+body.dark .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* ==================== DROPDOWN ==================== */
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 12px;
+}
+
+body.dark .dropdown-menu {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    transition: var(--tran-02);
+    padding: 10px 20px;
+}
+
+.dropdown-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--primary-color);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==================== BADGES ==================== */
+.badge {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+/* ==================== TEXT UTILITIES ==================== */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+small.text-muted,
+small.text-primary,
+small.text-success {
+    font-size: 0.85rem;
+}
+
+/* ==================== ICONS ==================== */
+.bi-tags {
+    color: var(--primary-color);
+    opacity: 0.3;
+}
+
+body.dark .bi-tags {
+    color: var(--primary-color);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    #main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .sidebar.close ~ #main-content {
+        margin-left: 0;
+    }
+
+    .stat-card {
+        margin-bottom: 15px;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.search-section,
+.table-container {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Notification de changement de mode */
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.mode-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.mode-notification .mode-icon {
+    font-size: 1.5rem;
+}
+
+.mode-notification .mode-message {
+    font-size: 0.95rem;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--body-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3d4f68;
+}
+
+body.dark ::-webkit-scrollbar-thumb {
+    background: var(--primary-color-light);
+}
+
+body.dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--toggle-color);
+}
+
+/* ==================== ALERT PERSONNALISÉE ==================== */
+.alert {
+    border-radius: 12px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+/* ==================== LOADING STATE ==================== */
+.table-container .text-center.text-muted {
+    color: var(--text-muted);
+    padding: 40px;
+    font-size: 1rem;
+}
+
+.target-search-bg {
+    /* Utilise la couleur primaire du thème avec une faible opacité (vert clair) */
+    background-color: rgba(var(--primary-color-rgb), 0.08) !important; 
+    border-radius: 8px; /* Appliquer le border-radius au groupe */
+    border: 2px solid rgba(var(--primary-color-rgb), 0.2); /* Bordure fine assortie */
+}
+
+/* S'assurer que le texte du groupe d'input a le même fond */
+.target-search-bg .input-group-text {
+    background-color: transparent !important; 
+    border: none !important;
+}
+
+/* S'assurer que l'input lui-même hérite du fond et n'a pas de bordure interne */
+.target-search-bg .form-control {
+    background-color: transparent !important;
+    border: none !important;
+}

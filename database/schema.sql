@@ -154,19 +154,6 @@ CREATE TABLE notifications (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- -----------------------------------------------------------------------------------------------------------
-USE gestion_frais_db;
-CREATE TABLE manager_team (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    manager_id INT NOT NULL,
-    member_id INT NOT NULL,
-    FOREIGN KEY (manager_id) REFERENCES users(id), 
-    FOREIGN KEY (member_id) REFERENCES users(id),
-    UNIQUE KEY unique_team_member (manager_id, member_id)
-);
-
-USE gestion_frais_db;
-INSERT INTO manager_team (manager_id, member_id) VALUES
-(4,1);
 
 USE gestion_frais_db;
 -- ============================================

@@ -1,143 +1,526 @@
-/* ==============================================================
-   Layout Principal
-   ============================================================== */
-
-/* Contenu principal */
-#main-content {
-    margin-left: 250px;
-    padding: 20px;
-    min-height: 100vh;
-    transition: margin-left 0.3s ease;
+/* Styles pour les petits textes de statut */
+small.text-muted,
+small.text-success,
+small.text-warning,
+small.text-danger {
+    font-size: 0.85rem;
 }
 
-/* Ajustement quand la sidebar est fermée */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* ==========================================
+    SECTION 2: CONTENU PRINCIPAL & HEADER DE PAGE
+========================================== */
+
+
+/* Décalage lorsque la sidebar est fermée */
 .sidebar.close ~ #main-content {
     margin-left: 88px;
 }
 
+/* En-tête de la page (Titre) */
+.page-header {
+    margin-bottom: 40px;
+}
 
-/* ==============================================================
-   1. Cartes Statistiques (Stats Cards)
-   ============================================================== */
+.page-title {
+    color: var(--text-primary);
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+/* ==========================================
+    SECTION 3: CARTES DE STATISTIQUES (STAT CARDS)
+========================================== */
+
 .stat-card {
-    border-radius: 10px;
-    border: 2px solid;
-    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    padding: 25px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    height: 100%;
+    background-color: var(--card-bg);
+}
+
+body.dark .stat-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-/* Couleurs selon le type */
-.stat-card.success { border-color: #28a745; background-color: #f8fff9; }
-.stat-card.warning { border-color: #ffc107; background-color: #fffef8; }
-.stat-card.danger  { border-color: #dc3545; background-color: #fff8f8; }
+body.dark .stat-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
 
-/* Icônes des cartes */
+/* Styles spécifiques par statut */
+.stat-card.success { background-color: #E8F5E9 !important; }
+body.dark .stat-card.success { background-color: #1b3a1c !important; border-color: #2e5d2f; }
+
+.stat-card.warning { background-color: #FFF8E1 !important; }
+body.dark .stat-card.warning { background-color: #3a2f1a !important; border-color: #5d4a2e; }
+
+.stat-card.danger { background-color: #FFEBEE !important; }
+body.dark .stat-card.danger { background-color: #3a1a1b !important; border-color: #5d2e2f; }
+
+/* Éléments internes de la carte */
 .stat-icon {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.9;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ==========================================
+    SECTION 4: FORMULAIRES & MODALES
+========================================== */
+
+/* Cartes (Conteneurs généraux) */
+.card {
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+    background-color: var(--hover-bg) !important;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-body {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+/* Éléments de formulaire */
+.form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px; /* Valeur par défaut */
+}
+
+/* Correction pour les petites labels au-dessus des inputs dans les modales/cards compactes */
+.modal-body .form-label {
+    margin-bottom: 0.2rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+/* Rend les inputs visuellement plus courts (Style compact) */
+.form-control.compact-input,
+.form-select.compact-input {
+    padding: 0.375rem 0.75rem; /* Réduire le padding vertical */
+    height: auto; 
+    font-size: 0.9rem;
+}
+
+body.dark .form-control,
+body.dark .form-select {
+    background-color: var(--primary-color-light);
+}
+
+.form-control:focus,
+.form-select:focus {
+    /* Utilise la couleur de thème définie en --primary-color */
+    border-color: var(--primary-color);
+    /* Utilisation de rgba(var(--primary-color-rgb), 0.15) pour l'ombre */
+    box-shadow: 0 0 0 0.2rem rgba(74, 95, 127, 0.15); 
+    background-color: var(--card-bg);
+}
+
+body.dark .form-control:focus,
+body.dark .form-select:focus {
+    background-color: var(--primary-color-light);
+}
+
+
+/* Modales personnalisées */
+.modal-content {
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    background-color: var(--card-bg);
+}
+
+body.dark .modal-content {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+    border-radius: 20px 20px 0 0;
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-body {
+    padding: 30px;
+    background-color: var(--card-bg);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+.btn-close-white { filter: brightness(0) invert(1); }
+body.dark .btn-close { filter: brightness(0) invert(1); }
+
+/* Assurer que les en-têtes des cartes ne sont pas trop grands */
+.modal-body .card-header {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+
+/* ==========================================
+    SECTION 5: FILTRES & BOUTONS
+========================================== */
+
+/* Section de filtres (Conteneur) */
+.filter-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    /* Raccourci le padding du conteneur de filtre */
+    padding: 15px 20px; 
+    /* Réduit l'espace après la section de filtre */
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+}
+
+body.dark .filter-section {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Bouton primaire personnalisé */
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-primary-custom:hover {
+    background-color: #3d4f68;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 95, 127, 0.3);
+}
+
+/* Boutons de filtre */
+.filter-btn {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color);
+}
+
+.filter-btn:not(.active) {
+    background-color: var(--hover-bg);
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+.filter-btn:not(.active):hover {
+    background-color: var(--primary-color-light);
+    border-color: var(--primary-color);
+}
+
+/* ==========================================
+    SECTION 6: TABLEAUX (TABLES)
+========================================== */
+
+.table-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+}
+
+body.dark .table-container {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed; /* ESSENTIEL pour garantir l'alignement des colonnes */
+}
+
+.modern-table thead {
+    background-color: var(--hover-bg);
+}
+
+.modern-table thead th {
+    border: none;
+    /* Padding réduit pour diminuer la hauteur des lignes */
+    padding: 12px 15px; 
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.modern-table tbody td {
+    /* Padding réduit pour diminuer la hauteur des lignes */
+    padding: 12px 15px; 
+    font-size: 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.modern-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.modern-table tbody tr:hover {
+    background-color: var(--hover-bg);
+}
+
+.table-primary-text {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Badges de statut */
+.badge {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+/* Boutons d'action dans le tableau */
+.btn-action-group {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-action {
+    width: 35px;
+    height: 35px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: white;
-}
-.stat-icon.success { background-color: #28a745; }
-.stat-icon.warning { background-color: #ffc107; }
-.stat-icon.danger  { background-color: #dc3545; }
-
-/* Nombre/statistique */
-.stat-number {
-    font-size: 36px;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-
-/* ==============================================================
-   2. Boutons et Filtres
-   ============================================================== */
-.filter-btn {
-    margin: 5px;
-    border-radius: 5px;
-}
-
-
-/* ==============================================================
-   3. Tables et Conteneurs
-   ============================================================== */
-.table-container {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-top: 20px;
-}
-
-.table thead {
-    background-color: #4a5f7f;
-    color: white;
-}
-
-.table thead th {
     border: none;
-    padding: 15px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    cursor: pointer;
 }
 
-/* Zone de chargement */
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-action.btn-edit { background-color: #FFF8E1; color: #f57c00; }
+body.dark .btn-action.btn-edit { background-color: #3a2f1a; }
+
+.btn-action.btn-delete { background-color: #FFEBEE; color: #e53935; }
+body.dark .btn-action.btn-delete { background-color: #3a1a1b; }
+
+/* ==========================================
+    SECTION 6.1: TABLEAUX À DÉFILEMENT FIXE (CORRECTION)
+========================================== */
+
+/* Conteneur principal qui gère la largeur et la structure */
+.table-scroll-wrapper {
+    /* Retiré la bordure ici car elle est déjà sur .table-container */
+    border: none; 
+    border-radius: 0;
+    overflow: hidden; 
+}
+
+/* Fixe la position de l'en-tête */
+.table-header-fixed {
+    background-color: var(--card-bg); /* S'assure que l'arrière-plan est la couleur de la carte */
+    z-index: 10;
+    position: relative;
+    padding-right: 17px; /* Espace de compensation pour la barre de défilement verticale */
+}
+
+/* Applique la hauteur maximale et le défilement au corps de la table */
+.table-body-scroll {
+    /* Augmente la hauteur maximale pour utiliser l'espace disponible */
+    max-height: 55vh; /* Utilise 55% de la hauteur de la fenêtre */
+    /* OU : remettez à 500px si vous préférez une valeur fixe plus grande */
+    /* max-height: 500px; */
+    overflow-y: auto; 
+    border-top: none; 
+    padding-top: 0; 
+}
+
+/* Correction pour le tableau dans le corps défilant */
+.table-body-scroll .modern-table {
+    border-top: none; 
+}
+
+
+/* ==========================================
+    SECTION 7: DROPDOWNS & CHARGEMENT
+========================================== */
+
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+body.dark .dropdown-menu {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    transition: var(--tran-02);
+}
+
+.dropdown-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--primary-color);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--border-color);
+}
+
+/* Alert personnalisée */
+.alert-custom {
+    border-radius: 12px;
+    border: none;
+    padding: 15px 20px;
+    font-weight: 500;
+}
+
+/* Loading */
 .loading {
     display: none;
     text-align: center;
-    padding: 20px;
+    padding: 40px;
 }
 
+/* ==========================================
+    SECTION 8: RESPONSIVE & ANIMATIONS
+========================================== */
 
-/* ==============================================================
-   4. Zone Upload de fichiers
-   ============================================================== */
-.upload-zone {
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.upload-zone:hover {
-    border-color: #007bff;
-    background-color: #f8f9fa;
-}
-
-.upload-zone.drag-over {
-    border-color: #28a745;
-    background-color: #e8f5e9;
-}
-
-/* Prévisualisation du fichier */
-.file-preview {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 5px;
-    display: none;
-}
-
-
-/* ==============================================================
-   5. Responsive
-   ============================================================== */
 @media (max-width: 768px) {
     #main-content {
         margin-left: 0;
+        padding: 15px;
     }
     
     .sidebar.close ~ #main-content {
         margin-left: 0;
     }
+
+    .stat-card {
+        margin-bottom: 15px;
+    }
+
+    .filter-btn {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
 }
+
+/* Animations d'entrée (Fade In) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-card, .filter-section, .table-container {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Animations notification mode */
+@keyframes slideInRight {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+}
+
+.mode-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.mode-notification .mode-icon { font-size: 1.5rem; }
+.mode-notification .mode-message { font-size: 0.95rem; }
+
+/* ==========================================
+    SECTION 9: SCROLLBAR PERSONNALISÉE
+========================================== */
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--body-color); }
+::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #3d4f68; }
+
+body.dark ::-webkit-scrollbar-thumb { background: var(--primary-color-light); }
+body.dark ::-webkit-scrollbar-thumb:hover { background: var(--toggle-color); }

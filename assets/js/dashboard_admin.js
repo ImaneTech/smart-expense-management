@@ -1,242 +1,270 @@
-
-const API_URL = 'http://localhost/smart-expense-management/api.php';
+// Définition de l'URL de l'API
+const API_URL = 'http://localhost/smart-expense-management/api/admin.php'; 
 let currentFilter = 'all';
-let selectedFile = null;
+
+// 💡 CORRECTION : La variable doit inclure "liste_demandes.php"
+const isDashboardView = !(
+    window.location.pathname.includes('liste_demandes.php') ||
+    window.location.pathname.includes('full_list.php')
+);
+const MAX_DASHBOARD_ROWS = 5;
+
+// Map des statuts front-end (clés envoyées et reçues par le Contrôleur)
+const STATUT_BADGE_MAP = {
+    'en_attente': { text: 'En attente', class: 'bg-warning text-dark' },
+    'validee_manager': { text: 'Validée Manager', class: 'bg-success' },
+    'rejetee': { text: 'Rejetée Manager', class: 'bg-danger' },
+    'validee_admin': { text: 'Approuvée Compta', class: 'bg-primary' },
+    'payee': { text: 'Payée', class: 'bg-info' }
+};
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Application démarrée');
-    loadStats();
+    console.log(`🚀 Application démarrée. Mode: ${isDashboardView ? 'Dashboard Limité' : 'Liste Complète'}`);
+    
+    // Charger les stats uniquement si les éléments du Dashboard existent
+    if (document.getElementById('stat-validees')) {
+        loadStats();
+    }
+    
     loadDemandes();
-    setupFileUpload();
+    setupModalStatutMapping();
 });
 
-// Configuration de l'upload drag & drop
-function setupFileUpload() {
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('justificatif');
-    const filePreview = document.getElementById('filePreview');
-    const fileName = document.getElementById('fileName');
-
-    uploadZone.addEventListener('click', () => fileInput.click());
-
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.classList.add('drag-over');
-    });
-
-    uploadZone.addEventListener('dragleave', () => {
-        uploadZone.classList.remove('drag-over');
-    });
-
-    uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadZone.classList.remove('drag-over');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleFile(files[0]);
-        }
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
-    });
-}
-
-function handleFile(file) {
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-
-    if (!allowedTypes.includes(file.type)) {
-        showAlert('Type de fichier non autorisé. Utilisez PDF, JPG ou PNG.', 'danger');
-        return;
+/**
+ * Initialise les selects de statut dans les modals pour utiliser les clés standardisées.
+ */
+function setupModalStatutMapping() {
+    const newStatutSelect = document.getElementById('statut');
+    if (newStatutSelect) {
+        newStatutSelect.innerHTML = Object.entries(STATUT_BADGE_MAP).map(([key, info]) => {
+            const selected = (key === 'en_attente') ? 'selected' : '';
+            return `<option value="${key}" ${selected}>${info.text}</option>`;
+        }).join('');
     }
 
-    if (file.size > maxSize) {
-        showAlert('Fichier trop volumineux (max 5MB)', 'danger');
-        return;
+    const editStatutSelect = document.getElementById('edit_statut');
+    if (editStatutSelect) {
+         editStatutSelect.innerHTML = Object.entries(STATUT_BADGE_MAP).map(([key, info]) => {
+            return `<option value="${key}">${info.text}</option>`;
+        }).join('');
     }
-
-    selectedFile = file;
-    document.getElementById('fileName').textContent = file.name;
-    document.getElementById('filePreview').style.display = 'block';
 }
 
-function removeFile() {
-    selectedFile = null;
-    document.getElementById('justificatif').value = '';
-    document.getElementById('filePreview').style.display = 'none';
-}
 
+// #region Data Loading
 function loadStats() {
+    if (!document.getElementById('stat-validees')) return;
+    
     fetch(`${API_URL}?action=get_stats`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById('stat-validees').textContent = data.validees_manager || 0;
-            document.getElementById('stat-attente').textContent = data.en_attente || 0;
-            document.getElementById('stat-rejetees').textContent = data.rejetees || 0;
+            const statValidees = document.getElementById('stat-validees');
+            const statAttente = document.getElementById('stat-attente');
+            const statRejetees = document.getElementById('stat-rejetees');
+
+            if (statValidees) statValidees.textContent = data.validees_manager || 0;
+            if (statAttente) statAttente.textContent = data.en_attente || 0;
+            if (statRejetees) statRejetees.textContent = data.rejetees || 0;
         })
         .catch(error => {
             console.error('❌ Erreur stats:', error);
             showAlert('Erreur lors du chargement des statistiques', 'danger');
         });
 }
-
 function loadDemandes(statut = null) {
-    document.querySelector('.loading').style.display = 'block';
+    const loadingElement = document.querySelector('.loading');
+    if (loadingElement) {
+        loadingElement.style.display = 'block';
+    }
     
     let url = `${API_URL}?action=get_demandes`;
     if (statut && statut !== 'all') {
-        url += `&statut=${statut}`;
+        url += `&statut=${encodeURIComponent(statut)}`;
     }
 
     fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            displayDemandes(data);
-            document.querySelector('.loading').style.display = 'none';
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP Error! Status: ${response.status}`);
+            }
+            return response.text(); // Récupère le texte brut au lieu du JSON
+        })
+        .then(text => {
+            try {
+                const data = JSON.parse(text); // Essayer de parser le texte en JSON
+                displayDemandes(data);
+            } catch (e) {
+                // Si le parsing JSON échoue, cela signifie que le serveur a renvoyé du texte HTML ou une erreur PHP.
+                console.error('❌ API RESPONSE TEXT:', text);
+                throw new Error('La réponse de l\'API n\'est pas un JSON valide. Voir la console pour le texte brut de l\'erreur.');
+            }
+            
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
         })
         .catch(error => {
             console.error('❌ Erreur demandes:', error);
-            document.querySelector('.loading').style.display = 'none';
-            showAlert('Erreur lors du chargement des demandes', 'danger');
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+            // Affiche un message plus précis si l'erreur est liée au réseau ou au statut HTTP
+            const errorMessage = error.message.includes('HTTP Error') ? `Erreur API: ${error.message}` : 'Erreur critique de l\'API. Voir console pour les détails.';
+            showAlert(errorMessage, 'danger');
         });
 }
+// #endregion
 
+// #region UI Functions
 function displayDemandes(demandes) {
     const tbody = document.getElementById('demandes-tbody');
-    document.getElementById('total-demandes').textContent = demandes.length;
+    const totalDemandes = document.getElementById('total-demandes');
 
-    if (!Array.isArray(demandes) || demandes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Aucune demande trouvée</td></tr>';
+    if (totalDemandes) totalDemandes.textContent = demandes.length;
+    if (!tbody) return; 
+
+    let dataToDisplay = demandes;
+
+    // LOGIQUE CLÉ : Limiter l'affichage à 5 lignes SEULEMENT si c'est la vue Dashboard
+    if (isDashboardView) {
+        dataToDisplay = demandes.slice(0, MAX_DASHBOARD_ROWS);
+    }
+    
+    // CORRECTION Colspan : 6 cols pour Dashboard, 7 cols pour Liste Complète
+    const colSpan = isDashboardView ? 6 : 7; 
+
+    if (!Array.isArray(dataToDisplay) || dataToDisplay.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="text-center text-muted py-5">Aucune demande trouvée</td></tr>`;
         return;
     }
-
-    tbody.innerHTML = demandes.map(d => {
-        let dateFormatted = 'Date invalide';
-        try {
-            if (d.date) {
-                const dateObj = new Date(d.date.replace(' ', 'T'));
-                dateFormatted = dateObj.toLocaleDateString('fr-FR');
+    
+    tbody.innerHTML = dataToDisplay.map(d => {
+        const formatDate = (dateStr) => {
+            if (!dateStr) return '-';
+            try {
+                return dateStr.length === 10 ? new Date(dateStr).toLocaleDateString('fr-FR') : formatDateTime(dateStr);
+            } catch (e) {
+                return dateStr;
             }
-        } catch (e) {
-            console.error('Erreur format date:', e);
-        }
+        };
 
-        // Gestion du justificatif
-        let justificatifBtn = '<span class="text-muted">-</span>';
-        if (d.justificatif) {
-            justificatifBtn = `<button class="btn btn-sm btn-info" onclick="viewJustificatif('${d.justificatif}')" title="Voir le justificatif">
-                <i class="bi bi-eye"></i>
-            </button>`;
-        }
+        const formatDateTime = (dateStr) => {
+            if (!dateStr) return '-';
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date)) return '-';
+                return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+            } catch (e) {
+                return dateStr;
+            }
+        };
 
-        return `
-            <tr>
-                <td>${d.id || 'N/A'}</td>
-                <td>${d.utilisateur || 'N/A'}</td>
-                <td>${d.objectif || 'N/A'}</td>
-                <td>${dateFormatted}</td>
-                <td>${parseFloat(d.montant_total || 0).toFixed(2)} €</td>
-                <td>${justificatifBtn}</td>
-                <td>${getStatutBadge(d.statut)}</td>
-                <td>
+        const statusBadge = getStatutBadge(d.statut);
+        const montantTotal = parseFloat(d.montant_total || 0).toFixed(2);
+
+        // Déterminer le contenu des colonnes selon la vue
+        let userColumnClass = '';
+        let actionColumnHtml = '';
+
+        if (!isDashboardView) {
+            // LISTE COMPLÈTE (7 colonnes, Actions incluses)
+            userColumnClass = 'ps-4'; // L'utilisateur est la première colonne avec padding
+            actionColumnHtml = `
+                <td class="text-end pe-4">
                     <div class="btn-group btn-group-sm">
-                        ${getActionButtons(d.id, d.statut)}
+                        ${getActionButtons(d.id, d.statut)} 
                     </div>
                 </td>
+            `;
+        } else {
+             // DASHBOARD (6 colonnes, Actions omises)
+             userColumnClass = 'ps-4'; 
+             actionColumnHtml = ''; 
+        }
+        
+        // Structure de la ligne (7 <td> au total)
+        return `
+            <tr>
+                <td class="${userColumnClass}">${d.utilisateur_nom || d.utilisateur || '-'}</td>
+                <td><small>${d.objet_mission || '-'}</small></td>
+                <td><small>${formatDate(d.date_depart)}</small></td>
+                <td><small>${formatDate(d.date_retour)}</small></td>
+                <td>${statusBadge}</td>
+                <td><strong>${montantTotal} €</strong></td>
+                ${actionColumnHtml}
             </tr>
         `;
     }).join('');
 }
 
-function viewJustificatif(filename) {
-    window.open(`<?= BASE_URL ?>uploads/${filename}`, '_blank');
-}
-
-function getStatutBadge(statut) {
-    const badges = {
-        'en_attente': '<span class="badge bg-warning text-dark">En attente</span>',
-        'validee_manager': '<span class="badge bg-success">Validée Manager</span>',
-        'validee_admin': '<span class="badge bg-primary">Validée Admin</span>',
-        'rejetee': '<span class="badge bg-danger">Rejetée</span>'
+function getStatutBadge(statutKey) {
+    const statusInfo = STATUT_BADGE_MAP[statutKey];
+    if (statusInfo) {
+        return `<span class="badge ${statusInfo.class}">${statusInfo.text}</span>`;
+    }
+    const reversedMap = {
+        'En attente': 'en_attente',
+        'Validée Manager': 'validee_manager',
+        'Rejetée Manager': 'rejetee'
     };
-    return badges[statut] || `<span class="badge bg-secondary">${statut}</span>`;
+    const key = reversedMap[statutKey] || statutKey;
+    const fallbackInfo = STATUT_BADGE_MAP[key];
+
+    if (fallbackInfo) {
+         return `<span class="badge ${fallbackInfo.class}">${fallbackInfo.text}</span>`;
+    }
+    
+    return `<span class="badge bg-secondary">${statutKey || 'Inconnu'}</span>`;
 }
 
 function getActionButtons(id, statut) {
+    if (isDashboardView) return ''; 
+    
     let buttons = '';
-    if (statut === 'en_attente') {
-        buttons += `<button class="btn btn-success btn-sm" onclick="updateStatus(${id}, 'validee_manager')" title="Valider">
-            <i class="bi bi-check"></i>
-        </button>`;
-        buttons += `<button class="btn btn-danger btn-sm" onclick="updateStatus(${id}, 'rejetee')" title="Rejeter">
-            <i class="bi bi-x"></i>
-        </button>`;
-    }
-    buttons += `<button class="btn btn-danger btn-sm" onclick="deleteDemande(${id})" title="Supprimer">
-        <i class="bi bi-trash"></i>
-    </button>`;
+    buttons += `<button class="btn btn-warning btn-sm" onclick="editDemande(${id})" title="Modifier" data-bs-toggle="modal" data-bs-target="#modifierDemandeModal"><i class="bi bi-pencil"></i></button>`;
+    buttons += `<button class="btn btn-danger btn-sm" onclick="deleteDemande(${id})" title="Supprimer"><i class="bi bi-trash"></i></button>`;
     return buttons;
 }
 
 function filterDemandes(statut, event) {
     currentFilter = statut;
-
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active', 'btn-dark');
-        btn.classList.add('btn-outline-secondary');
+        btn.classList.remove('active');
     });
-    
     if (event && event.currentTarget) {
-        event.currentTarget.classList.add('active', 'btn-dark');
-        event.currentTarget.classList.remove('btn-outline-secondary');
+        event.currentTarget.classList.add('active');
     }
-
-    loadDemandes(statut === 'all' ? null : statut);
+    loadDemandes(statut);
 }
 
-function updateStatus(id, statut) {
-    if (!confirm('Êtes-vous sûr de vouloir modifier le statut ?')) return;
-
+function collectFormData(formId, excludedFields = []) {
+    const form = document.getElementById(formId);
+    if (!form) return null; 
+    
     const formData = new FormData();
-    formData.append('id', id);
-    formData.append('statut', statut);
+    const inputs = form.querySelectorAll('input, select, textarea');
 
-    fetch(`${API_URL}?action=update_status`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadStats();
-            loadDemandes(currentFilter === 'all' ? null : currentFilter);
-            showAlert('Statut mis à jour', 'success');
+    inputs.forEach(input => {
+        if (excludedFields.includes(input.id)) return;
+        let value = input.value;
+        if (input.type === 'number' && value !== '') {
+            value = parseFloat(value);
         }
-    })
-    .catch(error => console.error('Erreur:', error));
+        if (value !== null && value !== undefined && value.toString().trim() !== '') {
+            const name = input.id.replace('edit_', ''); 
+            formData.append(name, value);
+        }
+    });
+    return formData;
 }
 
 async function createDemande() {
-    const utilisateur = document.getElementById('utilisateur').value.trim();
-    const objectif = document.getElementById('objectif').value.trim();
-    const montant = document.getElementById('montant').value;
+    const formData = collectFormData('nouvelleDemandeForm');
+    if (!formData) return;
 
-    if (!utilisateur || !objectif) {
-        showAlert('Veuillez remplir tous les champs obligatoires', 'warning');
+    if (!formData.get('user_id') || !formData.get('objet_mission') || !formData.get('lieu_deplacement') || !formData.get('date_depart') || !formData.get('date_retour')) {
+        showAlert('Veuillez remplir tous les champs obligatoires (*)', 'warning');
         return;
-    }
-
-    const formData = new FormData();
-    formData.append('utilisateur', utilisateur);
-    formData.append('objectif', objectif);
-    formData.append('montant', montant);
-
-    // Ajouter le justificatif s'il existe
-    if (selectedFile) {
-        formData.append('justificatif', selectedFile);
     }
 
     try {
@@ -247,23 +275,119 @@ async function createDemande() {
         const data = await response.json();
 
         if (data.success) {
-            bootstrap.Modal.getInstance(document.getElementById('nouvelleDemandeModal')).hide();
+            const modalElement = document.getElementById('nouvelleDemandeModal');
+            if (modalElement) {
+                bootstrap.Modal.getInstance(modalElement)?.hide();
+            }
             document.getElementById('nouvelleDemandeForm').reset();
-            removeFile();
             loadStats();
-            loadDemandes();
-            showAlert('Demande créée avec succès', 'success');
+            loadDemandes(currentFilter === 'all' ? null : currentFilter);
+            showAlert('Demande créée avec succès !', 'success');
         } else {
-            showAlert('Erreur lors de la création', 'danger');
+            showAlert(data.message || 'Erreur lors de la création', 'danger');
         }
     } catch (error) {
         console.error('Erreur:', error);
         showAlert('Erreur lors de la création', 'danger');
     }
 }
+// DANS dashboard_admin.js
+
+async function updateDemande() {
+    const id = document.getElementById('edit_demande_id').value;
+    if (!id) {
+        showAlert('ID de la demande manquant', 'danger');
+        return;
+    }
+
+    const formData = collectFormData('modifierDemandeForm');
+    if (!formData) return; 
+    
+    formData.append('id', id); 
+    
+    // 🗑️ CORRECTION CLÉ : SUPPRIMER user_id et manager_id de la vérification OBLIGATOIRE
+    if (!formData.get('objet_mission') || !formData.get('lieu_deplacement') || !formData.get('date_depart') || !formData.get('date_retour')) {
+        showAlert('Veuillez remplir tous les champs obligatoires (*)', 'warning');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}?action=update_demande`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const modalElement = document.getElementById('modifierDemandeModal');
+            if (modalElement) {
+                bootstrap.Modal.getInstance(modalElement)?.hide();
+            }
+            loadStats();
+            loadDemandes(currentFilter === 'all' ? null : currentFilter);
+            showAlert('Demande modifiée avec succès !', 'success');
+        } else {
+            showAlert(data.message || 'Erreur lors de la modification', 'danger');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('Erreur lors de la modification', 'danger');
+    }
+}
+
+function editDemande(id) {
+ 
+    
+    fetch(`${API_URL}?action=get_demande_by_id&id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+          
+            
+            if (!data || !data.id) {
+                showAlert('Demande introuvable', 'danger');
+                return;
+            }
+            
+            const modalElement = document.getElementById('modifierDemandeModal');
+            if (modalElement) {
+                document.getElementById('edit_demande_id').value = data.id;
+                const editUserIdField = document.getElementById('edit_user_id');
+    if (editUserIdField) {
+        editUserIdField.value = data.user_id || '';
+    }
+        
+                document.getElementById('edit_objet_mission').value = data.objet_mission || '';
+                document.getElementById('edit_lieu_deplacement').value = data.lieu_deplacement || '';
+                document.getElementById('edit_date_depart').value = data.date_depart ? data.date_depart.slice(0, 10) : '';
+                document.getElementById('edit_date_retour').value = data.date_retour ? data.date_retour.slice(0, 10) : '';
+                
+                document.getElementById('edit_statut').value = data.statut || 'en_attente'; 
+                
+                document.getElementById('edit_manager_id_validation').value = data.manager_id_validation || '';
+                document.getElementById('edit_montant_total').value = data.montant_total || 0.00;
+                document.getElementById('edit_commentaire_manager').value = data.commentaire_manager || '';
+
+                if (data.date_traitement) {
+                    // Les inputs de type 'datetime-local' nécessitent un format précis (YYYY-MM-DDTHH:MM)
+                    document.getElementById('edit_date_traitement').value = data.date_traitement.slice(0, 16).replace(' ', 'T');
+                } else {
+                    document.getElementById('edit_date_traitement').value = '';
+                }
+                
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            } else {
+                showAlert('Erreur : Modal de modification manquant dans le HTML.', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Erreur:', error);
+            showAlert('Erreur lors du chargement des données. (Vérifiez les données API ou le Modal)', 'danger');
+        });
+}
 
 function deleteDemande(id) {
-    if (!confirm('Supprimer cette demande ?')) return;
+    if (!confirm('Supprimer cette demande ? Toutes les lignes de frais associées seront également supprimées.')) return;
 
     const formData = new FormData();
     formData.append('id', id);
@@ -276,8 +400,10 @@ function deleteDemande(id) {
     .then(data => {
         if (data.success) {
             loadStats();
-            loadDemandes();
+            loadDemandes(currentFilter === 'all' ? null : currentFilter);
             showAlert('Demande supprimée', 'success');
+        } else {
+            showAlert(data.message || 'Erreur lors de la suppression', 'danger');
         }
     })
     .catch(error => console.error('Erreur:', error));
@@ -295,7 +421,7 @@ function exportData() {
 
 function showAlert(message, type) {
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-custom`; 
     alertDiv.style.zIndex = '9999';
     alertDiv.innerHTML = `
         ${message}

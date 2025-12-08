@@ -2,7 +2,7 @@
 // Simple Database Configuration
 $host = "localhost";
 $user = "root";
-$pass = "";       
+$pass = "root";       
 $dbname = "gestion_frais_db";
 
 try {

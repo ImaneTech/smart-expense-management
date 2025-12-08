@@ -1,9 +1,15 @@
 <?php
 // classes/DetailsFrais.php
+
 class DetailsFrais {
     private $pdo;
     public function __construct(PDO $pdo){ $this->pdo = $pdo; }
 
+
+    
+ 
+
+    /* ==================================================*/
     public function addDetail(int $demande_id, int $categorie_id, string $date_depense, float $montant, ?string $description = null, ?string $justificatif_path = null): bool {
         $stmt = $this->pdo->prepare("
             INSERT INTO details_frais (demande_id, categorie_id, date_depense, montant, description, justificatif_path)
