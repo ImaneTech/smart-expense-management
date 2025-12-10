@@ -1,8 +1,49 @@
- /* ==================== VARIABLES CSS ==================== */
+/* ==============================================================
+   0. VARIABLES GLOBALES ET COULEURS DU THÈME
+   ============================================================== */
+:root {
+    /* --- Variables d'origine (Conservées) --- */
+    --text-primary: #343a40;
+    --text-muted: #6c757d;
+    --border-color: #e5e7eb;
+    --card-bg: #ffffff;
+    --hover-bg: #f8f9fa;
+    --text-color: #495057;
+    --body-color: #f4f6f9;
+    --tran-03: all 0.3s ease;
+    --toggle-color: #495057; 
+    
+    /* COULEURS THÈME MANAGER (Inspiration) */
+    --primary-color: #76BD46; /* Vert Principal (Utilisé pour les actions) */
+    --secondary-color: #2566A1; /* Bleu Secondaire (Utilisé pour les titres, boutons secondaires) */
+    
+    /* Variables de Dev */
+    --primary-color-rgb: 118, 189, 70;
+    --secondary-color-rgb: 37, 102, 161;
+    --primary-color-light: #C0E2A9; 
+    --table-border: #e0e0e0;
+    --body-bg: #f4f6f9;
 
-.sidebar.close ~ #main-content {
-    margin-left: 88px;
+    /* Couleurs de Statut */
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+
+    /* Status Tags (Couleurs Claires) */
+    --status-pending-bg: #fffbe6;
+    --status-pending-text: #ca8a04; 
+    --status-approved-bg: #ecfdf5; 
+    --status-approved-text: #059669;
+    --status-rejected-bg: #fef2f2; 
+    --status-rejected-text: #dc2626;
+
+    /* Bouton d'ajout / Go-Green */
+    --go-green-base: var(--primary-color);
+    --go-green-hover: #60a83d; 
+    --go-green-text: #ffffff;
 }
+
+
 
 /* ==================== PAGE HEADER ==================== */
 .page-header {
@@ -13,7 +54,7 @@
 }
 
 .page-title {
-    color: var(--text-primary);
+    color: var(--secondary-color);
     font-weight: bold;
     font-size: 1.8rem;
     margin: 0;
@@ -25,116 +66,161 @@
     margin-top: 5px;
 }
 
-/* ==================== BUTTON ADD ==================== */
-.btn-add {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+/* ==================== BUTTONS (THÈME) ==================== */
+
+/* Bouton principal Nouvelle Demande (Go-Green) */
+.btn-go-green {
+    background-color: var(--go-green-base);
+    color: var(--go-green-text);
     border: none;
     padding: 12px 24px;
     border-radius: 10px;
-    font-weight: 500;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-go-green:hover {
+    background-color: var(--go-green-hover);
+    color: var(--go-green-text);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(var(--primary-color-rgb), 0.3);
+}
+
+/* NOUVEAU: Bouton de filtre principal (Inspiré du Manager - Couleur Secondaire) */
+.btn-secondary-theme {
+    background-color: var(--secondary-color);
+    color: white;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-secondary-theme:hover {
+    background-color: #1e4d77;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(var(--secondary-color-rgb), 0.3);
+}
+
+
+/* Bouton Réinitialiser (Style Manager Outline) */
+.btn-reset {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color); 
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
     transition: all 0.3s ease;
 }
 
-.btn-add:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+.btn-reset:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
     color: white;
 }
 
-body.dark .btn-add {
-    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+/* Styles pour les boutons Bootstrap */
+.btn-secondary {
+    background-color: var(--hover-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
 }
 
-body.dark .btn-add:hover {
-    box-shadow: 0 5px 15px rgba(74, 85, 104, 0.4);
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
-/* ==================== FILTER BAR ==================== */
+.btn-primary:hover {
+    background-color: var(--go-green-hover);
+    border-color: var(--go-green-hover);
+}
+
+/* ==================== ACTION BUTTONS (Détails Cerclé - Final) ==================== */
+.action-btn-details {
+    /* Cercle COULEUR PRIMAIRE du thème : Vert */
+    background-color: var(--primary-color); 
+    color: white; 
+    
+    /* Forme et taille */
+    border: none;
+    border-radius: 50%;
+    width: 32px; 
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem; 
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn-details:hover {
+    background-color: var(--go-green-hover); 
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn-details i {
+    color: white; 
+}
+
+
+/* ==================== FILTER BAR (Style Manager) ==================== */
 .filter-bar {
     background: var(--card-bg);
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03); 
     margin-bottom: 25px;
     border: 1px solid var(--border-color);
 }
 
-body.dark .filter-bar {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
 .filter-label {
-    font-size: 0.85rem;
-    font-weight: 500;
+    font-size: 0.75rem; 
+    font-weight: 700;
     color: var(--text-muted);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     display: flex;
     align-items: center;
     gap: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .filter-bar .form-control,
 .filter-bar .form-select {
     border-radius: 8px;
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color); 
     padding: 10px 15px;
     font-size: 0.9rem;
-    transition: all 0.3s ease;
-    background-color: var(--card-bg);
+    background-color: #f8f9fa;
     color: var(--text-primary);
-}
-
-body.dark .filter-bar .form-control,
-body.dark .filter-bar .form-select {
-    background-color: var(--primary-color-light);
 }
 
 .filter-bar .form-control:focus,
 .filter-bar .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(74, 95, 127, 0.15);
-    background-color: var(--card-bg);
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--secondary-color-rgb), 0.2);
 }
 
-body.dark .filter-bar .form-control:focus,
-body.dark .filter-bar .form-select:focus {
-    background-color: var(--primary-color-light);
-}
-
-.btn-reset {
-    background-color: var(--hover-bg);
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-reset:hover {
-    background-color: var(--primary-color-light);
-    border-color: var(--primary-color);
-}
-
-/* ==================== TABLE CONTAINER ==================== */
+/* ==================== TABLE CONTAINER (Style Manager) ==================== */
 .table-container {
     background: var(--card-bg);
     border-radius: 16px;
     padding: 25px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid var(--border-color);
-}
-
-body.dark .table-container {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03); 
+    border: none; 
 }
 
 .table-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 15px; 
+    padding: 0 10px;
 }
 
 .table-header-left {
@@ -145,16 +231,12 @@ body.dark .table-container {
 
 .table-header i {
     font-size: 1.5rem;
-    color: #667eea;
-}
-
-body.dark .table-header i {
-    color: #8b9dc3;
+    color: var(--secondary-color); 
 }
 
 .table-header h5 {
-    color: var(--text-primary);
-    font-weight: 600;
+    color: var(--secondary-color);
+    font-weight: 700;
     margin: 0;
 }
 
@@ -172,14 +254,14 @@ body.dark .table-header i {
 }
 
 .modern-table thead {
-    background-color: var(--hover-bg);
+    background-color: #f4f6f9; 
 }
 
 .modern-table thead th {
     border: none;
     padding: 15px;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -194,6 +276,12 @@ body.dark .table-header i {
     color: var(--text-color);
 }
 
+/* Centrage du bouton d'action dans la cellule */
+.modern-table tbody td:last-child {
+    text-align: center;
+    vertical-align: middle; 
+}
+
 .modern-table tbody tr {
     transition: background-color 0.2s ease;
 }
@@ -202,429 +290,120 @@ body.dark .table-header i {
     background-color: var(--hover-bg);
 }
 
-/* ==================== BADGES ==================== */
+/* ==================== STATUS TAGS (Maintenu) ==================== */
 .badge-custom {
     padding: 6px 14px;
     border-radius: 8px;
     font-weight: 500;
     font-size: 0.8rem;
 }
-
-/* ==================== JUSTIFICATIF ==================== */
-.justificatif-image-preview {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border: 2px solid var(--border-color);
-}
-
-.justificatif-image-preview:hover {
-    transform: scale(1.15);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-body.dark .justificatif-image-preview {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-body.dark .justificatif-image-preview:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-}
-
-.justificatif-btn {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: all 0.3s ease;
-    border: 2px solid var(--border-color);
-}
-
-.justificatif-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-body.dark .justificatif-btn {
-    background-color: var(--primary-color-light);
-    color: var(--text-primary);
-}
-
-/* ==================== EMPTY STATE ==================== */
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.empty-state i {
-    font-size: 64px;
-    color: #cbd5e0;
-    margin-bottom: 20px;
-}
-
-body.dark .empty-state i {
-    color: #4a5568;
-}
-
-.empty-state h5 {
-    color: var(--text-muted);
-    margin-bottom: 10px;
+.status-tag {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
     font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+}
+.status-attente {
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
+    border-color: var(--status-pending-text);
+}
+.status-validee {
+    background-color: var(--status-approved-bg);
+    color: var(--status-approved-text);
+    border-color: var(--status-approved-text);
+}
+.status-rejetee {
+    background-color: var(--status-rejected-bg);
+    color: var(--status-rejected-text);
+    border-color: var(--status-rejected-text);
 }
 
-.empty-state p {
-    color: #a0aec0;
-    font-size: 0.95rem;
-}
 
-body.dark .empty-state p {
-    color: #718096;
-}
-
-/* ==================== LOADING ==================== */
-.loading-container {
-    text-align: center;
-    padding: 40px;
-}
-
-.spinner-border {
-    color: var(--primary-color);
-}
-
-/* ==================== MODAL ==================== */
+/* ==================== MODAL STYLES (Harmonisation Manager) ==================== */
 .modal-content {
     border-radius: 20px;
-    border: 1px solid var(--border-color);
+    border: none;
     box-shadow: 0 10px 40px rgba(0,0,0,0.15);
     background-color: var(--card-bg);
 }
-
-body.dark .modal-content {
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-
 .modal-header {
     border-radius: 20px 20px 0 0;
     padding: 20px 30px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none; 
 }
 
-.modal-body {
-    padding: 30px;
-    background-color: var(--card-bg);
-}
-
-.modal-footer {
-    border-top: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-}
-
-.form-label {
-    font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-}
-
-.form-control,
-.form-select {
-    border-radius: 8px;
-    border: 2px solid var(--border-color);
-    padding: 10px 15px;
-    transition: all 0.3s ease;
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-}
-
-body.dark .form-control,
-body.dark .form-select {
-    background-color: var(--primary-color-light);
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(74, 95, 127, 0.15);
-    background-color: var(--card-bg);
-}
-
-body.dark .form-control:focus,
-body.dark .form-select:focus {
-    background-color: var(--primary-color-light);
-}
-
-.btn-close-white {
-    filter: brightness(0) invert(1);
-}
-
-body.dark .btn-close {
-    filter: brightness(0) invert(1);
-}
-
-/* ==================== IMAGE PREVIEW MODAL ==================== */
-.image-preview-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
-    justify-content: center;
-    align-items: center;
-}
-
-.image-preview-modal.show {
-    display: flex;
-}
-
-.image-preview-modal img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    border-radius: 10px;
-}
-
-.image-preview-close {
-    position: absolute;
-    top: 20px;
-    right: 40px;
+/* Surcharge pour la modale de Détails */
+#detailsDemandeModal .modal-header {
+    background-color: var(--secondary-color) !important;
     color: white;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease;
+    border-bottom: 3px solid var(--primary-color);
+}
+#detailsDemandeModal .modal-header .btn-close {
+    filter: invert(1);
 }
 
-.image-preview-close:hover {
-    color: #ffa726;
-}
-
-/* ==================== TEXT UTILITIES ==================== */
-.text-muted {
-    color: var(--text-muted) !important;
-}
-
-.text-primary {
-    color: var(--primary-color) !important;
-}
-
-.text-success {
-    color: var(--success-color) !important;
-}
-
-.text-warning {
-    color: var(--warning-color) !important;
-}
-
-.text-danger {
-    color: var(--danger-color) !important;
-}
-
-small.text-muted {
-    font-size: 0.85rem;
-}
-
-/* ==================== BADGES BOOTSTRAP ==================== */
-.badge {
-    transition: var(--tran-03);
-}
-
-body.dark .badge.bg-warning {
-    background-color: #f57c00 !important;
-}
-
-body.dark .badge.bg-success {
-    background-color: #2e7d32 !important;
-}
-
-body.dark .badge.bg-danger {
-    background-color: #c62828 !important;
-}
-
-body.dark .badge.bg-primary {
-    background-color: var(--primary-color) !important;
-}
-
-body.dark .badge.bg-info {
-    background-color: #0288d1 !important;
-}
-
-body.dark .badge.bg-secondary {
-    background-color: #616161 !important;
-}
-
-/* ==================== BUTTONS ==================== */
-.btn-secondary {
-    background-color: var(--hover-bg);
-    border-color: var(--border-color);
-    color: var(--text-primary);
-}
-
-body.dark .btn-secondary {
-    background-color: var(--primary-color-light);
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background-color: #3d4f68;
-    border-color: #3d4f68;
-}
-
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 768px) {
-    #main-content {
-        margin-left: 0;
-        padding: 15px;
-    }
-    
-    .sidebar.close ~ #main-content {
-        margin-left: 0;
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .page-title {
-        font-size: 1.5rem;
-    }
-    
-    .btn-add {
-        width: 100%;
-    }
-    
-    .filter-bar .row {
-        gap: 0;
-    }
-    
-    .btn-reset {
-        width: 100%;
-        margin-top: 10px;
-    }
-    
-    .table-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .modern-table {
-        font-size: 0.85rem;
-    }
-    
-    .modern-table thead th,
-    .modern-table tbody td {
-        padding: 10px;
-    }
-}
-
-/* ==================== ANIMATIONS ==================== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.filter-bar,
-.table-container {
-    animation: fadeIn 0.5s ease;
-}
-
-/* Notification de changement de mode */
-@keyframes slideInRight {
-    from {
-        transform: translateX(400px);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOutRight {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(400px);
-        opacity: 0;
-    }
-}
-
-.mode-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 500;
-}
-
-.mode-notification .mode-icon {
-    font-size: 1.5rem;
-}
-
-.mode-notification .mode-message {
-    font-size: 0.95rem;
-}
-
-/* ==================== SCROLLBAR ==================== */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--body-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #3d4f68;
-}
-
-body.dark ::-webkit-scrollbar-thumb {
-    background: var(--primary-color-light);
-}
-
-body.dark ::-webkit-scrollbar-thumb:hover {
-    background: var(--toggle-color);
-}
-
-/* ==================== ALERT PERSONNALISÉE ==================== */
-.alert {
+/* Cartes internes dans la modale */
+.details-card-section {
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    border: none;
-    font-weight: 500;
+    padding: 1.25rem;
+    height: 100%;
+}
+.details-card-title {
+    color: var(--secondary-color); 
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+.details-mission-title {
+    color: var(--secondary-color);
+    font-weight: 700;
+    text-align: left;
+    padding: 0;
+    background-color: transparent;
+}
+.text-primary-themed {
+    color: var(--secondary-color) !important; 
 }
 
-.alert-dismissible .btn-close {
-    padding: 0.75rem 1rem;
+.table-wrapper {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table-wrapper table {
+    border-collapse: collapse;
+}
+
+.table-wrapper thead th {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 10;
+}
+
+.table-body-scroll table {
+    border-collapse: collapse;
+}
+
+.table-body-scroll tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table-body-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-body-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 4px;
 }

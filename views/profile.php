@@ -10,8 +10,8 @@ ini_set('display_startup_errors', 1);
 
 // 1. INCLUSIONS
 require_once __DIR__ . '/../config.php';
-require_once BASE_PATH . 'models/UserModel.php';
-require_once BASE_PATH . 'controllers/ProfileController.php';
+require_once BASE_PATH . 'Models/UserModel.php';
+require_once BASE_PATH . 'Controllers/ProfileController.php';
 require_once BASE_PATH . 'includes/header.php';
 
 // 2. INCLUSION DES FONCTIONS FLASH (Essentiel pour les popups)

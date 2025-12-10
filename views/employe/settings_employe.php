@@ -1,4 +1,11 @@
 <?php
+
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
 // Fichier: views/employe/settings_employe.php
 
 if (session_status() === PHP_SESSION_NONE) session_start();
@@ -8,14 +15,17 @@ require_once __DIR__ . '/../../config.php';
 // 1. CHARGEMENT DES DÉPENDANCES ET CLASSE PDO
 // ---------------------------------------------------------------------
 
-require_once BASE_PATH . 'controllers/SettingsController.php';
-require_once BASE_PATH . 'models/NotificationModel.php'; // Nécessaire pour l'historique
+// --- ADD THIS LINE ---
+require_once BASE_PATH . 'Controllers/UserController.php';
+// ---------------------
+
+require_once BASE_PATH . 'Controllers/SettingsController.php';
+require_once BASE_PATH . 'Models/NotificationModel.php'; // Nécessaire pour l'historique
 
 // Header et Utilitaires
 require_once BASE_PATH . 'includes/header.php';
 require_once BASE_PATH . 'includes/flash.php';
-
-
+// ...
 // Vérification Rôle Employé
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employe') {
     header('Location: ' . BASE_URL . 'views/settings.php'); 
@@ -54,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
     /* Styles CSS réutilisés du code fourni */
     .page-header-title { color: var(--text-color); font-weight: 700; margin-bottom: 1.5rem; }

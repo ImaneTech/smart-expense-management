@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'controllers/SettingsController.php';
+require_once BASE_PATH . 'Controllers/SettingsController.php';
 require_once BASE_PATH . 'includes/flash.php';
 
 // Sécurité

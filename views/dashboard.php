@@ -1,8 +1,14 @@
 <?php
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // ======================================================
 // 1. Charger la configuration
 // ======================================================
 require_once __DIR__ . '/../config.php';
+require_once BASE_PATH . 'Controllers/DemandeController.php';
+require_once BASE_PATH . 'Controllers/UserController.php';
 
 // ======================================================
 // 2. Démarrer la session (si pas déjà faite)
@@ -10,6 +16,10 @@ require_once __DIR__ . '/../config.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+
+
+
 
 // ======================================================
 // 3. Sécurité : Rediriger si non connecté

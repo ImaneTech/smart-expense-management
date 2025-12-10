@@ -10,18 +10,18 @@
     --secondary-color-rgb: 37, 102, 161;
     
     /* COULEURS THÉMATIQUES SPÉCIFIQUES */
-    --light-green-bg: #EAF5E4; /* Vert très clair pour header/total */
-    --light-green-border: #C8E6C9; 
-    --dark-blue-btn: var(--secondary-color); /* Bleu foncé pour le bouton Ajouter */
+    --light-theme-bg: #EAF5E4; /* Renommé pour cohérence, équivalent à light-green-bg */
+    --light-theme-border: #C8E6C9; /* Renommé pour cohérence, équivalent à light-green-border */
+    --dark-blue-btn: var(--secondary-color); 
 
     /* Variables de thème par défaut (Light) */
-    --body-bg: #e4e9f7;
+    --body-bg: #f4f7fa; /* Fond plus clair pour une meilleure séparation */
     --card-bg: #ffffff;
-    --text-color: #5A5A5A;
+    --text-color: #343a40; /* Texte plus sombre pour lisibilité */
     --text-muted: #6c757d;
     --input-bg: #ffffff;
-    --input-border: #ced4da;
-    --table-border: #e3e6f0; /* Bordure des tableaux/lignes */
+    --input-border: #e0e6ed; /* Bordure d'input plus subtile */
+    --table-border: #e9ecef; /* Bordure des tableaux/lignes */
 }
 
 /* Mode sombre : surcharge des variables */
@@ -34,8 +34,8 @@ body.dark {
     --input-border: #555;
     --table-border: #444;
 
-    --light-green-bg: #384C32; 
-    --light-green-border: #526B4B;
+    --light-theme-bg: #384C32; 
+    --light-theme-border: #526B4B;
 }
 
 /* --- Général et Conteneurs --- */
@@ -45,14 +45,36 @@ body.dark {
 .text-secondary-themed { color: var(--secondary-color) !important; }
 
 /* --- Cartes et Headers --- */
-.form-section-card { border-radius: 12px !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); background-color: var(--card-bg); border: 1px solid var(--table-border); }
-.card-header { padding: 1rem 1.5rem; border-bottom: 3px solid; border-top-left-radius: 11px !important; border-top-right-radius: 11px !important; }
+.form-section-card { 
+    border-radius: 12px !important; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Ombre douce et marquée */
+    background-color: var(--card-bg); 
+    border: none; /* Supprime la bordure redondante */
+}
+.card-header { padding: 1rem 1.5rem; border-bottom: 3px solid; border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
 .primary-bg-card-header { background-color: var(--primary-color) !important; color: white !important; border-bottom-color: #5d9839; }
-.light-green-bg-card-header { background-color: var(--light-green-bg) !important; color: var(--text-color) !important; border-bottom-color: var(--light-green-border); }
-.alert-light-green { background-color: var(--light-green-bg) !important; color: var(--text-color) !important; border-color: var(--light-green-border); }
+
+/* Correction du header de la table de dépenses pour l'alignement */
+.light-green-bg-card-header { 
+    display: flex; /* Active Flexbox */
+    align-items: center; /* Centre verticalement le titre et les boutons */
+    justify-content: space-between; /* Espace le titre et le bloc droit */
+    flex-wrap: wrap; /* Permet le retour à la ligne sur mobile */
+    
+    background-color: var(--light-theme-bg) !important; /* Utilise la variable corrigée */
+    color: var(--text-color) !important; 
+    border-bottom-color: var(--light-theme-border); 
+}
+.alert-light-green { background-color: var(--light-theme-bg) !important; color: var(--text-color) !important; border-color: var(--light-theme-border); }
+
 
 /* --- Formulaires et Inputs (Générique) --- */
-.form-control, .form-select { border-radius: 6px; border: 1px solid var(--input-border); background-color: var(--input-bg); color: var(--text-color); }
+.form-control, .form-select { 
+    border-radius: 6px; 
+    border: 1px solid var(--input-border); 
+    background-color: var(--input-bg); 
+    color: var(--text-color); 
+}
 .form-control:focus, .form-select:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 0.25rem rgba(var(--secondary-color-rgb), 0.25) !important; background-color: var(--input-bg); }
 
 /* --- Boutons Thématiques --- */
@@ -62,15 +84,30 @@ body.dark {
 .btn-primary-themed:hover { background-color: #5d9839 !important; border-color: #5d9839 !important; }
 .btn-secondary-themed { background-color: var(--dark-blue-btn) !important; color: white !important; font-weight: 700; }
 .btn-secondary-themed:hover { background-color: #1a4f80 !important; }
-.total-frais-display { background-color: var(--light-green-bg); color: var(--text-color); border: 1px solid var(--light-green-border); }
 
+/* Correction du style du bloc Total */
+.total-frais-display { 
+    flex-shrink: 0; 
+    background-color: var(--card-bg); /* Mettre le fond blanc pour plus de lisibilité */
+    color: var(--text-color); 
+    border: 1px solid var(--light-theme-border); 
+    padding: 0.5rem 1rem !important; 
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+/* Aligner les éléments à droite du header des dépenses */
+.light-green-bg-card-header > div {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espace entre le total et le bouton */
+}
 
 /* ======================================= */
 /* --- TABLEAU COMPACT (GRILLE) --- */
 /* ======================================= */
 
 .modern-table {
-    border-collapse: collapse; 
+    border-collapse: separate; /* Change de collapse pour un meilleur contrôle */
     border-spacing: 0;
 }
 
@@ -78,113 +115,133 @@ body.dark {
     vertical-align: middle; 
     background-color: var(--body-bg); 
     border-bottom: 2px solid var(--table-border);
-    font-size: 0.75rem;
+    font-size: 0.8rem; /* Augmente légèrement la taille du titre */
     color: var(--text-muted);
+    padding: 0.75rem 0.75rem; /* Ajoute du padding pour le titre */
 }
 
 .expense-row {
     background-color: var(--card-bg);
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border: 1px solid var(--table-border);
+    border: none; /* Les bordures seront dans les TD */
     transition: background-color 0.2s; 
 }
+.expense-row:hover {
+    background-color: var(--body-bg); /* Effet de survol */
+}
 
-/* Bordures et Alignement des cellules */
+
+/* Bordures et Alignement des cellules - CLÉ DE L'ALIGNEMENT VERTICAL */
 .modern-table tbody td {
     vertical-align: middle; /* CLÉ: Centre verticalement le contenu */
-    border: 1px solid var(--table-border);
-    border-top-color: transparent; 
-    border-bottom-color: var(--table-border);
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.75rem; 
+    border-bottom: 1px solid var(--table-border);
+    border-top: none; 
+    height: 55px; /* CLÉ: Hauteur fixe pour la cohérence des lignes */
 }
 
-/* Inputs dans le tableau (Visibles avec bordures) */
+/* Inputs dans le tableau (Visibles avec bordures) - CLÉ DE LA TAILLE */
 .expense-input {
-    background-color: var(--input-bg);
+    /* Taille réduite pour le tableau */
+    font-size: 0.9rem; 
+    padding: 0.375rem 0.75rem; /* Padding standard bootstrap mais compact */
+    height: 38px; /* CLÉ: Hauteur fixe pour l'alignement */
+    border-radius: 6px; 
     border: 1px solid var(--input-border);
-    border-radius: 4px;
-    padding: 0.375rem 0.75rem; 
+    background-color: var(--input-bg);
     line-height: 1.5;
 }
-.montant-input { text-align: right !important; }
+.montant-input { 
+    text-align: right !important; 
+    font-weight: 600; 
+}
+
+/* Correction de la hauteur du Select */
+.form-select-sm {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+    height: 38px !important; /* CLÉ: Maintient la hauteur cohérente */
+    font-size: 0.9rem;
+}
+
+/* Correction du Justificatif (Bouton et Nom de fichier) */
+.file-upload-btn {
+    font-size: 0.8rem !important;
+    padding: 0.25rem 0.6rem !important;
+    white-space: nowrap;
+}
+.justificatif-cell .d-flex {
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+}
 
 
-/* --- CORRECTION DU BOUTON D'ACTION (Centrage parfait) --- */
+/* --- BOUTON SUPPRIMER (ACTION CELL) --- */
 
+/* La double définition du bouton danger a été corrigée, on ne garde que l'inversé et on assure la taille */
 .btn-danger-themed {
-    color: white;
-    background-color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-    
-    /* Centrage de l'icône dans le bouton */
-    width: 38px; /* Taille optimale pour l'icône */
-    height: 38px;
-    padding: 0; 
-    display: flex; /* Utilise Flexbox */
-    align-items: center; /* Centre l'icône verticalement */
-    justify-content: center; /* Centre l'icône horizontalement */
-    
-    border-radius: 50% !important; 
-    transition: all 0.2s;
-}
-
-.btn-danger-themed i {
-    /* Assure que l'icône (fa ou bi) est clairement visible et bien proportionnée */
-    font-size: 1.2rem; 
-    line-height: 1; 
-}
-
-/* Autres styles d'actions */
-.btn-outline-primary-themed {
-    font-weight: 600 !important;
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-.btn-outline-primary-themed:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.fade-in-row {
-    animation: none; /* Désactive l'animation pour le style compact */
-}
-
-
-/* ======================================= */
-/* --- ACTION BUTTON INVERSÉ (CLÉ) --- */
-/* ======================================= */
-
-/* Bouton Supprimer (Danger Theme - Inversé) */
-.btn-danger-themed {
-    /* Le fond devient le blanc de la carte (ou légèrement transparent) */
+    /* Bouton Outline/Icone seul (Inversé) */
     background-color: transparent; 
-    
-    /* La couleur du texte/icône et de la bordure devient le rouge Danger */
     color: var(--danger-color); 
     border: 1px solid var(--danger-color);
     
-    /* Centrage de l'icône dans le bouton */
-    width: 38px; 
-    height: 38px;
+    /* Centrage et taille */
+    width: 32px; /* Taille compacte pour le tableau */
+    height: 32px;
     padding: 0; 
     display: flex; 
     align-items: center;
     justify-content: center;
     
     border-radius: 50% !important; 
-    transition: all 0.2s ease-in-out; /* Ajout d'une transition pour le survol */
+    transition: all 0.2s ease-in-out; 
 }
 
 .btn-danger-themed:hover {
-    /* Au survol, on inverse pour donner l'effet plein rouge */
     background-color: var(--danger-color);
     color: white; 
     border-color: var(--danger-color);
 }
 
 .btn-danger-themed i {
-    /* Assure que l'icône est à la bonne taille, elle hérite déjà du color: var(--danger-color) */
-    font-size: 1.2rem; 
+    font-size: 1rem; /* Taille de l'icône ajustée */
     line-height: 1; 
+}
+
+.action-cell .d-flex {
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+/* Fin des corrections clés */
+
+/* --- ALIGNEMENT ET STYLE DU HEADER DES DÉPENSES --- */
+
+/* Assurez-vous que le header utilise le bon style */
+.light-green-bg-card-header { 
+    /* Conserve l'alignement Flexbox */
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    /* Réduit le padding pour coller au bord haut/bas si nécessaire */
+    padding: 0.75rem 1.5rem; /* Réduit légèrement le padding vertical */
+
+    background-color: var(--light-theme-bg) !important;
+    border-bottom-color: var(--light-theme-border); 
+}
+
+/* Style de l'affichage du Total provisoire (retire le background/border qui le sépare du header) */
+.total-frais-display { 
+    /* Retire le style de bloc pour qu'il s'intègre mieux */
+    background-color: transparent; /* CLÉ: Retire le fond vert clair/blanc pour le rendre "inline" */
+    border: none;
+    box-shadow: none;
+    padding: 0; /* Retire le padding interne */
+    margin-right: 1.5rem; /* Ajoute un espace correct avec le bouton */
+    color: var(--text-color);
+    font-weight: 700;
+}
+/* Donne une couleur thématique au montant lui-même */
+.total-frais-display .text-primary-themed {
+    font-size: 1.2rem; /* Met en évidence le montant */
 }

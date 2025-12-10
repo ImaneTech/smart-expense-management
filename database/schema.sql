@@ -97,6 +97,15 @@ CREATE TABLE demande_frais (
 
 ---
 
+ALTER TABLE demande_frais
+ADD COLUMN montant_total DECIMAL(10, 2) DEFAULT 0 NOT NULL AFTER date_retour;
+
+
+ALTER TABLE demande_frais 
+ADD COLUMN updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+---
 USE gestion_frais_db;
 -- ============================================
 -- 5. Table des DÉTAILS (Lignes de dépenses)

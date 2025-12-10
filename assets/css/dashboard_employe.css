@@ -1,7 +1,58 @@
+:root {
+    /* --- Your existing variables (Placeholder) --- */
+    --text-primary: #343a40; /* Example primary text color */
+    --text-muted: #6c757d; /* Example muted text color */
+    --border-color: #e5e7eb; /* Example border color */
+    --card-bg: #ffffff; /* Example card background */
+    --hover-bg: #f8f9fa; /* Example hover background */
+    --text-color: #495057; /* Example general text color */
+    --body-color: #f4f6f9; /* Example body color */
+   
+    --primary-color-light: #6c9af8;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --tran-03: all 0.3s ease;
+    /* Variables for Dark Mode transitions/toggles */
+    --toggle-color: #495057; 
+
+    /* Gradient colors (kept for potential use elsewhere) */
+    --gradient-warning-start: #ffc107;
+    --gradient-warning-end: #ffa000;
+    --gradient-success-start: #28a745;
+    --gradient-success-end: #1e7e34;
+    --gradient-danger-start: #dc3545;
+    --gradient-danger-end: #c82333;
+
+    /* --- Custom GoTrackr Variables (NEW) --- */
+    --go-green-base: #86efac;  /* light green for buttons/backgrounds */
+    --go-green-hover: #4ade80; /* lighter green for buttons hover */
+    --go-green-text: #059669;  /* dark green text/icon color */
+
+    /* Status Colors (Light Backgrounds) */
+    --status-pending-bg: #fffbe6; /* Very Light Yellow */
+    --status-pending-text: #ca8a04; 
+
+    --status-approved-bg: #ecfdf5; /* Very Light Green */
+    --status-approved-text: #059669;
+
+    --status-rejected-bg: #fef2f2; /* Very Light Red */
+    --status-rejected-text: #dc2626;
+
+    --primary-color: #76BD46;
+    --secondary-color: #2566A1;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+
+ 
+}
 
 /* ==================== PAGE HEADER ==================== */
 .page-header {
     margin-bottom: 40px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
 }
 
 .page-title {
@@ -17,6 +68,34 @@
     margin-top: 5px;
 }
 
+/* ==================== BUTTONS (NEW) ==================== */
+
+/* Custom light green button for "Nouvelle Demande" */
+.btn-go-green {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-go-green:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-go-green:focus {
+    box-shadow: 0 0 0 0.25rem rgba(134, 239, 172, 0.5); 
+}
+
+/* Modal Header Green Background */
+.modal-header.bg-go-green {
+    background-color: var(--go-green-base) !important;
+}
+
+
 /* ==================== STATS CARDS ==================== */
 .stat-card {
     border-radius: 20px;
@@ -25,6 +104,8 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     height: 100%;
+    /* FIX: Ensure background is the default card color (white/light) */
+    background: var(--card-bg) !important;
 }
 
 body.dark .stat-card {
@@ -40,17 +121,7 @@ body.dark .stat-card:hover {
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
-.stat-card.warning {
-    background: linear-gradient(135deg, var(--gradient-warning-start) 0%, var(--gradient-warning-end) 100%) !important;
-}
-
-.stat-card.success {
-    background: linear-gradient(135deg, var(--gradient-success-start) 0%, var(--gradient-success-end) 100%) !important;
-}
-
-.stat-card.danger {
-    background: linear-gradient(135deg, var(--gradient-danger-start) 0%, var(--gradient-danger-end) 100%) !important;
-}
+/* ⚠️ NOTE: Les blocs .stat-card.warning, .stat-card.success, .stat-card.danger sont omis ici pour garantir un fond de carte clair. */
 
 .stat-icon {
     width: 60px;
@@ -103,6 +174,74 @@ body.dark .stat-icon.danger {
     letter-spacing: 1px;
 }
 
+/* ==================== STATUS TAGS (NEW - Couleurs Claires) ==================== */
+.status-tag {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px; /* Pill shape */
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+}
+
+.status-attente {
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
+    border-color: var(--status-pending-text);
+}
+
+.status-validee {
+    background-color: var(--status-approved-bg);
+    color: var(--status-approved-text);
+    border-color: var(--status-approved-text);
+}
+
+.status-rejetee {
+    background-color: var(--status-rejected-bg);
+    color: var(--status-rejected-text);
+    border-color: var(--status-rejected-text);
+}
+
+
+/* ==================== ACTION BUTTONS (Détails Cerclé - FINAL) ==================== */
+.action-btn-details {
+    /* Style du conteneur (cercle vert clair - utilise go-green-base) */
+    background-color: var(--primary-color); 
+    color: white; /* Couleur de l'icône (White) */
+    
+    /* Forme et taille */
+    border: none;
+    border-radius: 50%; /* Pour faire un cercle */
+    width: 32px; /* Taille du conteneur */
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem; /* Taille de l'icône */
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.action-btn-details:hover {
+    background-color: var(--secondary-color); 
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Assurer que l'icône à l'intérieur est bien blanche (au cas où color: white; n'est pas suffisant) */
+.action-btn-details i {
+    color: white; 
+}
+
+
+.modern-table tbody td:last-child {
+    text-align: center;
+    vertical-align: middle; /* Optionnel, pour un centrage vertical optimal */
+}
+
 /* ==================== TABLE CONTAINER ==================== */
 .table-container {
     background: var(--card-bg);
@@ -120,7 +259,13 @@ body.dark .table-container {
 .table-header {
     display: flex;
     align-items: center;
+    justify-content: space-between; /* Ajouté pour séparer le titre et le bouton "Voir tout" */
     margin-bottom: 20px;
+}
+
+.table-header-left {
+    display: flex;
+    align-items: center;
 }
 
 .table-header i {
@@ -147,7 +292,8 @@ body.dark .table-header i {
 }
 
 .modern-table thead {
-    background-color: var(--hover-bg);
+    /* Ajout de la couleur d'arrière-plan pour l'en-tête (comme dans l'image) */
+    background-color: var(--go-green-base); 
 }
 
 .modern-table thead th {
@@ -155,7 +301,7 @@ body.dark .table-header i {
     padding: 15px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--go-green-text); /* Couleur de texte plus foncée sur l'arrière-plan vert clair */
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
@@ -349,7 +495,7 @@ small.text-danger {
         padding: 15px;
     }
     
-   
+    
     .stat-card {
         margin-bottom: 15px;
     }
@@ -509,4 +655,24 @@ body.dark .badge.bg-info {
 
 body.dark .badge.bg-secondary {
     background-color: #616161 !important;
+}
+
+.stat-icon {
+    /* Conserver la taille de l'icône, mais supprimer le background/border-radius s'il est appliqué ici */
+    width: 60px; /* Conserver la taille du conteneur */
+    height: 60px;
+    
+    /* Supprimer ou commenter ces lignes si elles existent dans votre CSS et appliquent un fond/cercle par défaut: */
+    /* background-color: initial !important; */ 
+    /* border-radius: 0 !important; */
+    
+    /* Assurez-vous que le conteneur est transparent ou utilise le fond de la carte */
+    background: transparent !important; 
+    border-radius: 0; /* Ou laisser vide si Bootstrap ne l'applique pas */
+
+    display: flex; /* Conserver pour centrer l'image */
+    align-items: center;
+    justify-content: center;
+    transition: var(--tran-03);
+    color: var(--text-primary); /* S'il s'agissait d'une icône de police */
 }

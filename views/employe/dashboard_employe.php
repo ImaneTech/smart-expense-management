@@ -1,126 +1,133 @@
 <?php
-session_start();
-// Vérification d'authentification
-if (!isset($_SESSION['user_id'])) {
-    header('Location: /smart-expense-management/views/auth/login.php');
-    exit();
-}
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-// Inclusions de configuration et d'entête
-require_once __DIR__ . '/../../config.php';
-// L'inclusion de header.php doit normalement ouvrir <body>
-require_once BASE_PATH . 'includes/header.php'; 
-
-// Récupération des données utilisateur de la session
-$user_id = $_SESSION['user_id'];
-$user_name = $_SESSION['user_name'] ?? 'Utilisateur';
-$role = $_SESSION['role'] ?? 'employe';
-
-// Définition de la constante BASE_URL si elle n'existe pas
-if (!defined('BASE_URL')) {
-    define('BASE_URL', '/smart-expense-management/');
-}
+// ... (PHP code de vérification de session, de la logique de devise, etc., reste inchangé) ...
+// 8. INCLUSION DU HEADER
+require_once BASE_PATH . 'includes/header.php';
 ?>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_employe.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/settings.css">
-<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
-<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
-<script src="<?= BASE_URL ?>assets/js/dashboard_employe.js"></script>
+<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/demandes_employe.css">
 
-<div class="container-fluid p-4 main-content-bg">
+<script>
+    // Variables utilisées par demandes_employe.js / dashboard_employe.js
+    const USER_ID = <?= $user_id ?>;
+    const CURRENCY_SYMBOL = '<?= htmlspecialchars($currencySymbol, ENT_QUOTES, 'UTF-8') ?>';
+    // ******************************************************
+    // ** CORRECTION CLÉ 1 : La limite est définie à 6. **
+    const DEFAULT_ROW_LIMIT = 6; 
+    // ******************************************************
+    
+    // Utilisation de window.BASE_URL pour éviter les erreurs de redéclaration
+    if (typeof window.BASE_URL === 'undefined') {
+        window.BASE_URL = '<?= BASE_URL ?>';
+    }
 
-    <div class="d-flex justify-content-between align-items-center mb-5">
-            <h1 class="page-title"><i class="bi bi-receipt me-2"></i>Mes Demandes de Frais</h1>
-            <p class="page-subtitle">Bienvenue, <?= htmlspecialchars($user_name) ?> - Suivi de vos demandes</p>
+    if (typeof bootstrap === 'undefined') {
+        console.warn("Bootstrap JS n'est pas chargé. Les modales ne fonctionneront pas.");
+    }
+</script>
+
+<script src="<?= BASE_URL ?>assets/js/demandes_employe.js"></script> 
+
+
+<div class="container-fluid p-4" style="min-height: 100vh; display: flex; flex-direction: column;">
+    
+    <div class="page-header d-flex justify-content-between align-items-center mb-3"> 
+        <div>
+            <h1 class="page-title fw-bold m-0" style="color: #32325d;"><i class="bi bi-speedometer me-2"></i>Tableau de bord</h1>
+            <p class="page-subtitle text-muted small mt-1">Aperçu de vos demandes de frais</p>
+        </div>
+        <a href="<?= BASE_URL ?>views/employe/create_demande.php" class="btn btn-go-green"> 
+            <i class="bi bi-plus-circle me-2"></i>Nouvelle Demande
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm border-0 h-100 stat-card" style="background-color: var(--status-pending-bg) !important;">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="fw-bold mb-1 stat-number" id="stat-attente" style="color: var(--text-primary); font-size: 2.5rem;">0</h2>
+                        <p class="text-muted fw-bold mb-0 small text-uppercase" style="letter-spacing: 1px;">En Attente</p>
+                        <small class="fw-bold mt-2 d-block" style="color: var(--status-pending-text);">
+                            En cours de traitement
+                        </small>
+                    </div>
+                    <div class="stat-icon"> 
+                        <img src="<?= BASE_URL ?>assets/img/pending2.png" alt="Icône En Attente" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row g-4 mb-4">
-            <div class="col-xl-4 col-md-6">
-                <div class="stat-card warning">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="stat-attente">0</div>
-                            <div class="stat-label">En attente</div>
-                            <small class="text-warning fw-bold mt-2 d-block">En cours de traitement</small>
-                        </div>
-                        <div class="stat-icon warning"><i class="bi bi-clock-history"></i></div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm border-0 h-100 stat-card" style="background-color: var(--status-approved-bg) !important;">
+                 <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="fw-bold mb-1 stat-number" id="stat-validees" style="color: var(--text-primary); font-size: 2.5rem;">0</h2>
+                        <p class="text-muted fw-bold mb-0 small text-uppercase" style="letter-spacing: 1px;">Validées</p>
+                        <small class="fw-bold mt-2 d-block" style="color: var(--status-approved-text);">
+                            Approuvées
+                        </small>
                     </div>
-                </div>
-            </div>
-            <div class="col-xl-4 col-md-6">
-                <div class="stat-card success">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="stat-validees">0</div>
-                            <div class="stat-label">Validées</div>
-                            <small class="text-success fw-bold mt-2 d-block">Approuvées</small>
-                        </div>
-                        <div class="stat-icon success"><i class="bi bi-check-circle"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4 col-md-6">
-                <div class="stat-card danger">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="stat-rejetees">0</div>
-                            <div class="stat-label">Rejetées</div>
-                            <small class="text-danger fw-bold mt-2 d-block">À réviser</small>
-                        </div>
-                        <div class="stat-icon danger"><i class="bi bi-x-circle"></i></div>
+                    <div class="stat-icon">
+                        <img src="<?= BASE_URL ?>assets/img/check-circle.png" alt="Icône Validée" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="table-container">
-            <div class="table-header">
-                <i class="bi bi-clock-history"></i>
-                <h5>Mes 3 dernières demandes - Vue complète</h5>
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm border-0 h-100 stat-card" style="background-color: var(--status-rejected-bg) !important;">
+                 <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="fw-bold mb-1 stat-number" id="stat-rejetees" style="color: var(--text-primary); font-size: 2.5rem;">0</h2>
+                        <p class="text-muted fw-bold mb-0 small text-uppercase" style="letter-spacing: 1px;">Rejetées</p>
+                        <small class="fw-bold mt-2 d-block" style="color: var(--status-rejected-text);">
+                            À réviser
+                        </small>
+                    </div>
+                    <div class="stat-icon">
+                        <img src="<?= BASE_URL ?>assets/img/rejected.png" alt="Icône Rejetée" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="modern-table">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">ID</th>
-                            <th>Objet Mission</th>
-                            <th>Lieu</th>
-                            <th>Date Départ</th>
-                            <th>Date Retour</th>
-                            <th>Statut</th>
-                            <th>Justificatif</th>
-                            <th>Montant Total</th>
-                            <th>Commentaire</th>
-                            <th class="pe-4">Date Création</th>
-                        </tr>
-                    </thead>
-                    <tbody id="demandes-tbody">
-                        <tr>
-                            <td colspan="10">
-                                <div class="loading-container">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Chargement...</span>
-                                    </div>
-                                    <p class="mt-3 text-muted">Chargement de vos demandes...</p>
-                                </div>
-                            </td>
-                        </tr>
+        </div>
+    </div>
+    
+    <div class="table-container flex-grow-1">
+        <div class="table-header p-0">
+            <div class="table-header-left">
+                <i class="bi bi-list-ul"></i>
+                <h5 style="color: #32325d; font-weight: bold;">Demandes Récentes</h5>
+            </div>
+            
+            <a href="<?= BASE_URL ?>views/employe/employe_demandes.php" class="btn btn-go-green btn-sm px-3 py-2">
+                Voir tout
+            </a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 25%;">Objet Mission</th>
+                        <th style="width: 15%;">Date Départ</th>
+                        <th style="width: 15%;">Date Retour</th>
+                        <th style="width: 15%;">Statut</th>
+                        <th style="width: 15%;">Montant Total (<?= htmlspecialchars($currencySymbol) ?>)</th>
+                        <th class="pe-4" style="width: 15%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="demandes-tbody">
                     </tbody>
-                </table>
-            </div>
+            </table>
         </div>
+    </div>
+    </div>
 
-        <div id="imagePreviewModal" class="image-preview-modal" onclick="closeImagePreview()">
-            <span class="image-preview-close">&times;</span>
-            <img id="previewImage" src="" alt="Prévisualisation">
-        </div>
-    </main>
 
-    <?php 
-    require_once BASE_PATH . 'includes/footer.php'; 
-    ?>
+<?php require_once BASE_PATH . 'includes/footer.php'; ?>

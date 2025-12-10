@@ -20,11 +20,11 @@ switch ($role) {
     case 'employe':
     default:
         $profile_url = BASE_URL . 'views/employe/profile.php';
-        $settings_target = 'views/employe/settings_employe.php'; 
+        $settings_target = 'views/employe/settings_employe.php';
         break;
 }
 // URL complète pour l'historique de notifications
-$historique_url = BASE_URL . $settings_target . '?tab=notifications'; 
+$historique_url = BASE_URL . $settings_target . '?tab=notifications';
 ?>
 
 <nav class="sidebar">
@@ -33,7 +33,7 @@ $historique_url = BASE_URL . $settings_target . '?tab=notifications';
             <img src="<?= BASE_URL ?>assets/img/logo.png" alt="Logo">
             <span class="brand-text">GoTrackr</span>
         </div>
-      <i class='bx bx-chevron-right toggle-sidebar'></i>
+        <i class='bx bx-chevron-right toggle-sidebar'></i>
     </div>
 
     <div class="menu-bar">
@@ -75,33 +75,37 @@ $historique_url = BASE_URL . $settings_target . '?tab=notifications';
                 <?php if ($role == 'admin'): ?>
                     <li class="nav-link">
                         <a href="<?= BASE_URL ?>views/admin/gestion_users.php">
-                            <i class='bx bx-user-plus icon'></i>
+                            <i class='bx bx-user-cog icon'></i>
                             <span class="text nav-text">Gestion des utilisateurs</span>
                         </a>
                     </li>
+
                     <li class="nav-link">
                         <a href="<?= BASE_URL ?>views/admin/gestion_categories.php">
-                            <i class='bx bx-category icon'></i>
+                            <i class='bx bx-category-alt icon'></i>
                             <span class="text nav-text">Catégories Frais</span>
                         </a>
                     </li>
                 <?php endif; ?>
 
-                   <?php if ($role == 'employe'): ?>
+
+                <?php if ($role == 'employe'): ?>
                     <li class="nav-link">
                         <a href="<?= BASE_URL ?>views/employe/create_demande.php">
-                            <i class='bx bx-group icon'></i>
+                <i class='bx bx-plus-circle icon'></i>
+
                             <span class="text nav-text">Nouvelle demande</span>
                         </a>
                     </li>
+
                     <li class="nav-link">
                         <a href="<?= BASE_URL ?>views/employe/employe_demandes.php">
-                            <i class='bx bx-user-plus icon'></i>
-                            <span class="text nav-text">Votre demandes</span>
+                            <i class='bx bx-file icon'></i>
+                            <span class="text nav-text">Vos demandes</span>
                         </a>
                     </li>
-                  
                 <?php endif; ?>
+
             </ul>
         </div>
 
