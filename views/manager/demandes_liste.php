@@ -1,28 +1,33 @@
 <?php
+// views/manager/demandes_liste.php
+
+// 1. Load config and header first to establish $pdo, $user_id, $userController, and currency functions
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'controllers/DemandeController.php';
-require_once BASE_PATH . 'controllers/UserController.php';
-require_once BASE_PATH . 'includes/header.php';
+require_once BASE_PATH . 'includes/header.php'; // This defines $user_id, $pdo, $userController, and $currencySymbol
 
+// 2. Load necessary controllers
+require_once BASE_PATH . 'Controllers/DemandeController.php';
+// Note: UserController is already loaded via header.php
+
+// 3. Initialize Controller and set Manager ID
 $controller = new DemandeController($pdo);
-$userController = new UserController($pdo);
-$managerId = $controller->getManagerId(); 
 
-$managerCurrencyCode = $userController->getPreferredCurrency($managerId);
-$currencySymbol = getCurrencySymbol($managerCurrencyCode);
+// Assuming the logged-in user ($user_id from header.php) is the Manager
+$managerId = $user_id;
 
-function getCurrencySymbol(string $code): string {
-    return match (strtoupper($code)) {
-        'EUR' => '€',
-        'USD' => '$',
-        'MAD' => 'Dhs',
-        'GBP' => '£',
-        default => '€',
-    };
-}
+// If getManagerId() pulls the ID from the session/context, you can still call it, but $user_id is safer:
+// $managerId = $controller->getManagerId(); 
+
+// Currency and $userController are already defined in header.php
+// $managerCurrencyCode = $userController->getPreferredCurrency($managerId);
+// $currencySymbol = getCurrencySymbol($managerCurrencyCode);
+
 
 $statutFiltre = $_GET['statut'] ?? 'En attente'; 
 $demandes = $controller->getDemandesList($statutFiltre);
+
+
+// --- UTILITY FUNCTIONS (Must remain here if not moved to a separate utils file) ---
 
 $statuts = [
     'toutes' => 'Toutes', 

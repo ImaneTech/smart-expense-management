@@ -7,8 +7,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'controllers/DemandeController.php';
-require_once BASE_PATH . 'controllers/UserController.php'; // <-- INCLUSION
+require_once BASE_PATH . 'Controllers/DemandeController.php';
+require_once BASE_PATH . 'Controllers/UserController.php'; // <-- INCLUSION
 require_once BASE_PATH . 'includes/header.php';
 
 $controller = new DemandeController($pdo);
