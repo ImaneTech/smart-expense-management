@@ -1,16 +1,15 @@
 <?php
+// views/manager/recherche_avancee.php
+
 // --- Debugging (Optionnel) ---
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
+// Load CORE CONFIGURATION first
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'controllers/DemandeController.php';
-require_once BASE_PATH . 'controllers/TeamController.php';
-require_once BASE_PATH . 'controllers/UserController.php';
-require_once BASE_PATH . 'includes/header.php';
 
-// --- Sécuriser la session ---
+// --- Sécuriser la session (If not already handled by header.php) ---
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -19,11 +18,24 @@ if (!isset($pdo)) {
     die("Erreur: La connexion à la base de données (\$pdo) est manquante.");
 }
 
+// Load Controllers
+require_once BASE_PATH . 'Controllers/DemandeController.php';
+require_once BASE_PATH . 'Controllers/TeamController.php';
+require_once BASE_PATH . 'Controllers/UserController.php';
+
+// --- Inclusion du header APRES les contrôleurs ---
+// The header handles authentication, defines $user_id, $userController, and the utility function getCurrencySymbol().
+require_once BASE_PATH . 'includes/header.php';
+
+
 // Initialisation des contrôleurs
+// Note: $userController is already defined in header.php
 $demandeController = new DemandeController($pdo);
-$managerId = $demandeController->getManagerId();
+
+// Assuming the authenticated user ($user_id from header.php) is the manager
+$managerId = $user_id; 
+
 $teamController = new TeamController($pdo, $managerId);
-$userController = new UserController($pdo);
 $employes = $teamController->getAllTeamMembers();
 $resultats = [];
 
@@ -44,24 +56,16 @@ $filters = $hasActiveFilter ? [
 $resultats = $demandeController->faireUneRecherche($filters);
 
 // Récupération de la devise préférée du Manager
+// Variables $userController and $managerId are defined, and getCurrencySymbol() is available from header.php
 $managerCurrencyCode = $userController->getPreferredCurrency($managerId);
 $currencySymbol = getCurrencySymbol($managerCurrencyCode);
 
-function getCurrencySymbol(string $code): string {
-    return match (strtoupper($code)) {
-        'EUR' => '€',
-        'USD' => '$',
-        'MAD' => 'Dhs',
-        'GBP' => '£',
-        default => '€',
-    };
-}
 
 function getStatutStyle(string $statut): string {
     return match ($statut) {
         'En attente' => 'background-color:#fff3cd;color:#856404;border:1px solid #ffeeba; white-space: nowrap;',
         'Validée Manager', 'Approuvée Compta' => 'background-color:#d4edda;color:#155724;border:1px solid #c3e6cb; white-space: nowrap;',
-        'Rejetée Manager' => 'background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb; white-space: nowrap;',
+        'Rejetée Manager' => 'background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb; border:1px solid #f5c6cb; white-space: nowrap;',
         'Payée' => 'background-color:#d1ecf1;color:#0c5460;border:1px solid #bee5eb; white-space: nowrap;',
         default => 'background-color:#e2e3e5;color:#383d41; white-space: nowrap;',
     };
@@ -73,6 +77,7 @@ function getStatutStyle(string $statut): string {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
+/* ... (CSS Styles remain the same) ... */
 .modern-table {
     width: 100%;
     table-layout: fixed;
@@ -96,10 +101,17 @@ function getStatutStyle(string $statut): string {
 .modern-table td:nth-child(3) { width: 120px; white-space: nowrap; }
 .modern-table th:nth-child(4),
 .modern-table td:nth-child(4) { width: 140px; text-align: right; font-weight: bold; color: var(--secondary-color); white-space: nowrap; }
+
 .modern-table th:nth-child(5),
 .modern-table td:nth-child(5) { width: 160px; white-space: nowrap; }
+
+/* Correction pour la colonne Action (last-child) */
 .modern-table th:last-child,
-.modern-table td:last-child { width: 70px; text-align: center; }
+.modern-table td:last-child { 
+    width: 90px; /* Augmenté à 80px pour laisser de l'espace pour le mot "Action" */
+    text-align: center;
+    white-space: nowrap; /* TRES IMPORTANT : Empêche le passage à la ligne */
+}
 
 .text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>

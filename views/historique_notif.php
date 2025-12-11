@@ -81,16 +81,16 @@ $notificationModel->marquerCommeLues($user_id);
                                 $status_badge = $notif['lue'] ? '<span class="badge bg-secondary">Lue</span>' : '<span class="badge bg-warning text-dark">Non lue</span>';
                                 $message_class = $notif['lue'] ? 'text-muted' : 'text-primary';
                             ?>
-                                <tr class="<?= $notif['lue'] ? '' : 'table-light-custom' ?>">
-                                    <td class="<?= $status_class ?>"><?= date('d/m/Y H:i', strtotime($notif['date_creation'])) ?></td>
-                                    <td class="text-muted"><i class='bx bx-message-square-detail me-2 <?= $message_class ?>'></i><?= htmlspecialchars($notif['message']) ?></td>
-                                    <td class="text-center"><?= $status_badge ?></td>
-                                    <td class="text-end">
-                                        <a href="<?= BASE_URL . $notif['lien_url'] ?>" class="btn btn-sm" style="background-color: var(--secondary-color); color: white;">
-                                            Voir Détail
-                                        </a>
-                                    </td>
-                                </tr>
+                               <tr class="<?= $notif['lue'] ? '' : 'table-light-custom' ?>">
+                                <td class="<?= $status_class ?>"><?= date('d/m/Y H:i', strtotime($notif['date_creation'])) ?></td>
+                                
+                                <td class="<?= $notif['lue'] ? 'text-muted' : 'text-dark fw-bold' ?>">
+                                    <i class='bx bx-message-square-detail me-2 <?= $message_class ?>'></i>
+                                    <?= htmlspecialchars($notif['message']) ?>
+                                </td>
+                                
+                                <td class="text-center"><?= $status_badge ?></td>
+                                <td class="text-end">
                             <?php endforeach; ?>
                         </tbody>
                     </table>

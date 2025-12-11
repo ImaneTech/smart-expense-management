@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 // La variable $role est utilisée uniquement pour l'affichage conditionnel ou les permissions si nécessaire.
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
 

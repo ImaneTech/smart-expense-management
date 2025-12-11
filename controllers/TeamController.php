@@ -56,7 +56,7 @@ class TeamController {
             return ['error' => 'Veuillez sélectionner au moins un membre.'];
         }
         
-        $success = $this->model->addMembersToTeam($this->currentManagerId, $memberIds);
+        $success =  $this->model->addMembersToTeam($this->currentManagerId, $memberIds);
 
         if (!$success) {
             return ['error' => 'Erreur lors de l\'ajout des membres à l\'équipe.'];

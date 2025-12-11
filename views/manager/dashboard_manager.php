@@ -4,7 +4,7 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . '/../../config.php';
-require_once BASE_PATH . 'controllers/DemandeController.php';
+require_once BASE_PATH . 'Controllers/DemandeController.php';
 require_once BASE_PATH . 'includes/header.php';
 
 $controller = new DemandeController($pdo);
@@ -23,8 +23,6 @@ $team_members = $data['team']; // Liste des membres d'équipe
 ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/settings.css">
-<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
-<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_manager.css">
 <script src="<?= BASE_URL ?>assets/js/dashboard_manager.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
@@ -153,7 +151,8 @@ $team_members = $data['team']; // Liste des membres d'équipe
                                     <td><span class="table-primary-text"><?= date('d/m/Y', strtotime($d['date_depart'])) ?></span></td>
                                     <td><span class="text-highlight"><?= number_format($d['total_calcule'], 2) ?> €</span></td>
                                     <td class="text-end pe-4">
-                                        <a href="details_demande.php?id=<?= $d['id'] ?>" class="btn-action-icon ms-auto">
+                                      
+                                        <a href="<?= BASE_URL ?>views/manager/details_demande.php?id=<?= $d['id'] ?>" class="btn-action-icon ms-auto">
                                             <i class='fa fa-chevron-right'></i>
                                         </a>
                                     </td>

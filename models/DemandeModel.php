@@ -363,4 +363,22 @@ public function addDetailFrais(int $demandeId, array $detail) {
 }
 
 
+/**
+ * Récupère l'ID du manager pour un employé donné.
+ * @param int $employeId L'ID de l'employé.
+ * @return int|null L'ID du manager ou null si non trouvé/défini.
+ */
+public function getManagerIdForUser(int $employeId): ?int {
+    try {
+        $sql = "SELECT manager_id FROM {$this->userTable} WHERE id = :employeId";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':employeId' => $employeId]);
+        $managerId = $stmt->fetchColumn();
+        
+        return ($managerId !== false && $managerId !== null) ? (int)$managerId : null;
+    } catch (\PDOException $e) {
+        error_log("DB Error in DemandeModel::getManagerIdForUser: " . $e->getMessage());
+        return null;
+    }
+}
 }

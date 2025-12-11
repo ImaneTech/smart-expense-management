@@ -1,11 +1,12 @@
 <?php
-// views/manager/details_demande.php (DESIGN PREMIUM)
+// views/manager/details_demande.php (DESIGN PREMIUM & JUSTIFICATIFS)
 
 // --- Initialisation PHP ---
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
+// Utiliser BASE_PATH pour une meilleure portabilité des inclusions
 require_once __DIR__ . '/../../config.php';
 require_once BASE_PATH . 'Controllers/DemandeController.php';
 require_once BASE_PATH . 'Controllers/UserController.php'; // <-- INCLUSION
@@ -15,15 +16,20 @@ $controller = new DemandeController($pdo);
 $demandeId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($demandeId <= 0) {
-    header('Location: demandes_liste.php');
+    // Utiliser BASE_URL pour une redirection absolue
+    $redirectUrl = (defined('BASE_URL') ? BASE_URL : '/') . 'views/manager/demandes_liste.php'; 
+    header('Location: ' . $redirectUrl);
     exit;
 }
 
+// NOTE: Le controller a été corrigé pour renvoyer des noms de colonnes harmonisés
 $demande = $controller->getDemandeDetails($demandeId);
 
 if (!$demande) {
     $_SESSION['error_message'] = "Demande introuvable ou accès refusé.";
-    header('Location: demandes_liste.php');
+    // Utiliser BASE_URL pour une redirection absolue
+    $redirectUrl = (defined('BASE_URL') ? BASE_URL : '/') . 'views/manager/demandes_liste.php'; 
+    header('Location: ' . $redirectUrl);
     exit;
 }
 
@@ -31,13 +37,19 @@ if (!$demande) {
 $managerId = $controller->getManagerId(); 
 
 // --- GESTION DE LA DEVISE DYNAMIQUE ---
-$userController = new UserController($pdo);
-$managerCurrencyCode = $userController->getPreferredCurrency($managerId);
+// Assurez-vous que UserController est correctement inclus et que getPreferredCurrency existe.
+if (!class_exists('UserController')) {
+    // Fallback si l'inclusion a échoué
+    $managerCurrencyCode = 'USD';
+} else {
+    $userController = new UserController($pdo);
+    $managerCurrencyCode = $userController->getPreferredCurrency($managerId);
+}
 $currencySymbol = getCurrencySymbol($managerCurrencyCode);
 
 /**
  * FONCTION : Convertit le code de devise (ex: EUR) en symbole (ex: €).
- * Dupliquée ici pour l'autonomie du fichier si nécessaire, mais idéalement dans un Helper.
+ * Laisser ici si Helper non utilisé.
  */
 function getCurrencySymbol(string $code): string {
     return match (strtoupper($code)) {
@@ -45,7 +57,7 @@ function getCurrencySymbol(string $code): string {
         'USD' => '$',
         'MAD' => 'Dhs', // Dirham Marocain
         'GBP' => '£',
-        default => '€', // Symbole par défaut si non trouvé
+        default => '$', // Symbole par défaut (changement à USD pour correspondre à l'image)
     };
 }
 // ------------------------------------
@@ -81,9 +93,28 @@ function getStatusClass($statut) {
         default => 'status-secondary',
     };
 }
+
+// --- Fonction pour obtenir l'URL du justificatif ---
+/**
+ * Construit l'URL complète pour télécharger le justificatif.
+ * Correction de l'URL pour une meilleure utilisation du BASE_URL.
+ * @param int $demandeId L'ID de la demande (pour des raisons de sécurité).
+ * @param string $fileName Le nom ou chemin du fichier dans la BDD.
+ * @return string L'URL complète ou un '#' si le fichier n'existe pas.
+ */
+function getJustificatifUrl(int $demandeId, ?string $fileName): string {
+    if (empty($fileName)) {
+        return '#';
+    }
+    // Correction de l'URL: Assurez-vous que BASE_URL est défini
+    $baseUrl = defined('BASE_URL') ? BASE_URL : '/';
+    return $baseUrl . 'Controllers/download_justificatif.php?file=' . urlencode($fileName) . '&demande_id=' . $demandeId;
+}
+
 ?>
 
 <style>
+    /* ... (CSS inchangé pour le design premium) ... */
     :root {
         --bg-color: #f4f7fc;
         --card-bg: #ffffff;
@@ -252,9 +283,27 @@ function getStatusClass($statut) {
         margin-right: 10px;
     }
     /* Catégories spécifiques */
-    tr[data-cat="Transport"] .category-icon { background: #e0f2fe; color: #0284c7; }
-    tr[data-cat="Hébergement"] .category-icon { background: #fef3c7; color: #d97706; }
-    tr[data-cat="Repas"] .category-icon { background: #dcfce7; color: #16a34a; }
+    tr[data-cat*="Transport"] .category-icon { background: #e0f2fe; color: #0284c7; }
+    tr[data-cat*="Hébergement"] .category-icon { background: #fef3c7; color: #d97706; }
+    tr[data-cat*="Repas"] .category-icon { background: #dcfce7; color: #16a34a; }
+
+    /* Justificatif */
+    .btn-justificatif {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+        color: var(--secondary-color);
+        background-color: #eff6ff;
+        border: 1px solid #bfdbfe;
+    }
+    .btn-justificatif:hover {
+        background-color: #dbeafe;
+    }
+    .no-justificatif {
+        color: var(--text-muted);
+        font-style: italic;
+        font-size: 0.8rem;
+    }
 
     /* --- Status Badges --- */
     .status-badge {
@@ -288,7 +337,25 @@ function getStatusClass($statut) {
     
     .btn-reject-outline { background: white; border: 2px solid #fee2e2; color: #ef4444; }
     .btn-reject-outline:hover { background: #fef2f2; border-color: #ef4444; }
-
+    
+    /* MODAL pour Justificatif */
+    .modal-dialog-centered-custom {
+        max-width: 90vw;
+        height: 90vh;
+        margin: auto;
+    }
+    .modal-content-custom {
+        height: 80vh; 
+    }
+    .modal-body-custom {
+        height: calc(100% - 60px); /* Hauteur moins le header */
+        padding: 0;
+    }
+    .pdf-viewer {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
 </style>
 
 <div class="container py-5">
@@ -334,7 +401,8 @@ function getStatusClass($statut) {
                 <div class="bg-light p-4 rounded-3 border-start border-4 border-secondary">
                     <div class="mission-timeline">
                         <div class="timeline-track"></div>
-                        <div class="timeline-progress"></div> <div class="timeline-point">
+                        <div class="timeline-progress"></div> 
+                        <div class="timeline-point">
                             <span class="timeline-date"><?= $date_depart_fmt ?></span>
                             <span class="timeline-label">Départ</span>
                         </div>
@@ -354,8 +422,7 @@ function getStatusClass($statut) {
             <div class="premium-card p-0 overflow-hidden">
                 <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
                     <div class="section-title mb-0"><i class="fas fa-receipt"></i> Lignes de Frais</div>
-                    <span class="badge bg-light text-dark border"><?= count($lignesFrais) ?> justicatifs</span>
-                </div>
+                    <span class="badge bg-light text-dark border"><?= count($lignesFrais) ?> lignes</span> </div>
 
                 <div class="table-responsive">
                     <table class="table table-custom mb-0 table-hover">
@@ -364,36 +431,37 @@ function getStatusClass($statut) {
                                 <th class="ps-4">Catégorie</th>
                                 <th>Description</th>
                                 <th>Date</th>
-                                <th class="text-end pe-4">Montant</th>
+                                <th class="text-center">Justificatif</th> <th class="text-end pe-4">Montant</th>
                             </tr>
                         </thead>
-                <tbody>
+                        <tbody>
     <?php if (empty($lignesFrais)): ?>
         <tr>
-            <td colspan="4" class="text-center py-5 text-muted">
-                <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i><br>
+            <td colspan="5" class="text-center py-5 text-muted"> <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i><br>
                 Aucune ligne de frais saisie.
             </td>
         </tr>
     <?php else: ?>
         <?php foreach ($lignesFrais as $ligne): 
-            // 1. Gestion sécurisée de la catégorie
+            // 1. Gestion sécurisée de la catégorie (utilise 'type_frais' mappé dans le Controller)
             $cat = htmlspecialchars($ligne['type_frais'] ?? 'Autre');
+            // Utilise le nom de colonne harmonisé
+            $justificatifFile = $ligne['fichier_justificatif'] ?? null; 
+            $justificatifUrl = getJustificatifUrl($demandeId, $justificatifFile); 
             
             // 2. Choix de l'icône
             $icon = match(true) {
                 stripos($cat, 'transport') !== false => 'fa-car',
                 stripos($cat, 'taxi') !== false => 'fa-taxi',
                 stripos($cat, 'hotel') !== false => 'fa-bed',
-                stripos($cat, 'repas') !== false => 'fa-utensils',
+                stripos($cat, 'repas') !== false || stripos($cat, 'food') !== false => 'fa-utensils',
                 default => 'fa-file-invoice-dollar'
             };
 
-            // 3. CORRECTION DES ERREURS DE DATE ICI
-            // On vérifie si 'date_frais' existe, sinon on essaie 'date', sinon NULL
-            $rawDate = $ligne['date_frais'] ?? $ligne['date'] ?? null;
-            // Si une date est trouvée, on la formate, sinon on affiche "N/A"
-            $dateAffichee = $rawDate ? date('d/m', strtotime($rawDate)) : 'N/A';
+            // 3. Correction de la date: utilise 'date_frais' (mappé dans le Controller)
+            $rawDate = $ligne['date_frais'] ?? null;
+            $dateAffichee = $rawDate ? date('d/m/Y', strtotime($rawDate)) : 'N/A'; // Ajout de l'année pour la clarté
+
         ?>
         <tr data-cat="<?= $cat ?>">
             <td class="ps-4 fw-bold text-dark">
@@ -406,9 +474,19 @@ function getStatusClass($statut) {
             
             <td><?= $dateAffichee ?></td>
             
-            <td class="text-end fw-bold pe-4">
-                <?= number_format($ligne['montant'] ?? 0, 2, ',', ' ') ?> <?= $currencySymbol ?> <!-- DEVISE DYNAMIQUE -->
-            </td>
+            <td class="text-center">
+                <?php if ($justificatifFile): ?>
+                    <button class="btn btn-justificatif" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#justificatifModal"
+                            data-file-url="<?= $justificatifUrl ?>"
+                            data-file-name="<?= htmlspecialchars(basename($justificatifFile)) ?>"> <i class="fas fa-eye me-1"></i> Voir / Télécharger
+                    </button>
+                <?php else: ?>
+                    <span class="no-justificatif"><i class="fas fa-exclamation-circle me-1"></i> Absent</span>
+                <?php endif; ?>
+            </td> <td class="text-end fw-bold pe-4">
+                <?= number_format($ligne['montant'] ?? 0, 2, ',', ' ') ?> <?= $currencySymbol ?> </td>
         </tr>
         <?php endforeach; ?>
     <?php endif; ?>
@@ -416,10 +494,8 @@ function getStatusClass($statut) {
                         <?php if (!empty($lignesFrais)): ?>
                         <tfoot class="bg-light">
                             <tr>
-                                <td colspan="3" class="text-end fw-bold text-uppercase fs-6 pt-3">Total Général</td>
-                                <td class="text-end fw-bolder fs-5 text-primary pe-4 pt-3">
-                                    <?= number_format($totalFrais, 2, ',', ' ') ?> <?= $currencySymbol ?> <!-- DEVISE DYNAMIQUE -->
-                                </td>
+                                <td colspan="4" class="text-end fw-bold text-uppercase fs-6 pt-3">Total Général</td> <td class="text-end fw-bolder fs-5 text-primary pe-4 pt-3">
+                                    <?= number_format($totalFrais, 2, ',', ' ') ?> <?= $currencySymbol ?> </td>
                             </tr>
                         </tfoot>
                         <?php endif; ?>
@@ -435,27 +511,26 @@ function getStatusClass($statut) {
                 <h1 class="fw-bold mb-0 display-4">
                     <?= number_format($totalFrais, 2, ',', ' ') ?>
                 </h1>
-                <small class="opacity-75">Devise: <?= htmlspecialchars($managerCurrencyCode) ?></small> <!-- CODE DEVISE DYNAMIQUE -->
-            </div>
+                <small class="opacity-75">Devise: <?= htmlspecialchars($managerCurrencyCode) ?></small> </div>
 
             <div class="premium-card text-center">
                 <div class="section-title justify-content-center"><i class="fas fa-user-circle"></i> Demandeur</div>
                 
                 <div class="d-flex flex-column align-items-center">
                     <div class="user-avatar-lg">
-                        <?= strtoupper(substr($demande['first_name'],0,1).substr($demande['last_name'],0,1)) ?>
+                        <?= strtoupper(substr($demande['first_name'] ?? 'E',0,1).substr($demande['last_name'] ?? 'E',0,1)) ?>
                     </div>
-                    <h5 class="fw-bold text-dark mb-1"><?= htmlspecialchars($demande['first_name'] . ' ' . $demande['last_name']) ?></h5>
-                    <p class="text-muted small mb-3"><?= htmlspecialchars($demande['email']) ?></p>
+                    <h5 class="fw-bold text-dark mb-1"><?= htmlspecialchars($demande['first_name'] ?? '') . ' ' . htmlspecialchars($demande['last_name'] ?? '') ?></h5>
+                    <p class="text-muted small mb-3"><?= htmlspecialchars($demande['email'] ?? '') ?></p>
                     
                     <div class="row w-100 border-top pt-3 mt-2">
                         <div class="col-6 border-end">
                             <small class="d-block text-muted text-uppercase" style="font-size:0.7rem">Département</small>
-                            <span class="fw-bold text-dark">Tech / IT</span>
+                            <span class="fw-bold text-dark"><?= htmlspecialchars($demande['department'] ?? 'Tech / IT') ?></span> 
                         </div>
                         <div class="col-6">
                             <small class="d-block text-muted text-uppercase" style="font-size:0.7rem">Rôle</small>
-                            <span class="fw-bold text-dark">Staff</span>
+                            <span class="fw-bold text-dark"><?= htmlspecialchars($demande['role'] ?? 'Staff') ?></span>
                         </div>
                     </div>
                 </div>
@@ -466,7 +541,7 @@ function getStatusClass($statut) {
                 <div class="section-title text-primary"><i class="fas fa-check-double"></i> Validation Requise</div>
                 <p class="small text-muted mb-4">En tant que manager, vous devez vérifier les justificatifs avant de valider.</p>
 
-                <form method="POST" action="traitement_demande.php" class="mb-3">
+                <form method="POST" action="<?= BASE_URL ?>Controllers/traitement_demande.php" class="mb-3"> 
                     <input type="hidden" name="demande_id" value="<?= $demande['id'] ?>">
                     <input type="hidden" name="action" value="valider">
                     <button class="btn-action-lg btn-accept">
@@ -483,5 +558,71 @@ function getStatusClass($statut) {
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="rejetModal" tabindex="-1" aria-labelledby="rejetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejetModalLabel">Rejeter la demande #<?= $demandeId ?></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= BASE_URL ?>Controllers/traitement_demande.php"> 
+                <div class="modal-body">
+                    <input type="hidden" name="demande_id" value="<?= $demande['id'] ?>">
+                    <input type="hidden" name="action" value="rejeter">
+                    <div class="mb-3">
+                        <label for="raisonRejet" class="form-label">Raison du rejet (obligatoire)</label>
+                        <textarea class="form-control" id="raisonRejet" name="commentaire_manager" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-times-circle me-2"></i>Confirmer le Rejet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="justificatifModal" tabindex="-1" aria-labelledby="justificatifModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-centered-custom">
+        <div class="modal-content modal-content-custom">
+            <div class="modal-header">
+                <h5 class="modal-title" id="justificatifModalLabel"><i class="fas fa-file-alt me-2"></i> Justificatif</h5>
+                <a href="#" id="downloadLink" class="btn btn-primary btn-sm me-2"><i class="fas fa-download me-1"></i> Télécharger le fichier</a>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal-body-custom">
+                <iframe id="justificatifViewer" class="pdf-viewer" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const justificatifModal = document.getElementById('justificatifModal');
+        const justificatifViewer = document.getElementById('justificatifViewer');
+        const downloadLink = document.getElementById('downloadLink');
+        const modalTitle = document.getElementById('justificatifModalLabel');
+
+        justificatifModal.addEventListener('show.bs.modal', function (event) {
+            // Bouton qui a déclenché le modal
+            const button = event.relatedTarget; 
+            const fileUrl = button.getAttribute('data-file-url');
+            const fileName = button.getAttribute('data-file-name');
+
+            // 1. Définir la source de l'iframe (pour la prévisualisation)
+            justificatifViewer.src = fileUrl;
+
+            // 2. Définir le lien de téléchargement
+            downloadLink.href = fileUrl;
+
+            // 3. Mettre à jour le titre
+            modalTitle.innerHTML = `<i class="fas fa-file-alt me-2"></i> Justificatif: ${fileName}`;
+        });
+    });
+</script>
+
 
 <?php require_once BASE_PATH . 'includes/footer.php'; ?>

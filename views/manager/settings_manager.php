@@ -19,9 +19,9 @@ require_once __DIR__ . '/../../config.php';
 // ---------------------------------------------------------------------
 
 // Nous chargeons les classes avant les includes de la vue pour garantir que la classe est connue.
-require_once BASE_PATH . 'controllers/SettingsController.php';
-require_once BASE_PATH . 'controllers/TeamController.php';
-require_once BASE_PATH . 'models/NotificationModel.php'; 
+require_once BASE_PATH . 'Controllers/SettingsController.php';
+require_once BASE_PATH . 'Controllers/TeamController.php';
+require_once BASE_PATH . 'Models/NotificationModel.php'; 
 
 // ---------------------------------------------------------------------
 // 3. CHARGEMENT DES VUES ET UTILITAIRES RESTANTS

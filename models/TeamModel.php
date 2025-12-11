@@ -4,8 +4,8 @@
 class TeamModel
 {
     private $pdo;
-    private $userTable = 'users';
-    private $teamTable = 'manager_team'; // Table de liaison
+    private $userTable = 'users'; 
+    // private $teamTable est retiré car il n'est plus utilisé.
 
     public function __construct($pdo)
     {
@@ -14,34 +14,31 @@ class TeamModel
 
     /**
      * Récupère TOUS les membres assignés à un manager spécifique.
-     * Cette méthode est la source de vérité unique pour la liste d'équipe.
-     * Utilisé par TeamController::getAllTeamMembers().
+     * Utilise la colonne users.manager_id.
      */
-  public function findAllTeamMembers(int $managerId): array {
-    try {
-        $sql = "
-            SELECT u.id, u.first_name, u.last_name, u.email, u.role 
-            FROM {$this->userTable} u
-            -- REVENIR AU JOIN pour n'afficher que les utilisateurs existants
-            JOIN {$this->teamTable} mt ON mt.member_id = u.id
-            WHERE mt.manager_id = :managerId
-            ORDER BY u.last_name ASC
-        ";
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':managerId', $managerId, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-    } catch (PDOException $e) {
-        error_log("SQL Error (findAllTeamMembers): " . $e->getMessage());
-        return [];
+    public function findAllTeamMembers(int $managerId): array {
+        try {
+            $sql = "
+                SELECT id, first_name, last_name, email, role 
+                FROM {$this->userTable}
+                WHERE manager_id = :managerId
+                ORDER BY last_name ASC
+            ";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':managerId', $managerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            error_log("SQL Error (findAllTeamMembers): " . $e->getMessage());
+            return [];
+        }
     }
-}
+    
     /**
-     * Récupère les employés disponibles pour l'ajout (non encore assignés au manager).
-     * Utilisé par TeamController::getAvailableEmployees().
+     * Récupère les employés disponibles pour l'ajout (ceux qui n'ont pas encore de manager).
      */
     public function findAvailableEmployees(int $managerId): array
     {
@@ -49,14 +46,11 @@ class TeamModel
             $stmt = $this->pdo->prepare("
                 SELECT id, first_name, last_name, email, role 
                 FROM {$this->userTable} 
-                WHERE id NOT IN (
-                    SELECT member_id FROM {$this->teamTable} WHERE manager_id = :managerId
-                )
+                WHERE manager_id IS NULL
                 AND id != :managerIdSelf
                 AND role = 'employe'
                 ORDER BY last_name ASC
             ");
-            $stmt->bindParam(':managerId', $managerId, PDO::PARAM_INT);
             $stmt->bindParam(':managerIdSelf', $managerId, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -67,53 +61,66 @@ class TeamModel
     }
 
     /**
-     * Ajoute les IDs des membres à la table de liaison manager_team.
-     * Utilisé par TeamController::addMembersToTeam().
+     * Ajoute les membres à l'équipe en mettant à jour leur manager_id dans la table users.
      */
     public function addMembersToTeam(int $managerId, array $memberIds): bool
     {
         if (empty($memberIds)) return true;
 
-        $placeholders = [];
-        $values = [];
-        $i = 0;
+        // Préparation pour la mise à jour (Utilisation des paramètres nommés pour la clause IN)
+        $updatePlaceholders = [];
+        $paramsUpdate = [':managerIdUpdate' => $managerId];
+        $k = 0;
+        
         foreach ($memberIds as $memberId) {
-            $placeholders[] = "(:managerId, :memberId{$i})";
-            $values[":memberId{$i}"] = (int) $memberId;
-            $i++;
+            // Création de placeholders nommés pour la clause IN (:updId0, :updId1, ...)
+            $updatePlaceholders[] = ":updId{$k}";
+            $paramsUpdate[":updId{$k}"] = (int) $memberId;
+            $k++;
         }
 
-        $sql = "INSERT IGNORE INTO {$this->teamTable} (manager_id, member_id) VALUES " . implode(', ', $placeholders);
-
+        $updateSql = "
+            UPDATE {$this->userTable} 
+            SET manager_id = :managerIdUpdate 
+            WHERE id IN (" . implode(', ', $updatePlaceholders) . ")
+            AND manager_id IS NULL 
+        ";
+        
         try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':managerId', $managerId, PDO::PARAM_INT);
-
-            foreach ($values as $key => $value) {
-                $stmt->bindValue($key, $value, PDO::PARAM_INT);
+            $stmtUpdate = $this->pdo->prepare($updateSql);
+            
+            // Lie TOUS les paramètres nommés (manager et member IDs)
+            foreach ($paramsUpdate as $key => $value) {
+                $stmtUpdate->bindValue($key, $value, PDO::PARAM_INT);
             }
+            
+            return $stmtUpdate->execute();
 
-            return $stmt->execute();
         } catch (PDOException $e) {
             error_log("SQL Error (addMembersToTeam): " . $e->getMessage());
+            // Si l'erreur persiste, le problème vient de la connexion ou du nom de table/colonne.
             return false;
         }
     }
+    
     /**
- * Supprime l'association entre le manager et un membre de l'équipe.
- */
-public function removeMemberFromTeam(int $managerId, int $memberId): bool {
-    try {
-        $stmt = $this->pdo->prepare("
-            DELETE FROM {$this->teamTable}
-            WHERE manager_id = :managerId AND member_id = :memberId
-        ");
-        $stmt->bindParam(':managerId', $managerId, PDO::PARAM_INT);
-        $stmt->bindParam(':memberId', $memberId, PDO::PARAM_INT);
-        return $stmt->execute();
-    } catch (PDOException $e) {
-        error_log("SQL Error (removeMemberFromTeam): " . $e->getMessage());
-        return false;
+     * Retire un membre de l'équipe en remettant son manager_id à NULL dans la table users.
+     */
+    public function removeMemberFromTeam(int $managerId, int $memberId): bool {
+        try {
+            $stmtUpdate = $this->pdo->prepare("
+                UPDATE {$this->userTable}
+                SET manager_id = NULL
+                WHERE id = :memberId 
+                AND manager_id = :managerId -- Sécurité : s'assurer que c'est bien CE manager qui le retire
+            ");
+            $stmtUpdate->bindParam(':managerId', $managerId, PDO::PARAM_INT);
+            $stmtUpdate->bindParam(':memberId', $memberId, PDO::PARAM_INT);
+            return $stmtUpdate->execute();
+            
+        } catch (PDOException $e) {
+            error_log("SQL Error (removeMemberFromTeam): " . $e->getMessage());
+            return false;
+        }
     }
-}
 }
