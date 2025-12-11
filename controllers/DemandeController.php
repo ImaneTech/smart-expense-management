@@ -208,7 +208,16 @@ class DemandeController
      */
     public function getDemandeDetails(int $demandeId): ?array
     {
-        $demande_info = $this->model->getDemandeById($demandeId, $this->managerId);
+        // 💡 CORRECTION : Gestion du rôle Admin
+        $role = $_SESSION['role'] ?? 'employe';
+
+        if ($role === 'admin') {
+            // L'admin peut tout voir, on utilise la méthode sans restriction manager
+            $demande_info = $this->model->getDemandeByIdAdmin($demandeId);
+        } else {
+            // Le manager ne voit que ce qui le concerne
+            $demande_info = $this->model->getDemandeById($demandeId, $this->managerId);
+        }
 
         if (!$demande_info) {
             return null;
@@ -225,9 +234,15 @@ class DemandeController
      */
     public function traiterDemandeAction(array $postData): void
     {
+        // 💡 CORRECTION : Délégation à la méthode Admin si le rôle est admin
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+            $this->traiterDemandeAdmin($postData);
+            return;
+        }
+
         if (!isset($postData['action'], $postData['demande_id'])) {
             $_SESSION['error_message'] = "Données incomplètes.";
-            header('Location: demandes_liste.php');
+            header('Location: ' . BASE_URL . 'views/manager/demandes_liste.php');
             exit;
         }
 
@@ -239,7 +254,7 @@ class DemandeController
         $demandeActuelle = $this->model->getDemandeById($id, $this->managerId);
         if (!$demandeActuelle) {
             $_SESSION['error_message'] = "Erreur: Demande introuvable ou accès refusé.";
-            header('Location: demandes_liste.php');
+            header('Location: ' . BASE_URL . 'views/manager/demandes_liste.php');
             exit;
         }
 
@@ -248,7 +263,7 @@ class DemandeController
 
         if ($action === 'rejeter' && empty(trim((string)$motif))) {
             $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
-            header('Location: details_demande.php?id=' . $id);
+            header('Location: ' . BASE_URL . 'views/manager/details_demande.php?id=' . $id);
             exit;
         }
 
@@ -256,7 +271,7 @@ class DemandeController
         if ($this->model->updateStatut($id, $nouveauStatut, $this->managerId, $this->userId, $motif)) {
             
             // =================================================================
-            // === LOGIQUE DE NOTIFICATION : Manager/Admin -> Employé ===
+            // === LOGIQUE DE NOTIFICATION : Manager -> Employé ===
             // =================================================================
             $lien_notif = "views/manager/details_demande.php?id={$id}";
             
@@ -276,6 +291,58 @@ class DemandeController
         } else {
             $_SESSION['error_message'] = "Erreur technique lors de la mise à jour du statut.";
             header('Location: ' . BASE_URL . 'views/manager/details_demande.php?id=' . $id);
+            exit;
+        }
+    }
+
+    /**
+     * Traite la demande pour l'Admin (Validation Finale)
+     */
+    private function traiterDemandeAdmin(array $postData): void
+    {
+        if (!isset($postData['action'], $postData['demande_id'])) {
+            $_SESSION['error_message'] = "Données incomplètes.";
+            header('Location: ' . BASE_URL . 'views/admin/liste_demandes.php');
+            exit;
+        }
+
+        $id = (int)$postData['demande_id'];
+        $action = $postData['action'];
+        $motif = $postData['commentaire_manager'] ?? null;
+
+        // 1. Récupérer la demande (Admin bypass manager check)
+        $demandeActuelle = $this->model->getDemandeByIdAdmin($id);
+
+        if (!$demandeActuelle) {
+            $_SESSION['error_message'] = "Erreur: Demande introuvable.";
+            header('Location: ' . BASE_URL . 'views/admin/liste_demandes.php');
+            exit;
+        }
+
+        $employe_id = $demandeActuelle['user_id']; 
+        $nouveauStatutFinal = ($action === 'valider') ? 'Validée' : 'Rejetée';
+        
+        if ($action === 'rejeter' && empty(trim((string)$motif))) {
+            $_SESSION['error_message'] = "Le motif de rejet est obligatoire.";
+            header('Location: ' . BASE_URL . 'views/admin/details_demande.php?id=' . $id);
+            exit;
+        }
+
+        // 2. Mise à jour du statut final
+        if ($this->model->updateStatutFinal($id, $nouveauStatutFinal, $this->userId, $motif)) {
+             $lien_notif = "views/employe/details_demande.php?id={$id}";
+             $message_notif = ($action === 'valider') 
+                ? "Votre demande n°{$id} a été **VALIDÉE** par l'administrateur."
+                : "Votre demande n°{$id} a été **REJETÉE** par l'administrateur.";
+             
+             $this->notifyUsers($employe_id, $id, $message_notif, $lien_notif);
+             
+             $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès (Admin).";
+             header('Location: ' . BASE_URL . 'views/admin/details_demande.php?id=' . $id);
+             exit;
+        } else {
+            $_SESSION['error_message'] = "Erreur technique lors de la mise à jour du statut final.";
+            header('Location: ' . BASE_URL . 'views/admin/details_demande.php?id=' . $id);
             exit;
         }
     }
@@ -425,10 +492,10 @@ class DemandeController
             $stmtUpdateDetail = $this->pdo->prepare("
                 UPDATE details_frais 
                 SET date_depense = :date_depense, 
-                    categorie_id = :categorie_id, 
-                    montant = :montant, 
-                    description = :description, 
-                    justificatif_path = :justificatif_path 
+                categorie_id = :categorie_id, 
+                montant = :montant, 
+                description = :description, 
+                justificatif_path = :justificatif_path 
                 WHERE id = :id AND demande_id = :demande_id
             ");
 

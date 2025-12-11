@@ -213,24 +213,26 @@ body.dark .category-badge:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+/* EDIT BUTTON - PRIMARY COLOR (GREEN) */
 .btn-action.btn-edit {
-    background-color: #FFF8E1;
-    color: #f57c00;
+    background-color: var(--primary-color-light, #E8F6E2); /* Light green background */
+    color: var(--primary-color, #76BD46); /* Primary green text */
 }
 
 body.dark .btn-action.btn-edit {
-    background-color: #3a2f1a;
-    color: #ffa726;
+    background-color: #064e3b;
+    color: #34d399;
 }
 
+/* DELETE BUTTON - RED */
 .btn-action.btn-delete {
-    background-color: #FFEBEE;
-    color: #e53935;
+    background-color: #fef2f2;
+    color: #ef4444;
 }
 
 body.dark .btn-action.btn-delete {
-    background-color: #3a1a1b;
-    color: #ef5350;
+    background-color: #450a0a;
+    color: #f87171;
 }
 
 /* ==================== HEADER ==================== */
@@ -301,7 +303,7 @@ body.dark .modal-content {
     border: 2px solid var(--border-color);
     padding: 10px 15px;
     transition: all 0.3s ease;
-    background-color: var(--card-bg);
+    background-color: #E8F6E2 !important; /* Force light green background */
     color: var(--text-primary);
 }
 
@@ -314,7 +316,7 @@ body.dark .form-select {
 .form-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(74, 95, 127, 0.15);
-    background-color: var(--card-bg);
+    background-color: #E8F6E2 !important; /* Keep light green on focus */
 }
 
 body.dark .form-control:focus,

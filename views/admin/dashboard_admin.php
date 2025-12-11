@@ -15,10 +15,11 @@ require_once __DIR__ . '/../../includes/header.php';
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_admin.css">
 <script src="<?= BASE_URL ?>assets/js/dashboard_admin.js" defer></script>
 
+<div class="container-fluid p-4">
     
-    <div class="page-header d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="page-title"><i class="bi bi-file-text me-2"></i>Gestion des Demandes</h1>
+            <h1 class="fw-bold m-0" style="color: #32325d;"><i class="bi bi-file-text me-2"></i>Gestion des Demandes</h1>
             <span class="text-muted small">Vue d'ensemble des demandes de frais</span>
         </div>
     </div>

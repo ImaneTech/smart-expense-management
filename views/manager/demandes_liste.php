@@ -142,11 +142,16 @@ function getFilterBtnStyle(string $statutKey, bool $isActive): string {
 </style>
 
 <div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-theme-secondary">Demandes de Frais</h2>
-        <a href="<?= BASE_URL ?>views/manager/export_demandes.php?statut=<?= urlencode($statutFiltre) ?>" class="btn btn-success fw-bold py-2 px-3" style="background-color: #2E7D32; border-color: #2E7D32; transition: all 0.2s;">
-            <i class="fas fa-file-excel me-2"></i> Exporter en Excel
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold m-0" style="color: #32325d;">Demandes de Frais</h1>
+            <span class="text-muted small">Gestion et validation des demandes</span>
+        </div>
+        <div>
+            <a href="<?= BASE_URL ?>views/manager/export_demandes.php?statut=<?= urlencode($statutFiltre) ?>" class="btn btn-success fw-bold py-2 px-3" style="background-color: #2E7D32; border-color: #2E7D32; transition: all 0.2s;">
+                <i class="fas fa-file-excel me-2"></i> Exporter en Excel
+            </a>
+        </div>
     </div>
 
     <div class="d-flex mb-4 gap-2 flex-wrap">

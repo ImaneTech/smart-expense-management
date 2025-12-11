@@ -34,14 +34,16 @@ require_once BASE_PATH . 'includes/header.php';
 
 <div class="container-fluid p-4" style="min-height: 100vh; display: flex; flex-direction: column;">
     
-    <div class="page-header d-flex justify-content-between align-items-center mb-3"> 
+    <div class="d-flex justify-content-between align-items-center mb-5"> 
         <div>
-            <h1 class="page-title fw-bold m-0" style="color: #32325d;"><i class="bi bi-speedometer me-2"></i>Tableau de bord</h1>
-            <p class="page-subtitle text-muted small mt-1">Aperçu de vos demandes de frais</p>
+            <h1 class="fw-bold m-0" style="color: #32325d;"><i class="bi bi-speedometer me-2"></i>Tableau de bord</h1>
+            <span class="text-muted small">Aperçu de vos demandes de frais</span>
         </div>
-        <a href="<?= BASE_URL ?>views/employe/create_demande.php" class="btn btn-go-green"> 
-            <i class="bi bi-plus-circle me-2"></i>Nouvelle Demande
-        </a>
+        <div>
+            <a href="<?= BASE_URL ?>views/employe/create_demande.php" class="btn btn-go-green"> 
+                <i class="bi bi-plus-circle me-2"></i>Nouvelle Demande
+            </a>
+        </div>
     </div>
 
     <div class="row g-4 mb-4">
@@ -128,4 +130,3 @@ require_once BASE_PATH . 'includes/header.php';
         </div>
     </div>
     </div>
-

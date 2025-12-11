@@ -51,7 +51,7 @@ class DemandeModel {
     // SECTION 2: READ OPERATIONS
     // =========================================================
     public function getDemandesByStatus(int $managerId, string $statut, ?int $limit = null): array {
-        $sql = "SELECT d.*, u.first_name, u.last_name, u.email,
+        $sql = "SELECT d.*, d.statut_final, u.first_name, u.last_name, u.email,
                        (SELECT SUM(montant) FROM {$this->detailsTable} WHERE demande_id = d.id) as total_calcule
                 FROM {$this->demandeTable} d
                 JOIN {$this->userTable} u ON d.user_id = u.id
@@ -144,6 +144,16 @@ class DemandeModel {
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    public function getDemandeByIdAdmin(int $id): ?array {
+        $sql = "SELECT d.*, u.first_name, u.last_name, u.email
+                FROM {$this->demandeTable} d
+                JOIN {$this->userTable} u ON d.user_id = u.id
+                WHERE d.id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function getDetailsFrais(int $demandeId): array {
         $sql = "SELECT df.*, cf.nom AS categorie_nom
                 FROM {$this->detailsTable} df
@@ -171,6 +181,7 @@ class DemandeModel {
                 return false;
             }
 
+            // Manager updates 'statut' ONLY
             $sqlDemande = "UPDATE {$this->demandeTable} d
                            JOIN {$this->userTable} u ON d.user_id = u.id
                            SET d.statut = ?, d.commentaire_manager = ?, d.date_traitement = NOW(), d.manager_id_validation = ?
@@ -179,6 +190,12 @@ class DemandeModel {
             if (!$stmtDemande->execute([$nouveauStatut, $motif, $managerId, $id, $managerId, $managerId]) || $stmtDemande->rowCount() === 0) {
                 $this->pdo->rollBack();
                 return false;
+            }
+
+            // If Manager rejects, statut_final becomes 'Rejetée'
+            if ($nouveauStatut === 'Rejetée Manager') {
+                 $stmtFinal = $this->pdo->prepare("UPDATE {$this->demandeTable} SET statut_final = 'Rejetée' WHERE id = ?");
+                 $stmtFinal->execute([$id]);
             }
 
             $sqlHistory = "INSERT INTO {$this->historyTable} (demande_id, user_id, ancien_statut, nouveau_statut, commentaire)
@@ -194,6 +211,38 @@ class DemandeModel {
         } catch (PDOException $e) {
             $this->pdo->rollBack();
             error_log("Erreur de transaction updateStatut : " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updateStatutFinal(int $id, string $nouveauStatutFinal, int $adminId, ?string $motif = null): bool {
+        $this->pdo->beginTransaction();
+        try {
+            // Admin updates 'statut_final'
+            // Also update 'statut' to reflect Admin action if needed (e.g. 'Validee Admin')
+            // But user requested: Admin uses statut_final.
+            
+            // Mapping for legacy 'statut' column compatibility if needed:
+            // If Admin Validates -> statut = 'validee_admin' (or similar)
+            // If Admin Rejects -> statut = 'Rejetée Admin' (or similar)
+            
+            $statutLegacy = ($nouveauStatutFinal === 'Validée') ? 'validee_admin' : 'Rejetée Admin';
+
+            $sql = "UPDATE {$this->demandeTable} SET statut_final = ?, statut = ? WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            if (!$stmt->execute([$nouveauStatutFinal, $statutLegacy, $id])) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            // Log history?
+            // ...
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Erreur updateStatutFinal : " . $e->getMessage());
             return false;
         }
     }
@@ -320,6 +369,10 @@ public function createDemande(int $userId, array $data) {
             ':date_depart' => $data['date_depart'],
             ':date_retour' => $data['date_retour']
         ]);
+        
+        // Initialiser statut_final à 'En attente' par défaut (géré par la BDD normalement, mais on force ici pour être sûr)
+        // La colonne a un DEFAULT 'En attente', donc pas besoin de l'ajouter dans l'INSERT si on veut le défaut.
+        // Mais pour la clarté, on pourrait l'ajouter. Pour l'instant, on laisse le défaut BDD.
         
         $demandeId = $this->pdo->lastInsertId();
         // Optionnel: loguer la création dans historique_statuts

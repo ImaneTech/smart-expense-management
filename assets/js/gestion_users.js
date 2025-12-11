@@ -2,17 +2,17 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 🎯 CORRECTION: Utiliser l'API centrale admin.php
-const API_URL = 'http://localhost/smart-expense-management/api/admin.php'; 
+const API_URL = 'http://localhost/smart-expense-management/api/admin.php';
 let currentFilter = 'all';
 let allUsers = [];
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('🚀 Gestion Utilisateurs démarrée');
     loadStats();
     loadUsers();
 
-    document.getElementById('searchInput').addEventListener('input', function() {
+    document.getElementById('searchInput').addEventListener('input', function () {
         filterUsersBySearch(this.value);
     });
 });
@@ -35,7 +35,7 @@ function loadStats() {
         })
         .catch(error => {
             console.error('❌ Erreur stats:', error);
-            showAlert('Erreur lors du chargement des statistiques (API)', 'danger'); 
+            showAlert('Erreur lors du chargement des statistiques (API)', 'danger');
         });
 }
 
@@ -64,8 +64,8 @@ function displayUsers(users) {
     const tbody = document.getElementById('users-tbody');
     const totalUsersElement = document.getElementById('total-users');
     if (totalUsersElement) totalUsersElement.textContent = users.length;
-    
-    const colspan = 7; 
+
+    const colspan = 7;
 
     if (!Array.isArray(users) || users.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center text-muted">Aucun utilisateur trouvé</td></tr>`;
@@ -81,10 +81,7 @@ function displayUsers(users) {
             <td>${u.department || 'N/A'}</td>
             <td>${getRoleBadge(u.role)}</td>
             <td class="text-end pe-4">
-                <button class="btn btn-sm btn-warning" onclick='editUser(${u.id})' title="Modifier">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-danger" onclick='deleteUser(${u.id})' title="Supprimer">
+                <button class="btn btn-action btn-delete" onclick='deleteUser(${u.id})' title="Supprimer">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
@@ -108,7 +105,7 @@ function filterUsers(role, event) {
         btn.classList.remove('active', 'btn-dark');
         btn.classList.add('btn-outline-secondary');
     });
-    
+
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('active', 'btn-dark');
         event.currentTarget.classList.remove('btn-outline-secondary');
@@ -129,7 +126,7 @@ function filterUsersBySearch(searchTerm) {
         const email = (u.email || '').toLowerCase();
         const id = String(u.id || '');
         const term = searchTerm.toLowerCase();
-        
+
         return firstName.includes(term) || lastName.includes(term) || email.includes(term) || id.includes(term);
     });
 
@@ -149,7 +146,7 @@ function editUser(id) {
     document.getElementById('edit-phone').value = user.phone;
     document.getElementById('edit-department').value = user.department;
     document.getElementById('edit-role').value = user.role;
-    
+
     const editPassword = document.getElementById('edit-password');
     const editConfirmPassword = document.getElementById('edit-confirmPassword');
     if (editPassword) editPassword.value = '';
@@ -166,10 +163,10 @@ async function updateUser() {
     const phone = document.getElementById('edit-phone').value.trim();
     const department = document.getElementById('edit-department').value.trim();
     const role = document.getElementById('edit-role').value;
-    
+
     const passwordField = document.getElementById('edit-password');
     const confirmPasswordField = document.getElementById('edit-confirmPassword');
-    
+
     const password = passwordField ? passwordField.value : '';
     const confirmPassword = confirmPasswordField ? confirmPasswordField.value : '';
 
@@ -177,7 +174,7 @@ async function updateUser() {
         showAlert('Veuillez remplir tous les champs obligatoires', 'warning');
         return;
     }
-    
+
     if (password || confirmPassword) {
         if (password !== confirmPassword) {
             showAlert('Les nouveaux mots de passe ne correspondent pas', 'danger');
@@ -193,7 +190,7 @@ async function updateUser() {
     formData.append('phone', phone);
     formData.append('department', department);
     formData.append('role', role);
-    
+
     if (password) {
         formData.append('password', password);
     }
@@ -230,20 +227,20 @@ function deleteUser(id) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadStats();
-            loadUsers();
-            showAlert('Utilisateur supprimé', 'success');
-        } else {
-            showAlert(data.message || 'Erreur lors de la suppression', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        showAlert('Erreur lors de la suppression', 'danger');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadStats();
+                loadUsers();
+                showAlert('Utilisateur supprimé', 'success');
+            } else {
+                showAlert(data.message || 'Erreur lors de la suppression', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showAlert('Erreur lors de la suppression', 'danger');
+        });
 }
 
 // 🗑️ L'ancienne fonction `refreshData` est supprimée.

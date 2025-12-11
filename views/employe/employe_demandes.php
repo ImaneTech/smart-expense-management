@@ -66,15 +66,18 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
 <div class="container-fluid p-4">
 
 
-    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="page-title fw-bold m-0" style="color:var(--secondary-color);"><i class="bi bi-receipt me-2"></i>Mes Demandes de Frais</h1>
-            <p class="page-subtitle text-muted small mt-1">Bienvenue, <?= htmlspecialchars($user_name) ?> - Gérez vos demandes</p>
+            <h1 class="fw-bold m-0" style="color: #32325d;"><i class="bi bi-receipt me-2"></i>Mes Demandes de Frais</h1>
+            <span class="text-muted small">Bienvenue, <?= htmlspecialchars($user_name) ?> - Gérez vos demandes</span>
         </div>
-        <a href="<?= BASE_URL ?>views/employe/create_demande.php" class="btn btn-go-green">
-            <i class="bi bi-plus-circle me-2"></i>Nouvelle Demande
-        </a>
+        <div>
+            <a href="<?= BASE_URL ?>views/employe/create_demande.php" class="btn btn-go-green">
+                <i class="bi bi-plus-circle me-2"></i>Nouvelle Demande
+            </a>
+        </div>
     </div>
+
     <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white filter-bar">
         <div class="card-body py-3 px-4">
 

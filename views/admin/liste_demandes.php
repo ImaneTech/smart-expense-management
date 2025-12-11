@@ -2,273 +2,167 @@
 session_start();
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
 
-// Assurez-vous que BASE_URL est défini
 if (!defined('BASE_URL')) {
     define('BASE_URL', '/smart-expense-management/');
 }
 
-
 require_once __DIR__ . '/../../includes/header.php'; 
 ?>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_admin2.css">
+<!-- Link to Unified Admin Theme -->
+<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/gestion_users.css">
+<script>
+    window.BASE_URL = '<?= BASE_URL ?>';
+</script>
 <script src="<?= BASE_URL ?>assets/js/dashboard_admin.js" defer></script> 
 
-    
-    <div class="page-header d-flex justify-content-between align-items-center">
+<div class="container-fluid p-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="page-title"><i class="bi bi-list-columns-reverse me-2"></i>Liste Complète des Demandes</h1>
-            <span class="text-muted small">Toutes les demandes de frais en détail, avec actions de gestion.</span>
+            <h1 class="fw-bold m-0" style="color: #32325d;">Toutes les Demandes</h1>
+            <span class="text-muted small">Gestion complète et historique des frais</span>
         </div>
         <div>
-            <button class="btn" onclick="exportData()" title="Exporter les données" style="background-color: #87D37C; color: white; border-color: #7BC571;">
-                <i class="bi bi-download me-1"></i> Exporter
+            <button class="btn btn-primary-custom" onclick="exportData()">
+                <i class="bi bi-file-earmark-excel me-2"></i> Exporter
             </button>
         </div>
     </div>
 
-    <div class="filter-section mt-4">
-        <div class="d-flex flex-wrap align-items-center">
+    <!-- Search & Filters Section -->
+    <div class="search-filter-section d-flex align-items-center mb-4 p-4" style="background-color: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        
+        <div class="d-flex align-items-center me-4">
             <span class="me-3 fw-semibold text-muted small text-uppercase">Filtrer par:</span>
-            <button class="btn filter-btn active" onclick="filterDemandes('all', event)">
-                <i class="bi bi-list me-1"></i> Toutes
+            <button class="filter-btn active btn-sm" onclick="filterDemandes('all', event)">
+                <i class="bi bi-collection me-1"></i> Tout
             </button>
-            <button class="btn filter-btn" onclick="filterDemandes('en_attente', event)">
-                <i class="bi bi-clock me-1"></i> En attente
+            <button class="filter-btn btn-sm" onclick="filterDemandes('en_attente', event)">
+                <i class="bi bi-hourglass-split me-1"></i> En attente
             </button>
-            <button class="btn filter-btn" onclick="filterDemandes('validee_manager', event)">
-                <i class="bi bi-check-circle me-1"></i> Validées Manager
+            <button class="filter-btn btn-sm" onclick="filterDemandes('validee_manager', event)">
+                <i class="bi bi-check-circle me-1"></i> Validées
             </button>
-            <button class="btn filter-btn" onclick="filterDemandes('rejetee', event)">
-                <i class="bi bi-x-circle me-1"></i> Rejetées Manager
+            <button class="filter-btn btn-sm" onclick="filterDemandes('rejetee', event)">
+                <i class="bi bi-x-circle me-1"></i> Rejetées
             </button>
         </div>
-    </div>
 
-    <div class="table-container">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-             <div>
+        <div class="search-box-main flex-grow-1">
+            <div class="input-group w-100 target-search-bg">
+                <span class="input-group-text border-0 bg-transparent"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control border-0 bg-transparent" id="searchInput" placeholder="Rechercher par utilisateur, objet...">
             </div>
         </div>
+    </div>
 
-        <div class="loading"> 
+    <!-- Main Table Card -->
+    <div class="table-container p-0 border-0 shadow-none" style="background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+        <div class="loading p-5 text-center" style="display:none;"> 
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Chargement...</span>
             </div>
-            <p class="mt-3 text-muted">Chargement des données...</p>
         </div>
 
-        <div class="table-scroll-wrapper">
-            
-            <div class="table-header-fixed table-responsive">
+        <div class="table-scroll-wrapper px-4 py-4">
+            <div class="table-responsive">
                 <table class="modern-table">
                     <thead>
                         <tr>
                             <th class="ps-4">Utilisateur</th> 
                             <th>Objet Mission</th>
-                            <th>Date Départ</th>
-                            <th>Date Retour</th>
+                            <th>Départ</th>
+                            <th>Retour</th>
                             <th>Statut</th>
-                            <th>Montant Total</th>
-                            <th class="text-end pe-4">Détails</th> 
+                            <th>Montant</th>
+                            <th class="text-end pe-4">Actions</th> 
                         </tr>
                     </thead>
-                </table>
-            </div>
-
-            <div class="table-body-scroll table-responsive">
-                <table class="modern-table">
                     <tbody id="demandes-tbody"> 
                         <tr><td colspan="7" class="text-center text-muted py-5">Chargement des données...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        </div>
-    
+    </div>
 </div> 
 
-<div class="modal fade" id="nouvelleDemandeModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i> Nouvelle Demande de Frais</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="nouvelleDemandeForm">
-                    <div class="card mb-3">
-                        <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-person me-2"></i> Informations Utilisateur</h6></div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">User ID *</label>
-                                    <input type="number" class="form-control" id="user_id" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Manager ID</label>
-                                    <input type="number" class="form-control" id="manager_id">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card mb-3">
-                        <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-briefcase me-2"></i> Détails de la Mission</h6></div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="form-label">Objet de la mission *</label>
-                                <textarea class="form-control" id="objet_mission" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Lieu de déplacement *</label>
-                                <input type="text" class="form-control" id="lieu_deplacement" required>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Date de départ *</label>
-                                    <input type="date" class="form-control" id="date_depart" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Date de retour *</label>
-                                    <input type="date" class="form-control" id="date_retour" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card mb-3">
-                        <div class="card-header bg-light"><h6 class="mb-0"><i class="bi bi-check-circle me-2"></i> Statut et Validation</h6></div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Statut *</label>
-                                    <select class="form-select" id="statut" required></select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Manager ID Validation</label>
-                                    <input type="number" class="form-control" id="manager_id_validation">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Date de traitement</label>
-                                    <input type="datetime-local" class="form-control" id="date_traitement">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Montant Total (€)</label>
-                                    <input type="number" step="0.01" class="form-control" id="montant_total" value="0.00">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Commentaire Manager</label>
-                                <textarea class="form-control" id="commentaire_manager" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i> Annuler
-                </button>
-                <button type="button" class="btn btn-primary-custom rounded-pill" onclick="createDemande()">
-                    <i class="bi bi-check-circle me-1"></i> Créer la demande
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- Modal Edit (Updated Design) -->
 <div class="modal fade" id="modifierDemandeModal" tabindex="-1">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content">
-            <div class="modal-header py-2" style="background-color: var(--primary-color); color: white; border-bottom: 2px solid var(--primary-color);">
-                <h5 class="modal-title fw-bold fs-6"><i class="bi bi-pencil-square me-2"></i> Modifier Demande de Frais</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i> Modifier la Demande</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-3">
+            <div class="modal-body p-4">
                 <form id="modifierDemandeForm">
                     <input type="hidden" id="edit_demande_id">
                     
-                    <div class="card mb-3 shadow-sm border-0">
-                        <div class="card-header border-0 pb-0 pt-2 bg-transparent">
-                            <h6 class="mb-0 text-uppercase small fw-bold" style="color: var(--secondary-color); font-size: 0.75rem !important;">
-                                <i class="bi bi-briefcase me-2"></i> Détails de la Mission
-                            </h6>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-muted small fw-bold mb-3">Détails de la Mission</h6>
                         </div>
-                        <div class="card-body pt-1 pb-2">
-                            <div class="mb-2">
-                                <label class="form-label small fw-semibold">Objet de la mission *</label>
-                                <textarea class="form-control compact-input" id="edit_objet_mission" rows="2" required></textarea>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Lieu de déplacement *</label>
-                                    <input type="text" class="form-control compact-input" id="edit_lieu_deplacement" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Date de départ *</label>
-                                    <input type="date" class="form-control compact-input" id="edit_date_depart" required>
-                                </div>
-                            </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Objet de la mission</label>
+                            <input type="text" class="form-control" id="edit_objet_mission" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Lieu</label>
+                            <input type="text" class="form-control" id="edit_lieu_deplacement" required>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Départ</label>
+                            <input type="date" class="form-control" id="edit_date_depart" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Retour</label>
+                            <input type="date" class="form-control" id="edit_date_retour" required>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Date de retour *</label>
-                                    <input type="date" class="form-control compact-input" id="edit_date_retour" required>
-                                </div>
-                                </div>
+                        <div class="col-12 mt-4">
+                            <h6 class="text-uppercase text-muted small fw-bold mb-3">Statut & Validation</h6>
                         </div>
-                    </div>
 
-                    <div class="card mb-0 shadow-sm border-0">
-                        <div class="card-header border-0 pb-0 pt-2 bg-transparent">
-                            <h6 class="mb-0 text-uppercase small fw-bold" style="color: var(--secondary-color); font-size: 0.75rem !important;">
-                                <i class="bi bi-check-circle me-2"></i> Statut & Traitement Comptable
-                            </h6>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Statut Manager</label>
+                            <select class="form-select" id="edit_statut" required></select>
                         </div>
-                        <div class="card-body pt-1 pb-2">
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Statut *</label>
-                                    <select class="form-select compact-input" id="edit_statut" required></select>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Validation ID</label>
-                                    <input type="number" class="form-control compact-input" id="edit_manager_id_validation">
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Montant Total (€)</label>
-                                    <input type="number" step="0.01" class="form-control compact-input" id="edit_montant_total">
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small fw-semibold">Date de traitement</label>
-                                    <input type="datetime-local" class="form-control compact-input" id="edit_date_traitement">
-                                </div>
-                            </div>
-                            
-                            <div class="mb-0">
-                                <label class="form-label small fw-semibold">Commentaire Manager / Admin</label>
-                                <textarea class="form-control compact-input" id="edit_commentaire_manager" rows="2"></textarea>
-                            </div>
+                        
+                        <div class="col-md-6">
+                             <label class="form-label fw-semibold">Statut Final (Admin)</label>
+                             <select class="form-select" id="edit_statut_final">
+                                 <option value="En attente">En attente</option>
+                                 <option value="Validée">Validée</option>
+                                 <option value="Rejetée">Rejetée</option>
+                             </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Montant Total (€)</label>
+                            <input type="number" step="0.01" class="form-control" id="edit_montant_total">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Commentaire</label>
+                            <textarea class="form-control" id="edit_commentaire_manager" rows="2"></textarea>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer py-2 d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill me-2" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i> Annuler
-                </button>
-                <button type="button" class="btn btn-warning btn-sm rounded-pill" onclick="updateDemande()">
-                    <i class="bi bi-save me-1"></i> Enregistrer les modifications
-                </button>
+            <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary-custom rounded-pill px-4" onclick="updateDemande()">Enregistrer</button>
             </div>
         </div>
     </div>
 </div>
+
 <?php 
 require_once __DIR__ . '/../../includes/footer.php'; 
 ?>

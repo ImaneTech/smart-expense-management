@@ -157,6 +157,9 @@ class CategorieModel {
             $stmt = $this->pdo->prepare("DELETE FROM categories_frais WHERE id = ?");
             return $stmt->execute([$id]);
         } catch (PDOException $e) {
+            if ($e->getCode() == '23000') {
+                throw new Exception("Cette catégorie est utilisée dans des notes de frais existantes et ne peut pas être supprimée.");
+            }
             throw new Exception("Erreur lors de la suppression de la catégorie: " . $e->getMessage());
         }
     }

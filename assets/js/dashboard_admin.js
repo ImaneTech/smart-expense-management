@@ -4,12 +4,13 @@ let currentFilter = 'all';
 
 // 💡 CORRECTION : La variable doit inclure "liste_demandes.php"
 const isDashboardView = !(
-    window.location.pathname.includes('liste_demandes.php') ||
-    window.location.pathname.includes('full_list.php')
+    window.location.pathname.toLowerCase().includes('liste_demandes.php') ||
+    window.location.pathname.toLowerCase().includes('full_list.php')
 );
 const MAX_DASHBOARD_ROWS = 5;
 
 // Map des statuts front-end (clés envoyées et reçues par le Contrôleur)
+// Note: This map is used for dropdowns, but for badges we use getBadgeStyle
 const STATUT_BADGE_MAP = {
     'en_attente': { text: 'En attente', class: 'bg-warning text-dark' },
     'validee_manager': { text: 'Validée Manager', class: 'bg-success' },
@@ -159,7 +160,7 @@ function displayDemandes(demandes) {
             }
         };
 
-        const statusBadge = getStatutBadge(d.statut);
+        const statusBadgeStyle = getBadgeStyle(d.statut);
         const montantTotal = parseFloat(d.montant_total || 0).toFixed(2);
 
         // Déterminer le contenu des colonnes selon la vue
@@ -169,11 +170,16 @@ function displayDemandes(demandes) {
         if (!isDashboardView) {
             // LISTE COMPLÈTE (7 colonnes, Actions incluses)
             userColumnClass = 'ps-4'; // L'utilisateur est la première colonne avec padding
+
+            // Construction de l'URL de détails
+            // On utilise un lien relatif simple car liste_demandes.php et details_demande.php sont dans le même dossier
+            const detailsUrl = `details_demande.php?id=${d.id}`;
+
             actionColumnHtml = `
-                <td class="text-end pe-4">
-                    <div class="btn-group btn-group-sm">
-                        ${getActionButtons(d.id, d.statut)} 
-                    </div>
+                <td class="text-center">
+                    <a href="${detailsUrl}" class="btn-action-icon d-inline-flex align-items-center justify-content-center" style="color:white; background-color: var(--primary-color);" title="Voir détails">
+                        <i class="bi bi-eye"></i>
+                    </a>
                 </td>
             `;
         } else {
@@ -185,36 +191,52 @@ function displayDemandes(demandes) {
         // Structure de la ligne (7 <td> au total)
         return `
             <tr>
-                <td class="${userColumnClass}">${d.utilisateur_nom || d.utilisateur || '-'}</td>
-                <td><small>${d.objet_mission || '-'}</small></td>
-                <td><small>${formatDate(d.date_depart)}</small></td>
-                <td><small>${formatDate(d.date_retour)}</small></td>
-                <td>${statusBadge}</td>
-                <td><strong>${montantTotal} €</strong></td>
+                <td class="${userColumnClass}">
+                    <strong>${d.utilisateur_nom || d.utilisateur || '-'}</strong>
+                </td>
+                <td><div class="text-truncate" title="${d.objet_mission || '-'}">${d.objet_mission || '-'}</div></td>
+                <td>${formatDate(d.date_depart)}</td>
+                <td>${formatDate(d.date_retour)}</td>
+                <td><span style="${statusBadgeStyle}">${d.statut || 'Inconnu'}</span></td>
+                <td class="text-theme-primary fw-bold">${montantTotal} €</td>
                 ${actionColumnHtml}
             </tr>
         `;
     }).join('');
 }
 
+function getBadgeStyle(statut) {
+    const base = "border-radius: 50px; padding: 8px 16px; font-weight: 700; font-size: 0.85rem; display: inline-block; border-width: 1px; border-style: solid; text-decoration: none; white-space: nowrap;";
+    let colors = "background-color: #F5F5F5; color: #616161; border-color: #E0E0E0;";
+
+    switch (statut) {
+        case 'En attente':
+        case 'en_attente':
+            colors = "background-color: #FFF8E1; color: #F57F17; border-color: #FFE0B2;";
+            break;
+        case 'Validée Manager':
+        case 'validee_manager':
+        case 'Approuvée Compta':
+        case 'validee_admin':
+        case 'Payée':
+        case 'payee':
+            colors = "background-color: #E8F5E9; color: #2E7D32; border-color: #C8E6C9;";
+            break;
+        case 'Rejetée Manager':
+        case 'rejetee':
+            colors = "background-color: #FFEBEE; color: #C62828; border-color: #FFCDD2;";
+            break;
+    }
+    return base + ' ' + colors;
+}
+
 function getStatutBadge(statutKey) {
-    const statusInfo = STATUT_BADGE_MAP[statutKey];
-    if (statusInfo) {
-        return `<span class="badge ${statusInfo.class}">${statusInfo.text}</span>`;
-    }
-    const reversedMap = {
-        'En attente': 'en_attente',
-        'Validée Manager': 'validee_manager',
-        'Rejetée Manager': 'rejetee'
-    };
-    const key = reversedMap[statutKey] || statutKey;
-    const fallbackInfo = STATUT_BADGE_MAP[key];
-
-    if (fallbackInfo) {
-        return `<span class="badge ${fallbackInfo.class}">${fallbackInfo.text}</span>`;
-    }
-
-    return `<span class="badge bg-secondary">${statutKey || 'Inconnu'}</span>`;
+    // Deprecated but kept for compatibility if called elsewhere, redirecting to getBadgeStyle logic
+    // But since we replaced displayDemandes, we might not need this anymore for the table.
+    // However, let's keep it simple or just remove it if not used.
+    // For safety, let's just return a span with the style.
+    const style = getBadgeStyle(statutKey);
+    return `<span style="${style}">${statutKey}</span>`;
 }
 
 function getActionButtons(id, statut) {

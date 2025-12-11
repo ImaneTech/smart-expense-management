@@ -28,8 +28,8 @@ class AdminModel {
         return $stats;
     }
 
-    public function getAllDemandes(?string $statut = null): array {
-        $sql = "SELECT d.id, d.user_id, d.objet_mission, d.date_depart, d.date_retour, d.statut, 
+    public function getAllDemandes(?string $statut = null, string $column = 'statut'): array {
+        $sql = "SELECT d.id, d.user_id, d.objet_mission, d.date_depart, d.date_retour, d.statut, d.statut_final,
                        d.created_at, d.montant_total,
                        u.first_name, u.last_name, u.email,
                        CONCAT(u.first_name, ' ', u.last_name) as utilisateur_nom
@@ -38,7 +38,12 @@ class AdminModel {
         
         $params = [];
         if ($statut && $statut !== 'all') {
-            $sql .= " WHERE d.statut = ?";
+            // Allow filtering by statut or statut_final
+            $allowedColumns = ['statut', 'statut_final'];
+            if (!in_array($column, $allowedColumns)) {
+                $column = 'statut';
+            }
+            $sql .= " WHERE d.$column = ?";
             $params[] = $statut;
         }
         

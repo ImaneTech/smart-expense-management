@@ -58,19 +58,29 @@ class AdminController {
     }
 
     private function getDemandes($statut) {
-        // Mapping des slugs frontend vers les valeurs en base de données
-        $statusMap = [
-            'en_attente' => 'En attente',
-            'validee_manager' => 'Validée Manager',
-            'rejetee' => 'Rejetée Manager',
-            'validee_admin' => 'Approuvée Compta',
-            'payee' => 'Payée'
+        // Mapping des slugs frontend vers les valeurs en base de données et la colonne cible
+        // Structure: 'slug' => ['value' => 'DB Value', 'column' => 'statut'|'statut_final']
+        
+        $filterConfig = [
+            'en_attente' => ['value' => 'En attente', 'column' => 'statut_final'],
+            'validee' => ['value' => 'Validée', 'column' => 'statut_final'],
+            'rejetee' => ['value' => 'Rejetée', 'column' => 'statut_final'],
+            'validee_manager' => ['value' => 'Validée Manager', 'column' => 'statut'],
+            'rejetee_manager' => ['value' => 'Rejetée Manager', 'column' => 'statut'],
+            // Legacy/Other
+            'validee_admin' => ['value' => 'Validée', 'column' => 'statut_final'],
+            'payee' => ['value' => 'Payée', 'column' => 'statut'], // Assuming Payée is still in statut? Or statut_final? Let's keep statut for now.
         ];
 
-        // Utiliser la valeur mappée si elle existe, sinon utiliser la valeur brute
-        $dbStatut = $statusMap[$statut] ?? $statut;
+        $dbStatut = $statut;
+        $column = 'statut';
 
-        $demandes = $this->adminModel->getAllDemandes($dbStatut);
+        if (isset($filterConfig[$statut])) {
+            $dbStatut = $filterConfig[$statut]['value'];
+            $column = $filterConfig[$statut]['column'];
+        }
+
+        $demandes = $this->adminModel->getAllDemandes($dbStatut, $column);
         echo json_encode($demandes);
     }
 
@@ -169,16 +179,36 @@ class AdminController {
                 date_depart = :depart,
                 date_retour = :retour,
                 statut = :statut,
+                statut_final = :statut_final,
                 montant_total = :montant
                 WHERE id = :id";
                 
+        // Determine statut_final based on statut if not provided directly
+        // Or if admin provides statut_final directly.
+        // Let's assume data['statut'] is what the admin selected.
+        // If admin selects 'Validée', it means statut_final = 'Validée'.
+        
+        $statut = $data['statut'] ?? 'En attente';
+        $statutFinal = $data['statut_final'] ?? 'En attente';
+        
+        // Logic sync:
+        // If admin sets 'Validée', statut_final = 'Validée', statut = 'validee_admin' (legacy)
+        if ($statut === 'Validée' || $statut === 'validee_admin') {
+            $statutFinal = 'Validée';
+            $statut = 'validee_admin';
+        } elseif ($statut === 'Rejetée' || $statut === 'rejetee') {
+            $statutFinal = 'Rejetée';
+            $statut = 'rejetee_admin'; // or keep previous?
+        }
+        
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             ':objet' => $data['objet_mission'],
             ':lieu' => $data['lieu_deplacement'],
             ':depart' => $data['date_depart'],
             ':retour' => $data['date_retour'],
-            ':statut' => $data['statut'] ?? 'En attente',
+            ':statut' => $statut,
+            ':statut_final' => $statutFinal,
             ':montant' => $data['montant_total'] ?? 0,
             ':id' => $id
         ]);

@@ -181,9 +181,14 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
                 <div class="card-header-custom" style="background-color: #f0fdf4;">
                     <h5 class="card-title-custom"><i class="fas fa-briefcase me-2 text-theme-primary"></i> Informations Mission</h5>
                     <!-- Status Badge Moved Here -->
-                    <span class="badge-theme <?= getStatusClass($current_statut) ?>">
-                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i> <?= htmlspecialchars($current_statut) ?>
-                    </span>
+                    <div class="d-flex gap-2">
+                        <span class="badge-theme <?= getStatusClass($current_statut) ?>">
+                            <i class="fas fa-user-tie me-1" style="font-size: 0.5rem;"></i> Manager: <?= htmlspecialchars($current_statut) ?>
+                        </span>
+                        <span class="badge-theme <?= getStatusClass($demande['statut_final'] ?? 'En attente') ?>">
+                            <i class="fas fa-crown me-1" style="font-size: 0.5rem;"></i> Admin: <?= htmlspecialchars($demande['statut_final'] ?? 'En attente') ?>
+                        </span>
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-4">

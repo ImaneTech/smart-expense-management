@@ -87,13 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <ul class="nav nav-tabs nav-tabs-custom" id="settingsTab" role="tablist">
             <li class="nav-item">
-                <button class="nav-link <?= $activeTab=='display'?'active':'' ?>" id="display-tab" data-bs-toggle="tab" data-bs-target="#display" type="button"><i class="fas fa-palette me-2"></i> Affichage</button>
+                <button class="nav-link <?= $activeTab=='display'?'active':'' ?>" id="display-tab" data-bs-toggle="tab" data-bs-target="#display" type="button"><i class="bi bi-palette me-2"></i> Affichage</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link <?= $activeTab=='prefs'?'active':'' ?>" id="prefs-tab" data-bs-toggle="tab" data-bs-target="#prefs" type="button"><i class="fas fa-sliders-h me-2"></i> Préférences</button>
-            </li>
-            <li class="nav-item">
-                <a href="settings_admin.php?tab=categories" class="nav-link <?= $activeTab=='categories'?'active':'' ?>" id="categories-tab"><i class="fas fa-tags me-2"></i> Gestion Catégories</a>
+                <button class="nav-link <?= $activeTab=='prefs'?'active':'' ?>" id="prefs-tab" data-bs-toggle="tab" data-bs-target="#prefs" type="button"><i class="bi bi-sliders me-2"></i> Préférences</button>
             </li>
             <li class="nav-item">
                 <a href="settings_admin.php?tab=notifications" class="nav-link <?= $activeTab=='notifications'?'active':'' ?>" id="notifications-tab"><i class="fas fa-bell me-2"></i> Notifications</a>
@@ -111,17 +108,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="row g-3">
                                 <div class="col-6">
                                     <input type="radio" class="btn-check" name="theme" id="themeLight" value="light" <?= $currentTheme == 'light' ? 'checked' : '' ?>>
-                                    <label class="theme-selector-label shadow-sm" for="themeLight"><i class="fas fa-sun fs-4"></i> Clair</label>
+                                    <label class="theme-selector-label shadow-sm" for="themeLight"><i class="bi bi-sun fs-4"></i> Clair</label>
                                 </div>
                                 <div class="col-6">
                                     <input type="radio" class="btn-check" name="theme" id="themeDark" value="dark" <?= $currentTheme == 'dark' ? 'checked' : '' ?>>
-                                    <label class="theme-selector-label shadow-sm" for="themeDark"><i class="fas fa-moon fs-4"></i> Sombre</label>
+                                    <label class="theme-selector-label shadow-sm" for="themeDark"><i class="bi bi-moon-stars fs-4"></i> Sombre</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-5">
-                        <button type="submit" class="btn btn-theme shadow-sm"><i class="fas fa-check-lg me-2"></i> Appliquer</button>
+                        <button type="submit" class="btn btn-theme shadow-sm">Appliquer</button>
                     </div>
                 </form>
             </div>
@@ -141,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-5">
-                        <button type="submit" class="btn btn-theme shadow-sm"><i class="fas fa-save me-2"></i> Enregistrer</button>
+                        <button type="submit" class="btn btn-theme shadow-sm">Enregistrer</button>
                     </div>
                 </form>
             </div>
