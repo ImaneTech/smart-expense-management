@@ -5,7 +5,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "root";       
-$dbname = "gestion_frais_db";
+$dbname = "test";
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);

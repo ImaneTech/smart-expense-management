@@ -1,5 +1,5 @@
 <?php
-// views/manager/details_demande.php
+// views/admin/details_demande.php
 // --- Initialisation PHP ---
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -7,13 +7,13 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../../config.php';
 require_once BASE_PATH . 'Controllers/DemandeController.php';
 require_once BASE_PATH . 'Controllers/UserController.php';
-require_once BASE_PATH . 'includes/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 
 $controller = new DemandeController($pdo);
 $demandeId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($demandeId <= 0) {
-    header('Location: ' . BASE_URL . 'views/manager/demandes_liste.php');
+    header('Location: ' . BASE_URL . 'views/admin/liste_demandes.php');
     exit;
 }
 
@@ -21,18 +21,23 @@ $demande = $controller->getDemandeDetails($demandeId);
 
 if (!$demande) {
     $_SESSION['error_message'] = "Demande introuvable ou accès refusé.";
-    header('Location: ' . BASE_URL . 'views/manager/demandes_liste.php');
+    header('Location: ' . BASE_URL . 'views/admin/liste_demandes.php');
     exit;
 }
 
-$managerId = $controller->getManagerId(); 
+// Admin might not have a manager ID in the same way, but let's try to get currency preference.
+// If getManagerId() relies on session role being manager, it might fail or return null.
+// We'll assume admin wants to see the currency of the *user* who made the request, or a default.
+// For now, let's try to get the current user's ID (admin) to check their currency preference if possible.
+$adminId = $_SESSION['user_id'] ?? 0; 
 
 // --- Devise ---
 if (!class_exists('UserController')) {
-    $managerCurrencyCode = 'USD';
+    $currencyCode = 'USD';
 } else {
     $userController = new UserController($pdo);
-    $managerCurrencyCode = $userController->getPreferredCurrency($managerId);
+    // Use admin's preference or default
+    $currencyCode = $userController->getPreferredCurrency($adminId);
 }
 
 function getCurrencySymbol(string $code): string {
@@ -44,7 +49,7 @@ function getCurrencySymbol(string $code): string {
         default => '$',
     };
 }
-$currencySymbol = getCurrencySymbol($managerCurrencyCode);
+$currencySymbol = getCurrencySymbol($currencyCode);
 
 // --- Données ---
 $current_statut = $demande['statut'] ?? 'En attente';
@@ -71,7 +76,7 @@ function getStatusClass($statut) {
         'Validée Manager' => 'badge-valid',
         'Rejetée Manager' => 'badge-reject',
         'Approuvée Compta' => 'badge-valid',
-        'Payée' => 'badge-valid', // Ou une autre classe si dispo
+        'Payée' => 'badge-valid',
         default => 'bg-secondary text-white',
     };
 }
@@ -147,8 +152,10 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
     <!-- Header & Breadcrumb -->
     <div class="page-header-custom d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
-           
-            <h2 class="fw-bold m-0">Détails de la demande</h2>
+            <a href="<?= BASE_URL ?>views/admin/liste_demandes.php" class="text-decoration-none text-muted small mb-2 d-inline-block">
+                <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+            </a>
+            <h2 class="fw-bold m-0">Détails de la demande (Admin)</h2>
         </div>
         <div class="d-flex align-items-center gap-3">
             <button class="btn btn-secondary text-white" style="background-color: var(--secondary-color);" onclick="window.print()">
@@ -305,16 +312,20 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
             <?php endif; ?>
 
             <!-- Validation Actions (Sticky) -->
-            <?php if ($current_statut === 'En attente'): ?>
+            <!-- Admin can validate if status is 'En attente' or maybe 'Validée Manager' depending on workflow. -->
+            <!-- For now, keeping it same as manager: 'En attente' -->
+            <?php if ($current_statut === 'En attente' || $current_statut === 'Validée Manager'): ?>
             <div class="card-custom border-valid" style="border: 1px solid var(--primary-color);">
                 <div class="card-header-custom bg-theme-light-green">
-                    <h5 class="card-title-custom text-theme-primary"><i class="fas fa-check-double me-2"></i> Validation</h5>
+                    <h5 class="card-title-custom text-theme-primary"><i class="fas fa-check-double me-2"></i> Action Admin</h5>
                 </div>
                 <div class="card-body p-4">
-                    <p class="small text-muted mb-4">Veuillez vérifier les justificatifs avant de valider la demande.</p>
+                    <p class="small text-muted mb-4">Actions d'administration sur la demande.</p>
                     
                     <form method="POST" action="<?= BASE_URL ?>Controllers/traitement_demande.php" class="mb-3"> 
                         <input type="hidden" name="demande_id" value="<?= $demande['id'] ?>">
+                        <!-- Admin might validate to 'Validée Manager' (if acting as manager) or 'Approuvée Compta' (if acting as admin/compta) -->
+                        <!-- Assuming admin validation means final approval or manager approval override -->
                         <input type="hidden" name="action" value="valider">
                         <button class="btn btn-success w-100 py-2 fw-bold" style="background-color: var(--primary-color); border: none;">
                             <i class="fas fa-check me-2"></i> Valider la demande
@@ -421,4 +432,4 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
     });
 </script>
 
-<?php require_once BASE_PATH . 'includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

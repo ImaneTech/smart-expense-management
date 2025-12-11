@@ -21,20 +21,6 @@ require_once __DIR__ . '/../../includes/header.php';
             <h1 class="page-title"><i class="bi bi-file-text me-2"></i>Gestion des Demandes</h1>
             <span class="text-muted small">Vue d'ensemble des demandes de frais</span>
         </div>
-        <div class="dropdown">
-            <button class="btn btn-primary-custom dropdown-toggle" type="button" id="actionsDropdown" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots-vertical me-1"></i> Actions
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="actionsDropdown">
-                <li><a class="dropdown-item" href="#" onclick="exportData()">
-                    <i class="bi bi-download me-2"></i> Exporter
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" onclick="refreshData()">
-                    <i class="bi bi-arrow-clockwise me-2"></i> Actualiser
-                </a></li>
-            </ul>
-        </div>
     </div>
 
     <div class="row g-4 mb-4">
@@ -106,8 +92,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 Liste des demandes récentes <span class="badge bg-secondary" id="total-demandes">0</span>
             </h5>
             <div>
-                <a href="<?= BASE_URL ?>views/admin/liste_demandes.php" class="btn btn-outline-primary">
-                    <i class="bi bi-list-columns-reverse me-1"></i> Voir toutes les demandes
+                <a href="<?= BASE_URL ?>views/admin/liste_demandes.php" class="btn text-white fw-bold" style="background-color: var(--primary-color); border: none;">
+                    Voir toutes les demandes
                 </a>
             </div>
         </div>

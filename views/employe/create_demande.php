@@ -59,7 +59,6 @@ $categories = [
 <div class="mx-auto outer-container" style="max-width:1300px;background-color:#f8f9fa;border-radius:20px;padding:40px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
     <div class="mx-auto" style="max-width:1300px;">
 
-        <!-- PAGE HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap">
             <?php displayFlash(); ?>
             <h1 class="fw-bold m-0 page-title">
@@ -70,7 +69,6 @@ $categories = [
             </a>
         </div>
 
-        <!-- FEEDBACK MESSAGES -->
         <?php if ($message_feedback): ?>
             <div class="alert alert-<?= htmlspecialchars($type_feedback) ?> alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
                 <?= htmlspecialchars($message_feedback) ?>
@@ -89,13 +87,10 @@ $categories = [
             </div>
         <?php endif; ?>
 
-        <!-- FORM START -->
-        <form id="demandeFraisForm" action="<?= BASE_URL ?>controllers/submit_demande.php" method="POST" enctype="multipart/form-data">
+        <form id="demandeFraisForm" action="<?= BASE_URL ?>Controllers/submit_demande.php" method="POST" enctype="multipart/form-data">
 
-            <!-- ⭐ NEW LAYOUT: VERTICAL STACK -->
             <div class="d-flex flex-column gap-4">
 
-                <!-- DETAILS DE DEPLACEMENT -->
                 <div>
                     <div class="card shadow-lg border-0">
                         <div class="card-header primary-bg-card-header text-white">
@@ -105,7 +100,6 @@ $categories = [
 
                             <div class="row g-4">
 
-                                <!-- OBJET & LIEU -->
                                 <div class="col-md-6">
                                     <label for="objet_mission" class="form-label fw-bold">Objet de la mission <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="objet_mission" name="objet_mission"
@@ -122,7 +116,6 @@ $categories = [
                                         value="<?= htmlspecialchars($_POST['lieu_deplacement'] ?? '') ?>">
                                 </div>
 
-                                <!-- DATES -->
                                 <div class="col-md-6">
                                     <label for="date_depart" class="form-label fw-bold">Date de départ <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" id="date_depart" name="date_depart"
@@ -142,7 +135,6 @@ $categories = [
                     </div>
                 </div>
 
-                <!-- DETAILS DES DEPENSES -->
                 <div>
                     <div class="card shadow-lg border-0">
                         <div class="card-header light-green-bg-card-header text-dark d-flex justify-content-between align-items-center flex-wrap">
@@ -183,10 +175,7 @@ $categories = [
                     </div>
                 </div>
 
-            </div> <!-- END vertical stack -->
-
-            <!-- SUBMIT -->
-            <div class="d-grid gap-2 mt-4 mb-5">
+            </div> <div class="d-grid gap-2 mt-4 mb-5">
                 <button type="submit" class="btn btn-primary-themed btn-lg fw-bold py-3 submit-btn" style="font-size:1.25rem;">
                     <i class="fa fa-paper-plane me-2"></i> Soumettre la Demande de Frais
                 </button>
@@ -243,7 +232,7 @@ $categories = [
                     <i class="bi bi-trash3-fill"></i>
                 </button>
             </td>
-        `;
+            `;
             newRow.querySelector('.montant-input').addEventListener('input', updateOverallTotal);
 
             updateNoDetailsMessage();

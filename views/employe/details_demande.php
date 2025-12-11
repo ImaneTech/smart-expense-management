@@ -154,9 +154,9 @@ require_once BASE_PATH . 'includes/header.php';
     border-radius: 50px; 
 }
 .status-en-attente { background-color: #ffc107; color: #000; }
-.status-validee-manager, .status-approuvee-compta { background-color: var(--primary-themed); color: #fff; }
+.status-validee-manager, .status-approuvee-compta { background-color: var(--primary-color); color: #fff; }
 .status-rejetee-manager, .status-rejetee-compta { background-color: #dc3545; color: #fff; } 
-.status-payee { background-color: var(--secondary-themed); color: #fff; }
+.status-payee { background-color: var(--secondary-color); color: #fff; }
 
 .total-frais-display-header {
     background: #e6f7e6;
@@ -336,10 +336,12 @@ require_once BASE_PATH . 'includes/header.php';
                     </div>
 
                 </div>
+                
+                <!-- Rejection Comment (Visible if exists) -->
                 <?php if (!empty($demande['commentaire_manager'])): ?>
-                    <div class="manager-comment mt-4">
-                        <p class="manager-comment-label"><i class="fa fa-comment-dots me-1"></i> Commentaire du Manager</p>
-                        <p class="mb-0 fst-italic"><?= nl2br(htmlspecialchars($demande['commentaire_manager'])) ?></p>
+                    <div class="manager-comment mt-4 p-3 rounded border border-danger bg-light-danger" style="background-color: #fff5f5;">
+                        <p class="manager-comment-label text-danger fw-bold mb-2"><i class="fa fa-comment-dots me-1"></i> Motif du Rejet / Commentaire Manager</p>
+                        <p class="mb-0 text-dark"><?= nl2br(htmlspecialchars($demande['commentaire_manager'])) ?></p>
                     </div>
                 <?php endif; ?>
 

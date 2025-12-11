@@ -17,21 +17,16 @@ require_once __DIR__ . '/../config.php';
 
 // --- INCLUSIONS DES CONTRÔLEURS ET MODÈLES ---
 // Inclusions Demandes
-require_once __DIR__ . '/../controllers/Admin/DemandeController.php'; 
-require_once __DIR__ . '/../Models/Admin/DemandeModel.php'; 
+require_once __DIR__ . '/../Controllers/DemandeController.php'; 
+require_once __DIR__ . '/../Models/DemandeModel.php'; 
 
 // Inclusions Utilisateurs
-require_once __DIR__ . '/../controllers/Admin/UserController.php'; 
-require_once __DIR__ . '/../Models/Admin/UserModel.php'; 
+require_once __DIR__ . '/../Controllers/UserController.php'; 
+require_once __DIR__ . '/../Models/UserModel.php'; 
 
 //  POUR LES CATÉGORIES
-require_once __DIR__ . '/../controllers/Admin/CategorieController.php'; 
-require_once __DIR__ . '/../Models/Admin/CategorieModel.php'; 
-
-// --- Utilisation des Namespaces ---
-use Controllers\Admin\DemandeController; 
-use Controllers\Admin\UserController; 
-use Controllers\Admin\CategorieController; 
+require_once __DIR__ . '/../Controllers/CategorieController.php'; 
+require_once __DIR__ . '/../Models/CategorieModel.php'; 
 
 
 // Vérifier la connexion DB ($pdo doit être défini dans config.php)
@@ -54,11 +49,12 @@ if (str_starts_with($action, 'user_')) {
 } elseif (str_starts_with($action, 'cat_')) {
     // 2.Déléguer au Contrôleur des Catégories
     $catAction = substr($action, 4); 
-    $controller = new CategorieController($pdo); 
+    $controller = new CategorieController($pdo, false); // false = no auth check for API
     $controller->handleApiRequest($catAction, $requestData, $requestData); 
 
 } else {
-    // 3. Déléguer au Contrôleur de Demandes (Par défaut)
-    $controller = new DemandeController($pdo); 
+    // 3. Déléguer au Contrôleur Admin (Par défaut pour ce fichier)
+    require_once __DIR__ . '/../Controllers/AdminController.php';
+    $controller = new AdminController($pdo); 
     $controller->handleApiRequest($action, $requestData);
 }

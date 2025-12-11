@@ -9,10 +9,8 @@ declare(strict_types=1);
 
 // --- Détection de la classe de notification disponible ---
 // Utilisé pour le helper notifyUsers
-$notificationClass = class_exists('Notification') ? 'Notification' : (class_exists('NotificationModel') ? 'NotificationModel' : null);
-if (!$notificationClass) {
-    error_log("FATAL: Classe de notification (Notification ou NotificationModel) introuvable. Les notifications seront désactivées.");
-}
+require_once BASE_PATH . 'Models/NotificationModel.php';
+$notificationClass = 'Notification';
 
 // --- Inclusions sûres (teste plusieurs variantes de chemin) ---
 $requiredFiles = [
@@ -140,12 +138,8 @@ class DemandeController
      */
     private function notifyUsers(int|array $recipientIds, int $demandeId, string $message, string $link): void
     {
-        global $notificationClass;
-        
-        if ($notificationClass) {
-            /** @var Notification|NotificationModel $notificationModel */
-            // Le nom de classe est dynamique ($notificationClass)
-            $notificationModel = new $notificationClass($this->pdo); 
+        try {
+            $notificationModel = new Notification($this->pdo); 
             $recipients = is_array($recipientIds) ? $recipientIds : [$recipientIds];
             
             foreach ($recipients as $recipientId) {
@@ -153,8 +147,8 @@ class DemandeController
                     $notificationModel->creerNotification($recipientId, $demandeId, $message, $link);
                 }
             }
-        } else {
-             error_log("Impossible de notifier : Classe de notification non disponible.");
+        } catch (\Exception $e) {
+             error_log("Impossible de notifier : " . $e->getMessage());
         }
     }
 
@@ -168,7 +162,6 @@ class DemandeController
     public function getDashboardData(): array {
         $stats = $this->model->getDashboardStats($this->managerId);
 
-        // NOTE: Nécessite la classe TeamController
         if (!class_exists('TeamController')) {
              return [ 'stats' => $stats, 'latest' => [], 'team' => [] ];
         }
@@ -265,7 +258,7 @@ class DemandeController
             // =================================================================
             // === LOGIQUE DE NOTIFICATION : Manager/Admin -> Employé ===
             // =================================================================
-            $lien_notif = "details_demande.php?id={$id}";
+            $lien_notif = "views/manager/details_demande.php?id={$id}";
             
             if ($action === 'valider') {
                 $message_notif = "Votre demande n°{$id} a été **VALIDÉE** par votre manager. (Statut: {$nouveauStatut})";
@@ -278,11 +271,11 @@ class DemandeController
             // =================================================================
             
             $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès. L'employé a été notifié.";
-            header('Location: details_demande.php?id=' . $id);
+            header('Location: ' . BASE_URL . 'views/manager/details_demande.php?id=' . $id);
             exit;
         } else {
             $_SESSION['error_message'] = "Erreur technique lors de la mise à jour du statut.";
-            header('Location: details_demande.php?id=' . $id);
+            header('Location: ' . BASE_URL . 'views/manager/details_demande.php?id=' . $id);
             exit;
         }
     }
@@ -296,7 +289,7 @@ class DemandeController
      */
     public function creerDemandeAction(array $demandeData, array $details, array $uploadedFiles = []): void
     {
-        // 🛑 Utilisation des méthodes de DemandeModel que vous avez fournies.
+        // Utilisation des méthodes de DemandeModel que vous avez fournies.
         $this->pdo->beginTransaction();
         try {
             // 1. Création de l'en-tête de la demande
@@ -316,6 +309,14 @@ class DemandeController
                  }
             }
             
+            // 3. Calculate and update total amount
+            $stmtTotal = $this->pdo->prepare("SELECT COALESCE(SUM(montant), 0) AS total FROM details_frais WHERE demande_id = ?");
+            $stmtTotal->execute([$nouvel_id_demande]);
+            $montantTotal = (float)$stmtTotal->fetchColumn();
+            
+            $stmtUpdate = $this->pdo->prepare("UPDATE demande_frais SET montant_total = ? WHERE id = ?");
+            $stmtUpdate->execute([$montantTotal, $nouvel_id_demande]);
+            
             $this->pdo->commit();
             
             // =================================================================
@@ -326,23 +327,26 @@ class DemandeController
             if ($manager_id > 0) {
                 $employe_nom = $_SESSION['user_full_name'] ?? ('Employé ID: ' . $this->userId); 
                 $message_notif = "Nouvelle demande de frais ({$nouvel_id_demande}) à valider soumise par **{$employe_nom}**.";
-                $lien_notif = "details_demande.php?id={$nouvel_id_demande}"; 
+                $lien_notif = "views/manager/details_demande.php?id={$nouvel_id_demande}"; 
                 
                 $this->notifyUsers($manager_id, $nouvel_id_demande, $message_notif, $lien_notif);
             }
             // =================================================================
             
             $_SESSION['message'] = "Demande (ID: {$nouvel_id_demande}) soumise avec succès à votre manager.";
-            header('Location: mes_demandes.php');
+            // 🛑 CORRECTION: Utilisation de BASE_URL pour une redirection absolue
+            header('Location: ' . BASE_URL . 'views/employe/employe_demandes.php');
             exit;
             
         } catch (\Throwable $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            error_log("Erreur de soumission : " . $e->getMessage());
+            error_log("❌ EXCEPTION: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             $_SESSION['error_message'] = "Erreur lors de la soumission de la demande: " . $e->getMessage();
-            header('Location: soumettre_demande.php');
+            // 🛑 CORRECTION: Utilisation de BASE_URL pour une redirection absolue
+            header('Location: ' . BASE_URL . 'views/employe/employe_demandes.php');
             exit;
         }
     }
@@ -352,10 +356,23 @@ class DemandeController
      */
     public function getDemandeDetailsById(int $demandeId, int $userId): ?array
     {
-        if ($this->employeModel === null) {
-            throw new \RuntimeException("Modèle Employé (DemandeFraisModel) non disponible.");
-        }
-        return $this->employeModel->getDemandeDetailsWithLines($demandeId, $userId);
+        // 🛑 CORRECTION: Le modèle DemandeFraisModel n'étant pas toujours disponible,
+        // on exécute la requête directement.
+        $stmt = $this->pdo->prepare("
+            SELECT df.*, CONCAT(u.first_name, ' ', u.last_name) AS employe_nom, u.email AS employe_email 
+            FROM demande_frais df 
+            JOIN users u ON df.user_id = u.id 
+            WHERE df.id = ? AND df.user_id = ?
+        ");
+        $stmt->execute([$demandeId, $userId]);
+        $demande = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        if (!$demande) return null;
+        
+        return [
+            'demande_frais' => $demande, 
+            'details_frais' => $this->model->getDetailsFrais($demandeId)
+        ];
     }
 
     /**
@@ -384,8 +401,70 @@ class DemandeController
                 throw new \Exception("Modification non autorisée ou demande non éditable.");
             }
 
-            // [RÉINTÉGRER LA LOGIQUE BDD COMPLÈTE ICI : Suppression, Modification, Ajout des détails]
-            // Pour la complétude, j'ai laissé la vérification SQL, mais le corps des boucles de traitement des détails doit être inséré ici.
+            // 2. Suppression des détails demandés
+            if (!empty($detailsToDelete)) {
+                // Récupérer les chemins des fichiers à supprimer pour nettoyage physique
+                if ($fileHandler) {
+                    $placeholders = implode(',', array_fill(0, count($detailsToDelete), '?'));
+                    $stmtGetFiles = $this->pdo->prepare("SELECT justificatif_path FROM details_frais WHERE id IN ($placeholders) AND demande_id = ?");
+                    $stmtGetFiles->execute(array_merge($detailsToDelete, [$demandeId]));
+                    $filesToDeletePhysical = array_merge($filesToDeletePhysical, $stmtGetFiles->fetchAll(\PDO::FETCH_COLUMN));
+                }
+
+                $placeholders = implode(',', array_fill(0, count($detailsToDelete), '?'));
+                $stmtDelete = $this->pdo->prepare("DELETE FROM details_frais WHERE id IN ($placeholders) AND demande_id = ?");
+                $stmtDelete->execute(array_merge($detailsToDelete, [$demandeId]));
+            }
+
+            // 3. Traitement des détails (Ajout / Modification)
+            $stmtInsertDetail = $this->pdo->prepare("
+                INSERT INTO details_frais (demande_id, date_depense, categorie_id, montant, description, justificatif_path)
+                VALUES (:demande_id, :date_depense, :categorie_id, :montant, :description, :justificatif_path)
+            ");
+
+            $stmtUpdateDetail = $this->pdo->prepare("
+                UPDATE details_frais 
+                SET date_depense = :date_depense, 
+                    categorie_id = :categorie_id, 
+                    montant = :montant, 
+                    description = :description, 
+                    justificatif_path = :justificatif_path 
+                WHERE id = :id AND demande_id = :demande_id
+            ");
+
+            foreach ($details as $detail) {
+                // Préparation des données
+                $params = [
+                    ':date_depense' => $detail['date_depense'],
+                    ':categorie_id' => $detail['id_categorie_frais'],
+                    ':montant' => $detail['montant'],
+                    ':description' => $detail['description'],
+                    ':justificatif_path' => $detail['justificatif_path']
+                ];
+
+                if (!empty($detail['id_detail_frais'])) {
+                    // --- UPDATE ---
+                    // Si un nouveau fichier a été uploadé, on peut vouloir supprimer l'ancien
+                    if ($fileHandler && !empty($detail['is_new_file'])) {
+                        $stmtOldFile = $this->pdo->prepare("SELECT justificatif_path FROM details_frais WHERE id = ?");
+                        $stmtOldFile->execute([$detail['id_detail_frais']]);
+                        $oldPath = $stmtOldFile->fetchColumn();
+                        if ($oldPath && $oldPath !== $detail['justificatif_path']) {
+                            $filesToDeletePhysical[] = $oldPath;
+                        }
+                    }
+
+                    $params[':id'] = $detail['id_detail_frais'];
+                    $params[':demande_id'] = $demandeId;
+                    $stmtUpdateDetail->execute($params);
+
+                } else {
+                    // --- INSERT ---
+                    $params[':demande_id'] = $demandeId;
+                    $stmtInsertDetail->execute($params);
+                }
+            }
+
 
             // 4. Recalculer le Montant Total FINAL
             $stmtTotal = $this->pdo->prepare("SELECT COALESCE(SUM(montant), 0) AS total FROM details_frais WHERE demande_id = ?");
@@ -417,6 +496,13 @@ class DemandeController
             $this->pdo->commit();
 
             // 6. Suppression physique des fichiers APRES commit
+            if ($fileHandler && !empty($filesToDeletePhysical)) {
+                foreach ($filesToDeletePhysical as $filePath) {
+                    if (!empty($filePath)) {
+                        $fileHandler->deleteFile($filePath);
+                    }
+                }
+            }
 
             // =================================================================
             // === LOGIQUE DE NOTIFICATION : Employé -> Manager ===
@@ -425,7 +511,7 @@ class DemandeController
             if ($manager_id > 0) {
                  $employe_nom = $_SESSION['user_full_name'] ?? ('Employé ID: ' . $userId);
                  $message_notif = "La demande n°{$demandeId} soumise par **{$employe_nom}** a été **MODIFIÉE** et est en attente de validation.";
-                 $lien_notif = "details_demande.php?id={$demandeId}";
+                 $lien_notif = "views/manager/details_demande.php?id={$demandeId}";
                  
                  $this->notifyUsers($manager_id, $demandeId, $message_notif, $lien_notif);
             }
@@ -492,7 +578,6 @@ class DemandeController
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
-            // Utilisation de la constante PDO::FETCH_ASSOC
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log("Erreur Recherche : " . $e->getMessage());

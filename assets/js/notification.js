@@ -1,8 +1,8 @@
 // Fichier: JavaScript
-$(document).ready(function() {
-    
+$(document).ready(function () {
+
     // Assurez-vous que API_ENDPOINT est défini dans votre code PHP/HTML principal
-    const apiEndpoint = API_ENDPOINT; 
+    const apiEndpoint = API_ENDPOINT;
     console.log("DEBUG: API_ENDPOINT défini comme:", apiEndpoint); // DEBUG 1
 
     // Fonction 1: Mettre à jour le Compteur (Badge)
@@ -14,21 +14,21 @@ $(document).ready(function() {
             url: url_count,
             method: 'GET',
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
                 console.log("DEBUG: Réponse 'count' reçue:", response); // DEBUG 3
-                
+
                 const count = response.total || 0;
                 const $notifCount = $('#notif-count');
-                
+
                 if (count > 0) {
                     $notifCount.text(count).show();
                 } else {
                     $notifCount.hide();
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                 // Gestion d'erreur spécifique pour le compteur
-                 console.error("ERREUR AJAX 'count' (le badge):", textStatus, errorThrown, jqXHR.responseText);
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gestion d'erreur spécifique pour le compteur
+                console.error("ERREUR AJAX 'count' (le badge):", textStatus, errorThrown, jqXHR.responseText);
             }
         });
     }
@@ -37,7 +37,7 @@ $(document).ready(function() {
     function loadNotificationList() {
         const $modalBody = $('#notif-modal-body');
         $modalBody.html('<p class="text-center text-muted p-4">Chargement des notifications...</p>');
-        
+
         const url_list = apiEndpoint + '?action=list';
         console.log("DEBUG: Appel AJAX 'list' URL:", url_list); // DEBUG 4
 
@@ -45,26 +45,26 @@ $(document).ready(function() {
             url: url_list,
             method: 'GET',
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
                 console.log("DEBUG: Réponse 'list' reçue:", response); // DEBUG 5
 
                 $modalBody.empty(); // Vider le contenu
 
                 if (response.notifications && response.notifications.length > 0) {
                     let htmlContent = '<ul style="list-style: none; padding: 0; margin: 0;">';
-                    
-                    response.notifications.forEach(function(notif) {
-                        
+
+                    response.notifications.forEach(function (notif) {
+
                         // ... (Logique d'affichage inchangée) ...
                         const displayDate = notif.date_creation ? notif.date_creation.substring(0, 10) : 'N/A';
                         const isUnread = notif.lue == 0;
-                        const liStyle = isUnread ? 
-                            `background-color: var(--bs-light); font-weight: bold; border-left: 4px solid var(--primary-color);` : 
+                        const liStyle = isUnread ?
+                            `background-color: var(--bs-light); font-weight: bold; border-left: 4px solid var(--primary-color);` :
                             `background-color: transparent; border-left: 4px solid transparent;`;
 
-                        const textClass = isUnread ? 'text-dark' : 'text-muted'; 
+                        const textClass = isUnread ? 'text-dark' : 'text-muted';
                         const dateTextClass = isUnread ? 'text-secondary' : 'text-muted';
-                        
+
                         htmlContent += `
                             <li style="${liStyle} padding: 12px 15px; border-bottom: 1px solid var(--table-border); cursor: pointer;">
                                 <a href="${notif.lien_url}" class="text-decoration-none d-block ${textClass}" style="color: inherit;">
@@ -75,22 +75,22 @@ $(document).ready(function() {
                                 </a>
                             </li>`;
                     });
-                    
+
                     htmlContent += '</ul>';
-                   
-                        
+
+
                     $modalBody.html(htmlContent);
 
                     // Après avoir chargé la liste, on la marque comme lue
                     markNotificationsAsRead();
-                    
+
                 } else {
                     console.log("DEBUG: 'list' est vide ou ne contient pas 'notifications'."); // DEBUG 6
-                    $modalBody.html('<p class="text-center text-info p-3">Aucune notification récente.</p>');
+                    $modalBody.html('<p class="text-center p-3" style="color: #2566A1;">Aucune notification récente.</p>');
                     updateNotificationCount();
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 // IMPORTANT : Gestion d'erreur AJAX améliorée
                 $modalBody.html('<p class="text-center text-danger p-4">❌ Erreur lors du chargement des notifications. (Code: ' + jqXHR.status + ')</p>');
                 console.error("ERREUR AJAX 'list':", textStatus, errorThrown, jqXHR.responseText); // DEBUG 7
@@ -105,16 +105,16 @@ $(document).ready(function() {
 
         $.ajax({
             url: url_mark,
-            method: 'POST', 
+            method: 'POST',
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
                 console.log("DEBUG: Réponse 'mark_as_read' reçue:", response); // DEBUG 9
                 const $notifCount = $('#notif-count');
-                $notifCount.hide().text(''); 
+                $notifCount.hide().text('');
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                 // Gestion d'erreur spécifique pour le marquage
-                 console.error("ERREUR AJAX 'mark_as_read':", textStatus, errorThrown, jqXHR.responseText);
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gestion d'erreur spécifique pour le marquage
+                console.error("ERREUR AJAX 'mark_as_read':", textStatus, errorThrown, jqXHR.responseText);
             }
         });
     }
@@ -122,13 +122,13 @@ $(document).ready(function() {
     // ----------------------------------------------------
     // 4. Déclencheurs et Initialisation
     // ----------------------------------------------------
-    
-    $('#notificationModal').on('show.bs.modal', function() {
+
+    $('#notificationModal').on('show.bs.modal', function () {
         console.log("INFO: Modal ouvert, appel de loadNotificationList."); // DEBUG 10
-        loadNotificationList(); 
+        loadNotificationList();
     });
 
-    updateNotificationCount(); 
-    
-    setInterval(updateNotificationCount, 60000); 
+    updateNotificationCount();
+
+    setInterval(updateNotificationCount, 60000);
 });

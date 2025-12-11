@@ -73,9 +73,15 @@ $historique_url = BASE_URL . $settings_target . '?tab=notifications';
                 <?php endif; ?>
 
                 <?php if ($role == 'admin'): ?>
+                       <li class="nav-link">
+                        <a href="<?= BASE_URL ?>views/admin/liste_demandes.php">
+                            <i class='bx bx-check-shield icon'></i>
+                            <span class="text nav-text">Demandes de frais</span>
+                        </a>
+                    </li>
                     <li class="nav-link">
                         <a href="<?= BASE_URL ?>views/admin/gestion_users.php">
-                            <i class='bx bx-user-cog icon'></i>
+                         <i class='bx bx-user-circle icon'></i>
                             <span class="text nav-text">Gestion des utilisateurs</span>
                         </a>
                     </li>

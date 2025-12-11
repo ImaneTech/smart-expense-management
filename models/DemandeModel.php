@@ -145,7 +145,7 @@ class DemandeModel {
     }
 
     public function getDetailsFrais(int $demandeId): array {
-        $sql = "SELECT df.*, cf.nom AS nom_categorie
+        $sql = "SELECT df.*, cf.nom AS categorie_nom
                 FROM {$this->detailsTable} df
                 JOIN categories_frais cf ON df.categorie_id = cf.id
                 WHERE df.demande_id = ?";
@@ -347,8 +347,10 @@ public function addDetailFrais(int $demandeId, array $detail) {
     
     try {
         $justificatif_path = $detail['justificatif_path'] ?? null;
+        error_log("addDetailFrais: Attempting to insert detail for demande_id=$demandeId");
+        error_log("Detail data: " . print_r($detail, true));
 
-        return $stmt->execute([
+        $result = $stmt->execute([
             ':demande_id' => $demandeId,
             ':categorie_id' => $detail['categorie_id'],
             ':date_depense' => $detail['date_depense'],
@@ -356,6 +358,11 @@ public function addDetailFrais(int $demandeId, array $detail) {
             ':description' => $detail['description'],
             ':justificatif_path' => $justificatif_path
         ]);
+        error_log("addDetailFrais result: " . ($result ? 'SUCCESS' : 'FAILED'));
+        if ($result) {
+            error_log("Inserted detail with ID: " . $this->pdo->lastInsertId());
+        }
+        return $result;
     } catch (PDOException $e) {
         error_log("Erreur PDO dans addDetailFrais : " . $e->getMessage());
         return false;

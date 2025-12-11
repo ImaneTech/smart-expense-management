@@ -70,7 +70,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             <th>Date Retour</th>
                             <th>Statut</th>
                             <th>Montant Total</th>
-                            <th class="text-end pe-4">Actions</th> 
+                            <th class="text-end pe-4">Détails</th> 
                         </tr>
                     </thead>
                 </table>

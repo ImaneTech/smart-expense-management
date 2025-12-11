@@ -2,10 +2,10 @@
 // =============================================
 // ======= CONTROLLER CATEGORIE ================
 // Fichier : controllers/CategorieController.php
+// Consolidated version - Merges Admin API and Session-based functionality
 // =============================================
 
-require_once __DIR__ . '/../models/CategorieModel.php'; 
-// Assurez-vous que BASE_URL et BASE_PATH sont définis dans config.php
+require_once __DIR__ . '/../Models/CategorieModel.php'; 
 
 // =============================================
 // ======= DEFINITION DE LA CLASSE =============
@@ -13,14 +13,16 @@ require_once __DIR__ . '/../models/CategorieModel.php';
 class CategorieController {
 
     private $model;
-
+    
     // =============================================
     // ======= CONSTRUCTEUR =======================
-    // Initialise le modèle et vérifie l'authentification admin
+    // Initialise le modèle (auth check optionnel)
     // =============================================
-    public function __construct($db) {
+    public function __construct($db, $checkAuth = true) {
         $this->model = new CategorieModel($db);
-        $this->checkAuth();
+        if ($checkAuth) {
+            $this->checkAuth();
+        }
     }
 
     // =============================================
@@ -36,6 +38,120 @@ class CategorieController {
             exit;
         }
     }
+
+    // =============================================
+    // ======= API REQUEST HANDLER ================
+    // Centralise la gestion des requêtes API pour les catégories
+    // =============================================
+    public function handleApiRequest(string $action, array $requestData, array $postData): void {
+        try {
+            switch ($action) {
+                case 'get_categories':
+                    $this->getCategories();
+                    break;
+                case 'get_stats': // Utilisé pour le total des catégories
+                    $this->getStats();
+                    break;
+                case 'create':
+                    $this->createCategorieApi($postData);
+                    break;
+                case 'update':
+                    $this->updateCategorieApi($postData);
+                    break;
+                case 'delete':
+                    $this->deleteCategorieApi($postData['id'] ?? 0);
+                    break;
+                case 'export':
+                    $this->exportCategories();
+                    break;
+                default:
+                    $this->sendJson(['success' => false, 'message' => 'Action de catégorie non reconnue']);
+            }
+        } catch (Exception $e) {
+            $this->sendJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    // =============================================
+    // ======= JSON RESPONSE HELPER ===============
+    // =============================================
+    private function sendJson(array $data): void {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data);
+    }
+
+    // =============================================
+    // ======= API METHODS ========================
+    // =============================================
+
+    private function getStats(): void {
+        $count = $this->model->getTotalCount();
+        $this->sendJson(['total' => $count]);
+    }
+    
+    private function getCategories(): void {
+        $categories = $this->model->getAll();
+        $this->sendJson($categories);
+    }
+
+    private function createCategorieApi(array $postData): void {
+        $nom = trim($postData['nom'] ?? '');
+        $description = trim($postData['description'] ?? '');
+
+        if (empty($nom)) {
+            throw new Exception('Le nom de la catégorie est obligatoire');
+        }
+
+        $newId = $this->model->create($nom, $description ?: null);
+        
+        $this->sendJson(['success' => true, 'message' => 'Catégorie créée avec succès', 'id' => $newId]);
+    }
+
+    private function updateCategorieApi(array $postData): void {
+        $id = (int)($postData['id'] ?? 0);
+        $nom = trim($postData['nom'] ?? '');
+        $description = trim($postData['description'] ?? '');
+
+        if (!$id || empty($nom)) {
+            throw new Exception('ID et nom de catégorie sont obligatoires pour la mise à jour');
+        }
+
+        $success = $this->model->update($id, $nom, $description ?: null);
+        
+        $this->sendJson(['success' => $success, 'message' => 'Catégorie modifiée avec succès']);
+    }
+
+    private function deleteCategorieApi(int $id): void {
+        if (!$id) {
+            throw new Exception('ID catégorie manquant pour la suppression');
+        }
+        $success = $this->model->delete($id);
+        $this->sendJson(['success' => $success, 'message' => 'Catégorie supprimée avec succès']);
+    }
+
+    private function exportCategories(): void {
+        $categories = $this->model->getAllForExport();
+        
+        // Création du fichier CSV
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=categories_' . date('Y-m-d') . '.csv');
+
+        $output = fopen('php://output', 'w');
+        
+        fputcsv($output, ['ID', 'Nom', 'Description']);
+        
+        foreach ($categories as $cat) {
+            fputcsv($output, [$cat['id'], $cat['nom'], $cat['description']]);
+        }
+        
+        fclose($output);
+        exit;
+    }
+
+    // =============================================
+    // ======= SESSION-BASED METHODS ==============
+    // (For backward compatibility with existing views)
+    // =============================================
 
     // =============================================
     // ======= LISTE DES CATEGORIES ===============

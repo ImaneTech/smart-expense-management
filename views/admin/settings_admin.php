@@ -146,13 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
 
-            <div class="tab-pane fade <?= $activeTab=='categories'?'show active':'' ?>" id="categories" role="tabpanel">
-                <h5 class="fw-bold mb-4" style="color: var(--text-color);">Gestion des Catégories de Frais</h5>
-                <div class="alert alert-warning text-center" role="alert">
-                    <i class="fas fa-tools me-2"></i> **Fonctionnalité en développement.** <br>
-                    Le CRUD des catégories sera inséré ici (Ajout/Modification/Suppression des types de frais).
-                </div>
-            </div>
+           
 
             <div class="tab-pane fade <?= $activeTab=='notifications'?'show active':'' ?>" id="notifications" role="tabpanel">
                  <?php 

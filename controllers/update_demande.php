@@ -47,8 +47,6 @@ if (empty($details_data) && empty($details_to_delete)) {
 // 2. Validation et traitement des détails (fichiers inclus)
 $processed_details = [];
 $upload_dir_relative = 'uploads/justificatifs/';
-// ⭐ Correction 1 : Instanciation de la classe FileHandler. 
-// Le nom de la classe est 'FileHandler' (comme défini précédemment), pas 'FileUploader' ou 'File'.
 $fileHandler = new FileHandler($upload_dir_relative); 
 
 
@@ -82,8 +80,6 @@ foreach ($details_data as $key => $detail) {
     // Tentative de téléchargement du nouveau fichier
     if (!empty($uploaded_file_name)) {
         try {
-            // ⭐ Correction 2 : Utilisation de la bonne instance et méthode du FileHandler
-            // La méthode 'handleUpload' ou 'handleUploadCustomName' doit prendre les clés d'index.
             $new_file_path = $fileHandler->handleUpload($_FILES, "details", $file_keys);
             
             // Si l'upload réussit, on met à jour le chemin
@@ -95,15 +91,15 @@ foreach ($details_data as $key => $detail) {
         }
     }
     
-    // Si nouvelle ligne, le justificatif est obligatoire (si aucune erreur n'a été ajoutée)
-    // Et si c'est une ligne existante sans justificatif précédent, il reste obligatoire
-    if (
-        (!isset($detail['id_detail_frais']) || !$justificatif_path) && // S'il n'existe pas en BDD ou n'est pas rempli
-        !$is_new_file_uploaded 
-    ) {
-         $errors[] = "Le justificatif est obligatoire pour la dépense.";
-         continue;
+    // Validation: justificatif is only required for NEW details that don't have a file uploaded
+    if (!isset($detail['id_detail_frais'])) {
+        // This is a new detail - justificatif is required
+        if (!$is_new_file_uploaded && empty($justificatif_path)) {
+            $errors[] = "Le justificatif est obligatoire pour la dépense.";
+            continue;
+        }
     }
+    // For existing details, justificatif_path_old will be preserved if no new file is uploaded
 
 
     $processed_details[] = [
@@ -136,7 +132,7 @@ try {
         'date_retour' => $date_retour,
     ];
     
-    // ⭐ Correction 3 : Passer l'instance de FileHandler à updateDemande 
+    // Passer l'instance de FileHandler à updateDemande 
     // pour que le contrôleur de domaine puisse gérer la suppression des anciens fichiers.
     $success = $demandeController->updateDemande($demande_id, $user_id, $demande_data, $processed_details, $details_to_delete, $fileHandler);
 

@@ -1,5 +1,5 @@
 // Définition de l'URL de l'API
-const API_URL = 'http://localhost/smart-expense-management/api/admin.php'; 
+const API_URL = 'http://localhost/smart-expense-management/api/admin.php';
 let currentFilter = 'all';
 
 // 💡 CORRECTION : La variable doit inclure "liste_demandes.php"
@@ -18,14 +18,14 @@ const STATUT_BADGE_MAP = {
     'payee': { text: 'Payée', class: 'bg-info' }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log(`🚀 Application démarrée. Mode: ${isDashboardView ? 'Dashboard Limité' : 'Liste Complète'}`);
-    
+
     // Charger les stats uniquement si les éléments du Dashboard existent
     if (document.getElementById('stat-validees')) {
         loadStats();
     }
-    
+
     loadDemandes();
     setupModalStatutMapping();
 });
@@ -44,7 +44,7 @@ function setupModalStatutMapping() {
 
     const editStatutSelect = document.getElementById('edit_statut');
     if (editStatutSelect) {
-         editStatutSelect.innerHTML = Object.entries(STATUT_BADGE_MAP).map(([key, info]) => {
+        editStatutSelect.innerHTML = Object.entries(STATUT_BADGE_MAP).map(([key, info]) => {
             return `<option value="${key}">${info.text}</option>`;
         }).join('');
     }
@@ -54,7 +54,7 @@ function setupModalStatutMapping() {
 // #region Data Loading
 function loadStats() {
     if (!document.getElementById('stat-validees')) return;
-    
+
     fetch(`${API_URL}?action=get_stats`)
         .then(response => response.json())
         .then(data => {
@@ -76,7 +76,7 @@ function loadDemandes(statut = null) {
     if (loadingElement) {
         loadingElement.style.display = 'block';
     }
-    
+
     let url = `${API_URL}?action=get_demandes`;
     if (statut && statut !== 'all') {
         url += `&statut=${encodeURIComponent(statut)}`;
@@ -98,7 +98,7 @@ function loadDemandes(statut = null) {
                 console.error('❌ API RESPONSE TEXT:', text);
                 throw new Error('La réponse de l\'API n\'est pas un JSON valide. Voir la console pour le texte brut de l\'erreur.');
             }
-            
+
             if (loadingElement) {
                 loadingElement.style.display = 'none';
             }
@@ -121,7 +121,7 @@ function displayDemandes(demandes) {
     const totalDemandes = document.getElementById('total-demandes');
 
     if (totalDemandes) totalDemandes.textContent = demandes.length;
-    if (!tbody) return; 
+    if (!tbody) return;
 
     let dataToDisplay = demandes;
 
@@ -129,15 +129,15 @@ function displayDemandes(demandes) {
     if (isDashboardView) {
         dataToDisplay = demandes.slice(0, MAX_DASHBOARD_ROWS);
     }
-    
+
     // CORRECTION Colspan : 6 cols pour Dashboard, 7 cols pour Liste Complète
-    const colSpan = isDashboardView ? 6 : 7; 
+    const colSpan = isDashboardView ? 6 : 7;
 
     if (!Array.isArray(dataToDisplay) || dataToDisplay.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${colSpan}" class="text-center text-muted py-5">Aucune demande trouvée</td></tr>`;
         return;
     }
-    
+
     tbody.innerHTML = dataToDisplay.map(d => {
         const formatDate = (dateStr) => {
             if (!dateStr) return '-';
@@ -153,7 +153,7 @@ function displayDemandes(demandes) {
             try {
                 const date = new Date(dateStr);
                 if (isNaN(date)) return '-';
-                return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+                return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             } catch (e) {
                 return dateStr;
             }
@@ -177,11 +177,11 @@ function displayDemandes(demandes) {
                 </td>
             `;
         } else {
-             // DASHBOARD (6 colonnes, Actions omises)
-             userColumnClass = 'ps-4'; 
-             actionColumnHtml = ''; 
+            // DASHBOARD (6 colonnes, Actions omises)
+            userColumnClass = 'ps-4';
+            actionColumnHtml = '';
         }
-        
+
         // Structure de la ligne (7 <td> au total)
         return `
             <tr>
@@ -211,19 +211,16 @@ function getStatutBadge(statutKey) {
     const fallbackInfo = STATUT_BADGE_MAP[key];
 
     if (fallbackInfo) {
-         return `<span class="badge ${fallbackInfo.class}">${fallbackInfo.text}</span>`;
+        return `<span class="badge ${fallbackInfo.class}">${fallbackInfo.text}</span>`;
     }
-    
+
     return `<span class="badge bg-secondary">${statutKey || 'Inconnu'}</span>`;
 }
 
 function getActionButtons(id, statut) {
-    if (isDashboardView) return ''; 
-    
-    let buttons = '';
-    buttons += `<button class="btn btn-warning btn-sm" onclick="editDemande(${id})" title="Modifier" data-bs-toggle="modal" data-bs-target="#modifierDemandeModal"><i class="bi bi-pencil"></i></button>`;
-    buttons += `<button class="btn btn-danger btn-sm" onclick="deleteDemande(${id})" title="Supprimer"><i class="bi bi-trash"></i></button>`;
-    return buttons;
+    if (isDashboardView) return '';
+
+    return `<a href="details_demande.php?id=${id}" class="btn btn-info btn-sm text-white" title="Voir détails"><i class="bi bi-eye"></i></a>`;
 }
 
 function filterDemandes(statut, event) {
@@ -239,8 +236,8 @@ function filterDemandes(statut, event) {
 
 function collectFormData(formId, excludedFields = []) {
     const form = document.getElementById(formId);
-    if (!form) return null; 
-    
+    if (!form) return null;
+
     const formData = new FormData();
     const inputs = form.querySelectorAll('input, select, textarea');
 
@@ -251,7 +248,7 @@ function collectFormData(formId, excludedFields = []) {
             value = parseFloat(value);
         }
         if (value !== null && value !== undefined && value.toString().trim() !== '') {
-            const name = input.id.replace('edit_', ''); 
+            const name = input.id.replace('edit_', '');
             formData.append(name, value);
         }
     });
@@ -301,10 +298,10 @@ async function updateDemande() {
     }
 
     const formData = collectFormData('modifierDemandeForm');
-    if (!formData) return; 
-    
-    formData.append('id', id); 
-    
+    if (!formData) return;
+
+    formData.append('id', id);
+
     // 🗑️ CORRECTION CLÉ : SUPPRIMER user_id et manager_id de la vérification OBLIGATOIRE
     if (!formData.get('objet_mission') || !formData.get('lieu_deplacement') || !formData.get('date_depart') || !formData.get('date_retour')) {
         showAlert('Veuillez remplir tous les champs obligatoires (*)', 'warning');
@@ -336,33 +333,33 @@ async function updateDemande() {
 }
 
 function editDemande(id) {
- 
-    
+
+
     fetch(`${API_URL}?action=get_demande_by_id&id=${id}`)
         .then(response => response.json())
         .then(data => {
-          
-            
+
+
             if (!data || !data.id) {
                 showAlert('Demande introuvable', 'danger');
                 return;
             }
-            
+
             const modalElement = document.getElementById('modifierDemandeModal');
             if (modalElement) {
                 document.getElementById('edit_demande_id').value = data.id;
                 const editUserIdField = document.getElementById('edit_user_id');
-    if (editUserIdField) {
-        editUserIdField.value = data.user_id || '';
-    }
-        
+                if (editUserIdField) {
+                    editUserIdField.value = data.user_id || '';
+                }
+
                 document.getElementById('edit_objet_mission').value = data.objet_mission || '';
                 document.getElementById('edit_lieu_deplacement').value = data.lieu_deplacement || '';
                 document.getElementById('edit_date_depart').value = data.date_depart ? data.date_depart.slice(0, 10) : '';
                 document.getElementById('edit_date_retour').value = data.date_retour ? data.date_retour.slice(0, 10) : '';
-                
-                document.getElementById('edit_statut').value = data.statut || 'en_attente'; 
-                
+
+                document.getElementById('edit_statut').value = data.statut || 'en_attente';
+
                 document.getElementById('edit_manager_id_validation').value = data.manager_id_validation || '';
                 document.getElementById('edit_montant_total').value = data.montant_total || 0.00;
                 document.getElementById('edit_commentaire_manager').value = data.commentaire_manager || '';
@@ -373,7 +370,7 @@ function editDemande(id) {
                 } else {
                     document.getElementById('edit_date_traitement').value = '';
                 }
-                
+
                 const modal = new bootstrap.Modal(modalElement);
                 modal.show();
             } else {
@@ -396,17 +393,17 @@ function deleteDemande(id) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadStats();
-            loadDemandes(currentFilter === 'all' ? null : currentFilter);
-            showAlert('Demande supprimée', 'success');
-        } else {
-            showAlert(data.message || 'Erreur lors de la suppression', 'danger');
-        }
-    })
-    .catch(error => console.error('Erreur:', error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadStats();
+                loadDemandes(currentFilter === 'all' ? null : currentFilter);
+                showAlert('Demande supprimée', 'success');
+            } else {
+                showAlert(data.message || 'Erreur lors de la suppression', 'danger');
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
 }
 
 function refreshData() {
@@ -421,7 +418,7 @@ function exportData() {
 
 function showAlert(message, type) {
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-custom`; 
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 alert-custom`;
     alertDiv.style.zIndex = '9999';
     alertDiv.innerHTML = `
         ${message}

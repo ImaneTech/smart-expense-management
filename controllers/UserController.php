@@ -1,9 +1,10 @@
 <?php
 // =============================================================
 // ================= USER CONTROLLER ==========================
-// Fichier : controllers/UserController.php
-// Gère l'inscription, la connexion, la réinitialisation de mot de passe
-// et les préférences utilisateur.
+// Fichier : Controllers/UserController.php
+// Consolidated version - Merges Admin API and Auth functionality
+// Gère l'inscription, la connexion, la réinitialisation de mot de passe,
+// les préférences utilisateur, et la gestion CRUD des utilisateurs (Admin)
 // =============================================================
 
 require_once(__DIR__ . '/../Models/User.php');
@@ -14,6 +15,7 @@ require_once __DIR__ . '/../includes/flash.php';
 class UserController
 {
     private $model;
+    private $pdo;
 
     // =============================================================
     // =================== CONSTRUCTEUR ===========================
@@ -21,11 +23,153 @@ class UserController
     // =============================================================
     public function __construct($pdo)
     {
+        $this->pdo = $pdo;
         $this->model = new UserModel($pdo);
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
+
+    // =============================================================
+    // ======= API REQUEST HANDLER (ADMIN) =======================
+    // Centralise la gestion des requêtes API
+    // =============================================================
+    public function handleApiRequest(string $action, array $requestData, array $postData): void {
+        try {
+            switch ($action) {
+                case 'get_stats':
+                    $this->getStatsApi();
+                    break;
+                case 'get_users':
+                    $this->getUsersApi($requestData['role'] ?? null);
+                    break;
+                case 'create':
+                    $this->createUserApi($postData);
+                    break;
+                case 'update':
+                    $this->updateUserApi($postData);
+                    break;
+                case 'delete':
+                    $this->deleteUserApi($postData['id'] ?? 0);
+                    break;
+                case 'export':
+                    $this->exportUsersApi();
+                    break;
+                default:
+                    $this->sendJson(['success' => false, 'message' => 'Action non reconnue']);
+            }
+        } catch (Exception $e) {
+            $this->sendJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    // =============================================================
+    // ======= JSON RESPONSE HELPER ===============================
+    // =============================================================
+    private function sendJson(array $data): void {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data);
+    }
+
+    // =============================================================
+    // ======= API METHODS (ADMIN) ================================
+    // =============================================================
+
+    private function getStatsApi(): void {
+        $stats = $this->model->getStats();
+        $this->sendJson($stats);
+    }
+
+    private function getUsersApi(?string $role): void {
+        $users = $this->model->getUsers($role);
+        $this->sendJson($users);
+    }
+
+    private function createUserApi(array $postData): void {
+        $requiredFields = ['first_name', 'last_name', 'email', 'phone', 'password', 'department'];
+        foreach ($requiredFields as $field) {
+            if (empty($postData[$field])) {
+                throw new Exception('Tous les champs obligatoires doivent être remplis.');
+            }
+        }
+
+        $data = [
+            'first_name' => $postData['first_name'],
+            'last_name' => $postData['last_name'],
+            'email' => $postData['email'],
+            'phone' => $postData['phone'],
+            'role' => $postData['role'] ?? 'employe',
+            'department' => $postData['department'],
+            'password' => $postData['password'],
+            'manager_id' => $postData['manager_id'] ?? null
+        ];
+
+        $newId = $this->model->createUserAdmin($data);
+        $this->sendJson([
+            'success' => true,
+            'message' => 'Utilisateur créé avec succès',
+            'id' => $newId
+        ]);
+    }
+
+    private function updateUserApi(array $postData): void {
+        $requiredFields = ['id', 'first_name', 'last_name', 'email', 'phone', 'department', 'role'];
+        
+        foreach ($requiredFields as $field) {
+            if (empty($postData[$field])) {
+                throw new Exception("Le champ '$field' est obligatoire.");
+            }
+        }
+
+        $data = [
+            'id' => $postData['id'],
+            'first_name' => $postData['first_name'],
+            'last_name' => $postData['last_name'],
+            'email' => $postData['email'],
+            'phone' => $postData['phone'],
+            'role' => $postData['role'],
+            'department' => $postData['department'],
+            'manager_id' => $postData['manager_id'] ?? null, 
+            'password' => $postData['password'] ?? null 
+        ];
+
+        $success = $this->model->updateUserAdmin($data);
+        $this->sendJson([
+            'success' => $success,
+            'message' => 'Utilisateur modifié avec succès'
+        ]);
+    }
+
+    private function deleteUserApi(int $id): void {
+        $success = $this->model->deleteUserAdmin($id);
+        $this->sendJson([
+            'success' => $success,
+            'message' => 'Utilisateur supprimé avec succès'
+        ]);
+    }
+
+    private function exportUsersApi(): void {
+        $users = $this->model->getAllUsersForExport();
+        
+        // Création du fichier CSV
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=utilisateurs_' . date('Y-m-d') . '.csv');
+
+        $output = fopen('php://output', 'w');
+        
+        fputcsv($output, ['ID', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Rôle', 'Département', 'Date création']);
+        
+        foreach ($users as $user) {
+            fputcsv($output, array_values($user));
+        }
+        
+        fclose($output);
+        exit;
+    }
+
+    // =============================================================
+    // =================== AUTHENTICATION METHODS =================
+    // =============================================================
 
     // =============================================================
     // =================== INSCRIPTION ============================
@@ -97,37 +241,36 @@ class UserController
     // =============================================================
     // =================== RÉINITIALISATION =======================
     // =============================================================
-/**
- * Envoie un email pour réinitialiser le mot de passe
- */
-public function sendResetPassword(string $email): bool
-{
-    $user = $this->model->findUserByEmail($email);
-    if (!$user) {
-        setFlash('danger', 'Aucun compte trouvé avec cet email.');
-        return false;
+    
+    /**
+     * Envoie un email pour réinitialiser le mot de passe
+     */
+    public function sendResetPassword(string $email): bool
+    {
+        $user = $this->model->findUserByEmail($email);
+        if (!$user) {
+            setFlash('danger', 'Aucun compte trouvé avec cet email.');
+            return false;
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $this->model->storeResetToken($email, $token);
+
+        $resetLink = BASE_URL . "views/auth/resetpassword.php?token={$token}";
+
+        $subject = "Réinitialisation de mot de passe - GoTrackr";
+
+        // On passe le lien à sendMail pour qu'il le mette dans le bouton
+        $body = $resetLink;
+
+        if (sendMail($email, $subject, $body)) {
+            setFlash('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
+            return true;
+        } else {
+            setFlash('danger', 'Erreur lors de l\'envoi de l\'email.');
+            return false;
+        }
     }
-
-    $token = bin2hex(random_bytes(32));
-    $this->model->storeResetToken($email, $token);
-
-    $resetLink = BASE_URL . "views/auth/resetpassword.php?token={$token}";
-
-    $subject = "Réinitialisation de mot de passe - GoTrackr";
-
-    // On passe le lien à sendMail pour qu’il le mette dans le bouton
-    $body = $resetLink;
-
-    if (sendMail($email, $subject, $body)) {
-        setFlash('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
-        return true;
-    } else {
-        setFlash('danger', 'Erreur lors de l\'envoi de l\'email.');
-        return false;
-    }
-}
-
-
 
     /**
      * Réinitialise le mot de passe à partir du token
@@ -153,4 +296,3 @@ public function sendResetPassword(string $email): bool
         return $this->model->getPreferredCurrency($userId);
     }
 }
-?>

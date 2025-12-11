@@ -20,12 +20,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../config.php';
 
-// Chemin correct (respect de la casse)
-require_once __DIR__ . '/../controllers/Employe/EmployeController.php';
-
-// Si FileHandler n'est pas autoloadé, décommente :
-// require_once BASE_PATH . 'includes/file_handler.php';
-
 if (!isset($pdo) || !$pdo instanceof PDO) {
     http_response_code(500);
     echo json_encode(['error' => 'Erreur de connexion à la base de données.']);
@@ -48,11 +42,7 @@ if ($action === null) {
 }
 
 try {
-    // Instanciation du contrôleur Employé
-    $controller = new Controllers\Employe\EmployeController($pdo, $employeId, BASE_PATH);
-
-    // ⚠️ SUPPRIMÉ : getFileHandler() n'existe pas → erreur fatale
-    // $fileHandler = $controller->getFileHandler(); 
+    // Using direct SQL queries for employee data
 
     // =========================================================
     //                    ROUTES / ACTIONS
@@ -60,42 +50,80 @@ try {
 
     if ($action === 'getDemandeStats') {
 
-        echo json_encode([
-            'success' => true,
-            'stats' => $controller->getDashboardStats()
-        ]);
+        // Get stats for the current employee
+        $sql = "SELECT statut, COUNT(*) AS total FROM demande_frais WHERE user_id = ? GROUP BY statut";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$employeId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $stats = ['en_attente' => 0, 'validees' => 0, 'rejetees' => 0];
+        foreach ($rows as $r) {
+            if ($r['statut'] === 'En attente') {
+                $stats['en_attente'] += (int)$r['total'];
+            } elseif ($r['statut'] === 'Validée' || $r['statut'] === 'Validée Manager') {
+                $stats['validees'] += (int)$r['total'];
+            } elseif ($r['statut'] === 'Rejetée' || $r['statut'] === 'Rejetée Manager') {
+                $stats['rejetees'] += (int)$r['total'];
+            }
+        }
+
+        echo json_encode(['success' => true, 'stats' => $stats]);
 
     } elseif ($action === 'getRecentDemandes') {
 
         $limit = (int)($_REQUEST['limit'] ?? 6);
-        echo json_encode([
-            'success' => true,
-            'demandes' => $controller->getDemandesByEmploye($limit)
-        ]);
+        
+        // Use direct integer in LIMIT to avoid PDO binding issues
+        $sql = "SELECT df.*, 
+                       (SELECT SUM(det.montant) FROM details_frais det WHERE det.demande_id = df.id) AS montant_total
+                FROM demande_frais df
+                WHERE df.user_id = ?
+                ORDER BY df.created_at DESC
+                LIMIT " . $limit;
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$employeId]);
+        $demandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['success' => true, 'demandes' => $demandes]);
 
     } elseif ($action === 'getDemandes') {
 
-        echo json_encode([
-            'success' => true,
-            'demandes' => $controller->getDemandesByEmploye(null)
-        ]);
+        $sql = "SELECT df.*, 
+                       (SELECT SUM(det.montant) FROM details_frais det WHERE det.demande_id = df.id) AS montant_total
+                FROM demande_frais df
+                WHERE df.user_id = ?
+                ORDER BY df.created_at DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$employeId]);
+        $demandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['success' => true, 'demandes' => $demandes]);
 
     } elseif ($action === 'submitDemande') {
 
-        echo json_encode(
-            $controller->submitNewDemande($_REQUEST, $_FILES)
-        );
+        // Use DemandeController's creerDemandeAction method
+        // This would require adapting the data format
+        echo json_encode(['success' => false, 'message' => 'Not implemented yet']);
 
     } elseif ($action === 'getDashboardData') {
 
-        echo json_encode([
-            'success' => true,
-            'data' => $controller->getEmployeDashboardData()
-        ]);
+        // Simple dashboard data for employee
+        $statsData = [];
+        $sql = "SELECT statut, COUNT(*) AS total FROM demande_frais WHERE user_id = ? GROUP BY statut";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$employeId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($rows as $r) {
+            $statsData[$r['statut']] = (int)$r['total'];
+        }
+
+        echo json_encode(['success' => true, 'data' => ['stats' => $statsData]]);
 
     } elseif ($action === 'deleteDemande') {
 
-        // Accepter POST + DELETE
         if (!in_array($_SERVER['REQUEST_METHOD'], ['POST', 'DELETE'])) {
             http_response_code(405);
             echo json_encode(['error' => 'Méthode non autorisée.']);
@@ -110,18 +138,32 @@ try {
             exit;
         }
 
-        // ⚠️ Tu dois remplacer cette ligne par ton vrai contrôleur de demandes
-        // Exemple :
-        // $demandeController = new Controllers\DemandeController($pdo);
-        $demandeController = $controller; // TEMPORAIRE : éviter erreur fatale
+        // Check if demande belongs to user and is "En attente"
+        $stmt = $pdo->prepare("SELECT statut FROM demande_frais WHERE id = ? AND user_id = ?");
+        $stmt->execute([$demandeId, $employeId]);
+        $demande = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $success = $demandeController->deleteDemande($demandeId, $employeId);
+        if (!$demande) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Demande introuvable ou accès refusé.']);
+            exit;
+        }
+
+        if ($demande['statut'] !== 'En attente') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Seules les demandes en attente peuvent être supprimées.']);
+            exit;
+        }
+
+        // Delete the demande
+        $stmt = $pdo->prepare("DELETE FROM demande_frais WHERE id = ? AND user_id = ?");
+        $success = $stmt->execute([$demandeId, $employeId]);
 
         if ($success) {
             echo json_encode(['success' => true, 'message' => 'Demande supprimée avec succès.']);
         } else {
-            http_response_code(403);
-            echo json_encode(['error' => 'La demande ne peut pas être supprimée (statut ou permission).']);
+            http_response_code(500);
+            echo json_encode(['error' => 'Erreur lors de la suppression.']);
         }
 
     } else {

@@ -31,13 +31,9 @@ $details = [];
 $errorMessage = '';
 $isEditable = false;
 
-$categories = [ // Récupération des catégories (idéalement depuis la BDD via un Controller/Model)
-    ['id' => 1, 'nom' => 'Transport (Hors Carburant)'],
-    ['id' => 2, 'nom' => 'Hébergement'],
-    ['id' => 3, 'nom' => 'Restauration'],
-    ['id' => 4, 'nom' => 'Carburant'],
-    ['id' => 5, 'nom' => 'Péage / Parking'],
-];
+// Fetch categories from database
+$categoriesStmt = $pdo->query("SELECT id, nom FROM categories_frais ORDER BY nom");
+$categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
 
 try {
     if ($demande_id === 0) {
@@ -296,13 +292,14 @@ require_once BASE_PATH . 'includes/header.php';
         
         // Fonction pour ajouter une ligne (pour les détails EXISTANTS ou NOUVEAUX)
         function addDetailRow(detail = {}) {
-            const index = detail.id_detail_frais ? `existing-${detail.id_detail_frais}` : `new-${detailCount++}`;
+            const detailId = detail.id || detail.id_detail_frais;
+            const index = detailId ? `existing-${detailId}` : `new-${detailCount++}`;
             const newRow = detailsTableBody.insertRow();
             newRow.id = `row-${index}`;
             
             // Si c'est un détail existant, on ajoute un champ caché pour l'ID
-            const existingIdField = detail.id_detail_frais 
-                ? `<input type="hidden" name="details[${index}][id_detail_frais]" value="${detail.id_detail_frais}">` 
+            const existingIdField = detailId 
+                ? `<input type="hidden" name="details[${index}][id_detail_frais]" value="${detailId}">` 
                 : '';
                 
             const today = new Date().toISOString().split('T')[0];
@@ -316,19 +313,19 @@ require_once BASE_PATH . 'includes/header.php';
                    <input type="hidden" name="details[${index}][justificatif_path_old]" value="${justificatifPath}">
                    <input type="file" class="form-control form-control-sm" name="details[${index}][justificatif_new]" accept="image/*,.pdf">
                    <small class="text-muted">Laisser vide pour garder l'ancien.</small>`
-                : `<input type="file" class="form-control form-control-sm" name="details[${index}][justificatif]" required accept="image/*,.pdf">`;
+                : `<input type="file" class="form-control form-control-sm" name="details[${index}][justificatif]" accept="image/*,.pdf">`;
 
             newRow.innerHTML = `
                 <td>
                     ${existingIdField}
                     <input type="date" class="form-control form-control-sm" name="details[${index}][date_depense]" required value="${dateValue}">
                 </td>
-                <td>${createCategorySelect(index, detail.id_categorie_frais)}</td>
+                <td>${createCategorySelect(index, detail.categorie_id)}</td>
                 <td><input type="number" step="0.01" class="form-control form-control-sm text-end montant-input" name="details[${index}][montant]" required value="${montantValue}"></td>
                 <td><input type="text" class="form-control form-control-sm" name="details[${index}][description]" maxlength="255" value="${descriptionValue}"></td>
                 <td>${fileInput}</td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-danger remove-detail-btn rounded-circle" data-row-id="row-${index}" data-detail-id="${detail.id_detail_frais ?? 0}">
+                    <button type="button" class="btn btn-danger remove-detail-btn rounded-circle" data-row-id="row-${index}" data-detail-id="${detailId ?? 0}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </td>
