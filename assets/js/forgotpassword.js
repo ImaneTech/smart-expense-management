@@ -1,6 +1,6 @@
 /* ========================   Gestion mot de passe oublié ======================= */
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("forgotPasswordForm");
     if (!form) return;
 
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
     emailField.addEventListener("input", validateEmail);
 
     // Validation au submit avec popup
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", function (e) {
         let valid = validateEmail();
 
         if (!valid) {
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const alertDiv = document.createElement("div");
             alertDiv.className = "alert alert-danger js-popup-alert position-fixed top-0 start-50 translate-middle-x mt-3";
             alertDiv.style.zIndex = "1050";
-          //  alertDiv.textContent = "Erreur : Veuillez entrer une adresse email valide.";
+            //  alertDiv.textContent = "Erreur : Veuillez entrer une adresse email valide.";
             document.body.appendChild(alertDiv);
 
             // Disparaît après 3 secondes

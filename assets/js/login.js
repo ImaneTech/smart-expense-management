@@ -15,7 +15,7 @@ function togglePassword(fieldId) {
 }
 
 /* ========================  Validation en temps réel ======================= */
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
     if (!form) return;
 

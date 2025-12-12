@@ -1,5 +1,5 @@
 // js/sidebar.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('sidebar');
     const body = document.body;
@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Toggle sidebar on button click
-    sidebarToggle.addEventListener('click', function() {
+    sidebarToggle.addEventListener('click', function () {
         sidebar.classList.toggle('collapsed');
         body.classList.toggle('sidebar-collapsed');
-        
+
         // Save state to localStorage
         const isCollapsed = sidebar.classList.contains('collapsed');
         localStorage.setItem('sidebarCollapsed', isCollapsed);
@@ -23,12 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Mobile: Toggle sidebar visibility
     if (window.innerWidth <= 768) {
-        sidebarToggle.addEventListener('click', function() {
+        sidebarToggle.addEventListener('click', function () {
             sidebar.classList.toggle('show');
         });
 
         // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
                 sidebar.classList.remove('show');
             }
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle window resize
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         if (window.innerWidth > 768) {
             sidebar.classList.remove('show');
         }

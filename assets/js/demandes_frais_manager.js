@@ -1,5 +1,5 @@
 // Recherche instantanée dans le tableau
-document.getElementById('searchInput').addEventListener('keyup', function() {
+document.getElementById('searchInput').addEventListener('keyup', function () {
     let filter = this.value.toLowerCase();
     let rows = document.querySelectorAll('#demandesTable tbody tr');
 

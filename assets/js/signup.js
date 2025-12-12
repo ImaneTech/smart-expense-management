@@ -56,7 +56,7 @@ window.addEventListener('load', function () {
 });
 
 /* ========================  Validation formulaire  ======================== */
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("signupForm");
     if (!form) return;
 
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const phoneRegex = /^0[67][0-9]{8}$/;
     const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/;
 
-/* ========================   Ajouter div pour message sous input ======================== */
+    /* ========================   Ajouter div pour message sous input ======================== */
     Object.values(fields).forEach(field => {
         if (field && field.tagName === "INPUT" || field.tagName === "SELECT") {
             let feedback = document.createElement("div");
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function() {
             field.parentNode.appendChild(feedback);
         }
     });
-/* ========================     Fonctions de validation  ======================== */
+    /* ========================     Fonctions de validation  ======================== */
     function markInvalid(input, message) {
         input.classList.add("is-invalid");
         input.classList.remove("is-valid");
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
 
-/* ========================   Validation en temps réel ======================== */
+    /* ========================   Validation en temps réel ======================== */
     fields.first_name.addEventListener("input", () => validateName(fields.first_name));
     fields.last_name.addEventListener("input", () => validateName(fields.last_name));
     fields.email.addEventListener("input", validateEmail);
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function() {
     fields.role.addEventListener("change", () => validateSelect(fields.role));
     fields.department.addEventListener("change", () => validateSelect(fields.department));
 
-/* ========================   Validation finale submit ======================== */
+    /* ========================   Validation finale submit ======================== */
     form.addEventListener("submit", function (e) {
         let valid =
             validateName(fields.first_name) &&

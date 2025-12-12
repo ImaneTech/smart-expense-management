@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
         sidebar.classList.toggle("close");
 
         // Rotate arrow dynamically
-        toggleSidebar.style.transform = sidebar.classList.contains("close") 
-            ? "translateY(-50%) rotate(180deg)" 
+        toggleSidebar.style.transform = sidebar.classList.contains("close")
+            ? "translateY(-50%) rotate(180deg)"
             : "translateY(-50%) rotate(0deg)";
     });
 

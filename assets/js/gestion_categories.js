@@ -1,15 +1,15 @@
 // DANS assets/js/gestion_categories.js
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-const API_URL = 'http://localhost/smart-expense-management/api/admin.php'; 
+const API_URL = 'http://localhost/smart-expense-management/api/admin.php';
 let allCategories = [];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('🚀 Gestion Catégories démarrée');
     loadCategories();
-    document.getElementById('searchInput').addEventListener('input', function() {
+    document.getElementById('searchInput').addEventListener('input', function () {
         filterCategoriesBySearch(this.value);
     });
 });
@@ -22,11 +22,11 @@ function loadCategories() {
         .then(data => {
             allCategories = data;
             displayCategories(data);
-            
+
             // NOTE: stat-total est supprimé du HTML, mais on garde total-categories
             const totalCategoriesElement = document.getElementById('total-categories');
             if (totalCategoriesElement) {
-                 totalCategoriesElement.textContent = data.length;
+                totalCategoriesElement.textContent = data.length;
             }
         })
         .catch(error => {
@@ -41,15 +41,15 @@ function displayCategories(categories) {
     const tbody = document.getElementById('categories-tbody');
     const totalCategoriesElement = document.getElementById('total-categories');
     if (totalCategoriesElement) totalCategoriesElement.textContent = categories.length;
-    
+
     // 🎯 Colspan ajusté à 3 (Nom, Description, Actions)
-    const colspan = 3; 
+    const colspan = 3;
 
     if (!Array.isArray(categories) || categories.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center text-muted py-5">Aucune catégorie trouvée</td></tr>`;
         return;
     }
-    
+
     tbody.innerHTML = categories.map(c => `
         <tr>
             <td class="ps-4">${c.nom || 'N/A'}</td> <td>${c.description || '-'}</td>
@@ -96,7 +96,7 @@ async function createCategorie() {
         if (data.success) {
             const modalElement = document.getElementById('nouvelleCategorieModal');
             if (modalElement) {
-                 bootstrap.Modal.getInstance(modalElement)?.hide();
+                bootstrap.Modal.getInstance(modalElement)?.hide();
             }
             document.getElementById('nouvelleCategorieForm').reset();
             loadCategories();
@@ -113,11 +113,11 @@ async function createCategorie() {
 function editCategorie(id) {
     const categorie = allCategories.find(c => c.id == id);
     if (!categorie) return;
-    
+
     document.getElementById('edit-id').value = categorie.id;
     document.getElementById('edit-nom').value = categorie.nom;
     document.getElementById('edit-description').value = categorie.description || '';
-    
+
     new bootstrap.Modal(document.getElementById('modifierCategorieModal')).show();
 }
 
@@ -139,7 +139,7 @@ async function updateCategorie() {
         if (data.success) {
             const modalElement = document.getElementById('modifierCategorieModal');
             if (modalElement) {
-                 bootstrap.Modal.getInstance(modalElement)?.hide();
+                bootstrap.Modal.getInstance(modalElement)?.hide();
             }
             loadCategories();
             showAlert('Catégorie modifiée avec succès', 'success');
@@ -156,20 +156,20 @@ function deleteCategorie(id) {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return;
     const formData = new FormData();
     formData.append('id', id);
-    fetch(`${API_URL}?action=cat_delete`, { method: 'POST', body: formData }) 
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadCategories();
-            showAlert('Catégorie supprimée', 'success');
-        } else {
-            showAlert(data.message || 'Erreur lors de la suppression', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        showAlert('Erreur lors de la suppression', 'danger');
-    });
+    fetch(`${API_URL}?action=cat_delete`, { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadCategories();
+                showAlert('Catégorie supprimée', 'success');
+            } else {
+                showAlert(data.message || 'Erreur lors de la suppression', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showAlert('Erreur lors de la suppression', 'danger');
+        });
 }
 
 // 🗑️ Les fonctions `refreshData` et `exportCategories` sont supprimées.

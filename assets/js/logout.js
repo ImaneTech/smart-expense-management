@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const countdownElement = document.getElementById('countdown');
-    
+
     // Check if variables exist (passed from PHP)
     if (typeof redirectDelay !== 'undefined' && typeof redirectUrl !== 'undefined') {
         let timeLeft = redirectDelay;
