@@ -144,7 +144,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Montant Total (€)</label>
+                            <label class="form-label fw-semibold">Montant Total (<?= $currencySymbol ?>)</label>
                             <input type="number" step="0.01" class="form-control" id="edit_montant_total">
                         </div>
                         

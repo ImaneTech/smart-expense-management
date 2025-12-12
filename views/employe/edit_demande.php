@@ -206,7 +206,7 @@ require_once BASE_PATH . 'includes/header.php';
                                 <div class="d-flex align-items-center ms-auto">
                                     <div class="total-frais-display me-3 p-2 rounded-3 fw-bold shadow-sm">
                                         Total provisoire :
-                                        <span id="totalMontantDisplay" class="text-primary-themed">0,00 Dhs</span> </div>
+                                        <span id="totalMontantDisplay" class="text-primary-themed">0,00 <?= $currencySymbol ?></span> </div>
                                     <button type="button" class="btn btn-secondary-themed fw-bold btn-sm rounded-pill px-3 py-1" id="addDetailBtn">
                                         <i class="fa fa-plus-circle me-1"></i> Ajouter une dépense
                                     </button>
@@ -220,7 +220,7 @@ require_once BASE_PATH . 'includes/header.php';
                                             <tr>
                                                 <th style="width:12%;">Date</th>
                                                 <th style="width:18%;">Catégorie</th>
-                                                <th style="width:15%;">Montant (Dhs)</th>
+                                                <th style="width:15%;">Montant (<?= $currencySymbol ?>)</th>
                                                 <th style="width:30%;">Description</th>
                                                 <th style="width:20%;">Justificatif</th>
                                                 <th style="width:5%;">Action</th>
@@ -283,7 +283,7 @@ require_once BASE_PATH . 'includes/header.php';
                 total += parseFloat(input.value.replace(',', '.')) || 0;
             });
             // Assurez-vous d'utiliser le bon symbole monétaire défini en PHP
-            totalMontantDisplay.textContent = total.toFixed(2).replace('.', ',') + ' Dhs'; 
+            totalMontantDisplay.textContent = total.toFixed(2).replace('.', ',') + ' ' + CURRENCY_SYMBOL; 
         }
 
         function updateNoDetailsMessage() {

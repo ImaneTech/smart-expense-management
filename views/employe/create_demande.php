@@ -142,7 +142,7 @@ $categories = [
                             <div class="d-flex align-items-center ms-auto">
                                 <div class="total-frais-display me-3 p-2 rounded-3 fw-bold shadow-sm">
                                     Total provisoire :
-                                    <span id="totalMontantDisplay" class="text-primary-themed">0,00 €</span>
+                                    <span id="totalMontantDisplay" class="text-primary-themed">0,00 <?= $currencySymbol ?></span>
                                 </div>
                                 <button type="button" class="btn btn-secondary-themed fw-bold btn-sm rounded-pill px-3 py-1" id="addDetailBtn">
                                     <i class="fa fa-plus-circle me-1"></i> Ajouter une dépense
@@ -157,7 +157,7 @@ $categories = [
                                         <tr>
                                             <th style="width:12%;">Date</th>
                                             <th style="width:18%;">Catégorie</th>
-                                            <th style="width:15%;">Montant (€)</th>
+                                            <th style="width:15%;">Montant (<?= $currencySymbol ?>)</th>
                                             <th style="width:30%;">Description</th>
                                             <th style="width:20%;">Justificatif</th>
                                             <th style="width:5%;">Action</th>
@@ -209,7 +209,7 @@ $categories = [
             detailsTableBody.querySelectorAll('.montant-input').forEach(input => {
                 total += parseFloat(input.value.replace(',', '.')) || 0;
             });
-            totalMontantDisplay.textContent = total.toFixed(2).replace('.', ',') + ' €';
+            totalMontantDisplay.textContent = total.toFixed(2).replace('.', ',') + ' ' + CURRENCY_SYMBOL;
         }
 
         function updateNoDetailsMessage() {

@@ -35,16 +35,16 @@ if (!class_exists('UserController')) {
     $managerCurrencyCode = $userController->getPreferredCurrency($managerId);
 }
 
-function getCurrencySymbol(string $code): string {
-    return match (strtoupper($code)) {
+// function getCurrencySymbol(string $code): string {
+/*    return match (strtoupper($code)) {
         'EUR' => '€',
         'USD' => '$',
         'MAD' => 'Dhs',
         'GBP' => '£',
         default => '$',
     };
-}
-$currencySymbol = getCurrencySymbol($managerCurrencyCode);
+} */
+// $currencySymbol = getCurrencySymbol($managerCurrencyCode);
 
 // --- Données ---
 $current_statut = $demande['statut'] ?? 'En attente';

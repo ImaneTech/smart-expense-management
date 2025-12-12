@@ -198,7 +198,7 @@ function displayDemandes(demandes) {
                 <td>${formatDate(d.date_depart)}</td>
                 <td>${formatDate(d.date_retour)}</td>
                 <td><span style="${statusBadgeStyle}">${d.statut || 'Inconnu'}</span></td>
-                <td class="text-theme-primary fw-bold">${montantTotal} €</td>
+                <td class="text-theme-primary fw-bold">${montantTotal} ${CURRENCY_SYMBOL}</td>
                 ${actionColumnHtml}
             </tr>
         `;

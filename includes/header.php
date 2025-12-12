@@ -96,6 +96,10 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
     
     <link rel="icon" href="<?= BASE_URL ?>assets/img/logo.png">
+    <script>
+        const BASE_URL = "<?= BASE_URL ?>";
+        const CURRENCY_SYMBOL = "<?= $currencySymbol ?>";
+    </script>
 </head>
 
 <body class="<?= $themeClass ?>">

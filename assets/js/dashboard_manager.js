@@ -4,7 +4,7 @@
  */
 
 // Durée de l'animation par défaut en millisecondes
-const ANIMATION_DURATION = 2000; 
+const ANIMATION_DURATION = 2000;
 
 /**
  * Fonction de formatage pour afficher les nombres (avec ou sans décimales).
@@ -18,8 +18,8 @@ function formatNumber(number, isAmount) {
         // Fixe à 2 décimales
         return number.toLocaleString('fr-FR', {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2 
-        });
+            maximumFractionDigits: 2
+        }) + ' ' + (typeof CURRENCY_SYMBOL !== 'undefined' ? CURRENCY_SYMBOL : '€') + ' est.';
     }
     // Pour les nombres entiers (arrondi au supérieur pour l'animation)
     return Math.ceil(number).toString();
@@ -33,7 +33,7 @@ function animateCounter(element) {
     // Récupère la valeur cible (nombre)
     const target = parseFloat(element.getAttribute('data-target'));
     const isAmount = element.classList.contains('is-amount');
-    
+
     let startTimestamp = null;
     let initialValue = 0; // Commence toujours à 0
 
@@ -48,10 +48,10 @@ function animateCounter(element) {
         const elapsed = timestamp - startTimestamp;
         // La progression va de 0 à 1
         const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
-        
+
         // Calcul de la valeur actuelle basée sur la progression
         const currentValue = progress * target;
-        
+
         // Mise à jour de l'affichage
         element.textContent = formatNumber(currentValue, isAmount);
 
@@ -68,7 +68,7 @@ function animateCounter(element) {
     if (target > 0) {
         window.requestAnimationFrame(step);
     } else {
-         element.textContent = formatNumber(target, isAmount);
+        element.textContent = formatNumber(target, isAmount);
     }
 }
 
@@ -79,7 +79,7 @@ function animateCounter(element) {
  */
 function initCounters() {
     const counters = document.querySelectorAll('.counter');
-    
+
     // Si IntersectionObserver n'est pas supporté, lancer immédiatement
     if (!('IntersectionObserver' in window)) {
         counters.forEach(animateCounter);
@@ -99,7 +99,7 @@ function initCounters() {
                 // Lancer l'animation
                 animateCounter(entry.target);
                 // Arrêter d'observer cet élément
-                observer.unobserve(entry.target); 
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
@@ -112,7 +112,7 @@ function initCounters() {
 /**
  * Fonction principale exécutée après le chargement du DOM.
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Dashboard Manager chargé. Démarrage des animations...');
 
     // 1. Démarrer l'initialisation des compteurs

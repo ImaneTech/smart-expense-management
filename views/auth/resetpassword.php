@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     } else {
         $result = $controller->resetPassword($token, $p1);
 
-        if ($result['type'] && $result['message']) {
-            setFlash($result['type'], $result['message']);
+        if ($result === true) {
+            // Le message flash est déjà défini dans le contrôleur
             header("Location: login.php"); // Redirection vers login après succès
             exit();
         }

@@ -149,7 +149,7 @@ $team_members = $data['team']; // Liste des membres d'équipe
                                     </td>
                                     <td><span class="table-primary-text"><?= htmlspecialchars($d['objet_mission']) ?></span></td>
                                     <td><span class="table-primary-text"><?= date('d/m/Y', strtotime($d['date_depart'])) ?></span></td>
-                                    <td><span class="text-highlight"><?= number_format($d['total_calcule'], 2) ?> €</span></td>
+                                    <td><span class="text-highlight"><?= number_format($d['total_calcule'], 2) ?> <?= $currencySymbol ?></span></td>
                                     <td class="text-end pe-4">
                                       
                                         <a href="<?= BASE_URL ?>views/manager/details_demande.php?id=<?= $d['id'] ?>" class="btn-action-icon ms-auto">
