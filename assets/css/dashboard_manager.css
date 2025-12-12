@@ -80,7 +80,7 @@ body.dark {
 /* Ajustements pour table moderne */
 .modern-table {
     width: 100%;
-    table-layout: fixed;
+    table-layout: auto; /* Changed from fixed to auto to prevent overlap */
 }
 .modern-table thead {
     border-top-left-radius: 15px; 
@@ -88,7 +88,7 @@ body.dark {
     overflow: hidden; 
 }
 .modern-table td, .modern-table th {
-    white-space: nowrap; 
+    white-space: normal; /* Changed from nowrap to normal to allow text wrapping */
     padding: 10px;
 }
 .modern-table td:last-child {

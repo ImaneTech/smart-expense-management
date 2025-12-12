@@ -391,19 +391,16 @@
     z-index: 10;
 }
 
-.table-body-scroll table {
-    border-collapse: collapse;
+.table-body-scroll {
+    overflow-y: auto;
+    width: 100%;
 }
 
-.table-body-scroll tr:nth-child(even) {
-    background-color: #f9f9f9;
+.table-wrapper {
+    overflow: hidden; /* Ensure rounded corners */
 }
-
-.table-body-scroll::-webkit-scrollbar {
-    width: 8px;
-}
-
-.table-body-scroll::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
-    border-radius: 4px;
+/* Ensure the table takes up full width for proper column alignment */
+.modern-table {
+    width: 100%;
+    table-layout: auto; /* Allow flexible column widths based on content/percentages */
 }

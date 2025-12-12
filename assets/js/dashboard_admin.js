@@ -194,7 +194,7 @@ function displayDemandes(demandes) {
                 <td class="${userColumnClass}">
                     <strong>${d.utilisateur_nom || d.utilisateur || '-'}</strong>
                 </td>
-                <td><div class="text-truncate" title="${d.objet_mission || '-'}">${d.objet_mission || '-'}</div></td>
+                <td><div title="${d.objet_mission || '-'}">${d.objet_mission || '-'}</div></td>
                 <td>${formatDate(d.date_depart)}</td>
                 <td>${formatDate(d.date_retour)}</td>
                 <td><span style="${statusBadgeStyle}">${d.statut || 'Inconnu'}</span></td>

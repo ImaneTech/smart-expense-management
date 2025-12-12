@@ -99,6 +99,7 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
     <script>
         const BASE_URL = "<?= BASE_URL ?>";
         const CURRENCY_SYMBOL = "<?= $currencySymbol ?>";
+        const USER_ID = <?= $user_id ?>;
     </script>
 </head>
 

@@ -53,9 +53,10 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
 
 <script>
     // **********************************************
-  const USER_ID = <?= $user_id ?>;
     // **********************************************
-    const CURRENCY_SYMBOL = '<?= htmlspecialchars($currencySymbol, ENT_QUOTES, 'UTF-8') ?>';
+    // Variables globales déplacées dans header.php (USER_ID, CURRENCY_SYMBOL)
+    // **********************************************
+    
     // Vérifie si Bootstrap est chargé, nécessaire pour la modale
     if (typeof bootstrap === 'undefined') {
         console.warn("Bootstrap JS n'est pas chargé. Les modales ne fonctionneront pas.");
@@ -141,9 +142,9 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
         <span id="results-count" class="badge bg-white text-secondary border shadow-sm px-3 py-2 rounded-pill"></span>
     </div>
 
-    <div class="table-wrapper">
+    <div class="table-wrapper table-body-scroll" style="max-height: 400px; overflow-y: auto;">
         <table class="modern-table w-100">
-            <thead>
+            <thead class="bg-white" style="position: sticky; top: 0; z-index: 10;">
                 <tr>
                     <th class="ps-4" style="width: 25%;">Objet Mission</th>
                     <th style="width: 15%;">Date Départ</th>
@@ -153,24 +154,19 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
                     <th class="pe-4 text-center" style="width: 15%;">Actions</th>
                 </tr>
             </thead>
-        </table>
-
-        <div class="table-body-scroll" style="max-height: 400px; overflow-y: auto;">
-            <table class="modern-table w-100">
-                <tbody id="demandes-tbody">
-                    <tr>
-                        <td colspan="6">
-                            <div class="loading-container p-5">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Chargement...</span>
-                                </div>
-                                <p class="mt-3 text-muted">Chargement de vos demandes...</p>
+            <tbody id="demandes-tbody">
+                <tr>
+                    <td colspan="6">
+                        <div class="loading-container p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                            <p class="mt-3 text-muted">Chargement de vos demandes...</p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 

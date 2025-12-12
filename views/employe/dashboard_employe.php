@@ -11,18 +11,12 @@ require_once BASE_PATH . 'includes/header.php';
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/demandes_employe.css">
 
 <script>
-    // Variables utilisées par demandes_employe.js / dashboard_employe.js
-    const USER_ID = <?= $user_id ?>;
-    const CURRENCY_SYMBOL = '<?= htmlspecialchars($currencySymbol, ENT_QUOTES, 'UTF-8') ?>';
+    // Variables globales déplacées dans header.php (USER_ID, CURRENCY_SYMBOL, BASE_URL)
+    
     // ******************************************************
     // ** CORRECTION CLÉ 1 : La limite est définie à 6. **
     const DEFAULT_ROW_LIMIT = 6; 
     // ******************************************************
-    
-    // Utilisation de window.BASE_URL pour éviter les erreurs de redéclaration
-    if (typeof window.BASE_URL === 'undefined') {
-        window.BASE_URL = '<?= BASE_URL ?>';
-    }
 
     if (typeof bootstrap === 'undefined') {
         console.warn("Bootstrap JS n'est pas chargé. Les modales ne fonctionneront pas.");

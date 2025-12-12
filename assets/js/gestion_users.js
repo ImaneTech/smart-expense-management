@@ -91,11 +91,11 @@ function displayUsers(users) {
 
 function getRoleBadge(role) {
     const badges = {
-        'admin': '<span class="role-badge role-admin">Admin</span>',
-        'manager': '<span class="role-badge role-manager">Manager</span>',
-        'employe': '<span class="role-badge role-employe">Employé</span>'
+        'admin': '<span class="badge-theme badge-reject">Admin</span>', // Light Red
+        'manager': '<span class="badge-theme badge-wait">Manager</span>', // Light Orange
+        'employe': '<span class="badge-theme badge-valid">Employé</span>' // Light Green
     };
-    return badges[role] || `<span class="role-badge bg-secondary">${role}</span>`;
+    return badges[role] || `<span class="badge-theme bg-light text-dark">${role}</span>`;
 }
 
 function filterUsers(role, event) {

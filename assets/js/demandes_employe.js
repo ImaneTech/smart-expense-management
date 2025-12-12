@@ -236,7 +236,46 @@ function applyFilters() {
     displayDemandes(filtered);
 }
 
-// ... (resetFilters and checkActiveFilters remain unchanged) ...
+
+/**
+ * Vérifie l'état des filtres pour afficher ou masquer le bouton "Réinitialiser".
+ */
+function checkActiveFilters() {
+    const search = document.getElementById('filter-search')?.value;
+    const statut = document.getElementById('filter-statut')?.value;
+    const dateDeb = document.getElementById('filter-date-debut')?.value;
+    const dateFin = document.getElementById('filter-date-fin')?.value;
+    const resetLink = document.getElementById('reset-link-container');
+
+    if (resetLink) {
+        if (search || statut || dateDeb || dateFin) {
+            resetLink.style.visibility = 'visible';
+        } else {
+            resetLink.style.visibility = 'hidden';
+        }
+    }
+}
+
+/**
+ * Réinitialise tous les champs de filtre et recharge la liste brute.
+ */
+function resetFilters() {
+    const search = document.getElementById('filter-search');
+    const statut = document.getElementById('filter-statut');
+    const dateDeb = document.getElementById('filter-date-debut');
+    const dateFin = document.getElementById('filter-date-fin');
+
+    if (search) search.value = '';
+    if (statut) statut.value = '';
+    if (dateDeb) dateDeb.value = '';
+    if (dateFin) dateFin.value = '';
+
+    // Masquer le lien
+    checkActiveFilters();
+
+    // Recharger la liste complète (non filtrée)
+    displayDemandes(allDemandes);
+}
 
 function getStatusTag(statut) {
     let className = 'status-tag ';
@@ -265,7 +304,8 @@ function getStatusTag(statut) {
 
 
 function displayDemandes(demandes) {
-    // ... (tbody check remains unchanged) ...
+    const tbody = document.getElementById('demandes-tbody');
+    if (!tbody) return;
 
     tbody.innerHTML = demandes.map(d => {
         const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString('fr-FR') : '-';

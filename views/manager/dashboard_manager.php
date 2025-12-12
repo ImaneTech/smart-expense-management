@@ -117,7 +117,7 @@ $team_members = $data['team']; // Liste des membres d'équipe
 
             <div class="table-responsive h-100" style="max-height: 500px; overflow-y: auto;">
                 <table class="modern-table">
-                    <thead>
+                    <thead style="position: sticky; top: 0; background: white; z-index: 5;">
                         <tr>
                             <th class="ps-4">Employé</th>
                             <th>Mission</th>
