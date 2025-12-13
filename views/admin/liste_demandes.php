@@ -67,9 +67,9 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
 
         <div class="table-scroll-wrapper px-4 py-4">
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                 <table class="modern-table">
-                    <thead>
+                    <thead style="position: sticky; top: 0; background: white; z-index: 5;">
                         <tr>
                             <th class="ps-4">Utilisateur</th> 
                             <th>Objet Mission</th>

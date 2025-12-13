@@ -140,6 +140,50 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
         font-size: 2rem;
         font-weight: 700;
     }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .container, .container * {
+            visibility: visible;
+        }
+        .container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 20px !important; /* Some padding for paper calculation */
+            margin: 0 !important;
+        }
+        
+        /* Cacher la sidebar, navbar, footer, boutons */
+        .sidebar, .navbar, header, footer, .btn, .no-print, .page-header-custom button {
+            display: none !important;
+        }
+
+        /* Layout modifications - Stack columns verticaly */
+        .col-lg-8, .col-lg-4 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+            display: block !important;
+        }
+
+        .card-custom {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            break-inside: avoid;
+        }
+
+        /* Remove backgrounds for ink saving */
+        body {
+            background: white !important;
+        }
+    }
 </style>
 
 <div class="container py-5">

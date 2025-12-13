@@ -121,9 +121,9 @@ function getHistoriqueBadgeClass(string $statut): string {
 
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light sticky-top">
+                    <thead class="table-light sticky-top" style="position: sticky; top: 0; z-index: 5;">
                         <tr>
                             <th class="ps-4">Employé</th>
                             <th>Mission & Dates</th>

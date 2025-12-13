@@ -167,9 +167,9 @@ function getFilterBtnStyle(string $statutKey, bool $isActive): string {
 
     <div class="card shadow-sm border-0 custom-table-card">
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                 <table class="table table-striped table-hover align-middle mb-0 modern-table">
-                    <thead>
+                    <thead style="position: sticky; top: 0; background: white; z-index: 5;">
                         <tr class="text-uppercase small text-muted table-header-theme" style="background-color: rgba(118, 189, 70, 0.15);">
                             <th class="ps-4">Employé</th>
                             <th>Objet</th>

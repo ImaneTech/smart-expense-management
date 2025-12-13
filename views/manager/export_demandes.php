@@ -63,7 +63,6 @@ $header = [
     'Nom Complet Employé',
     'Email Employé',
     'Objet Mission',
-    'Date de Départ',
     'Montant Total (' . $currencySymbol . ')',
     'Statut de la Demande'
 ];
@@ -77,7 +76,6 @@ if (!empty($demandes)) {
             $demande['first_name'] . ' ' . $demande['last_name'],
             $demande['email'],
             $demande['objet_mission'],
-            date('d/m/Y', strtotime($demande['date_depart'])),
             // **CHANGEMENT CLÉ 3 : Utilisation du point '.' comme séparateur décimal (standard CSV)**
             number_format($demande['total_calcule'] ?? 0, 2, '.', ''), 
             $demande['statut'] ?? 'Inconnu'

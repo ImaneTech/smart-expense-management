@@ -104,9 +104,9 @@ if (!defined('BASE_URL')) {
 
     <div class="table-container p-0 border-0 shadow-none" style="background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
         <div class="table-scroll-wrapper px-4 py-4">
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                 <table class="modern-table">
-                    <thead>
+                    <thead style="position: sticky; top: 0; background: white; z-index: 5;">
                         <tr>
                             <th class="ps-4">Prénom</th>
                             <th>Nom</th>

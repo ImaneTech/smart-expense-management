@@ -72,7 +72,7 @@ $notificationModel->marquerCommeLues($user_id);
                                 <th scope="col" style="width: 15%;">Date</th>
                                 <th scope="col" style="width: 65%;">Message</th>
                                 <th scope="col" class="text-center" style="width: 10%;">Statut</th>
-                                <th scope="col" class="text-end" style="width: 10%;">Action</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -90,7 +90,7 @@ $notificationModel->marquerCommeLues($user_id);
                                 </td>
                                 
                                 <td class="text-center"><?= $status_badge ?></td>
-                                <td class="text-end">
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>

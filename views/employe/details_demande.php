@@ -247,6 +247,71 @@ require_once BASE_PATH . 'includes/header.php';
     line-height: 1;
     transition: background 0.2s, color 0.2s;
 }
+
+@media print {
+    /* Cache les éléments de navigation et l'interface utilisateur générale */
+    body * {
+        visibility: hidden; 
+    }
+    
+    /* Affiche uniquement le contenu pertinent */
+    .outer-container, .outer-container * {
+        visibility: visible;
+    }
+
+    /* Positionnement absolu pour le contenu imprimable */
+    .outer-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        background-color: white !important;
+    }
+    
+    /* Reset styles inline des containers internes */
+    .outer-container > div {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Masquer Sidebar (App), Header, Footer, Boutons */
+    .sidebar, header, footer, .navbar, .btn, .no-print, .alert-footer-table, .page-header-custom .btn {
+        display: none !important;
+    }
+
+    /* Main content takes full width and stacks */
+    .col-lg-8, .col-lg-4 {
+        width: 100% !important; 
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        display: block !important; /* Force stacking */
+    }
+
+    /* Ajustements layout pour impression */
+    .col-lg-4, .col-lg-8 {
+        width: 100% !important; 
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        break-inside: avoid; 
+    }
+
+    /* Assurer que les liens/textes sont lisibles */
+    a {
+        text-decoration: none !important;
+        color: black !important;
+    }
+}
 </style>
 
 
@@ -258,9 +323,14 @@ require_once BASE_PATH . 'includes/header.php';
         <h1 class="fw-bold m-0 page-title">
             <i class="fa fa-file-invoice-dollar me-2 text-primary-themed"></i> Détails de la Demande <span class="text-secondary-themed">#<?= htmlspecialchars($demande_id) ?></span>
         </h1>
-        <a href="<?= BASE_URL ?>views/employe/employe_demandes.php" class="btn btn-secondary-outline fw-bold rounded-pill px-4 py-2 mt-3 mt-md-0">
-            <i class="fa fa-arrow-left me-1"></i> Retour aux Demandes
-        </a>
+        <div class="d-flex gap-2">
+             <button class="btn btn-secondary-outline fw-bold rounded-pill px-4 py-2 mt-3 mt-md-0 d-flex align-items-center" onclick="window.print()">
+                <i class="fa fa-print me-2"></i> Imprimer
+            </button>
+            <a href="<?= BASE_URL ?>views/employe/employe_demandes.php" class="btn btn-secondary-outline fw-bold rounded-pill px-4 py-2 mt-3 mt-md-0">
+                <i class="fa fa-arrow-left me-1"></i> Retour aux Demandes
+            </a>
+        </div>
     </div>
 
     <?php if ($errorMessage): ?>
