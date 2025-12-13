@@ -1,44 +1,26 @@
 <?php
-// Fichier: views/historique_notif.php (Inclus dans settings_manager.php)
-
-// --- Debugging (Optionnel) ---
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-
-// NOTE IMPORTANTE : Ce fichier est inclus DANS un autre fichier PHP (settings_manager.php).
-// Il ne doit contenir AUCUNE vérification de session, ni définition de constantes (BASE_PATH, BASE_URL), 
-// ni inclusion de fichiers déjà chargés (config.php, header.php).
-
-// ----------------------------------------------------------------------
-// CORRECTION CLÉ 1 : RETIRER L'INCLUSION DEPLACÉE DE CONFIG.PHP
-// ----------------------------------------------------------------------
+// Fichier: views/historique_notif.php
 
 $erreur_dependance = null;
 
-// ----------------------------------------------------------------------
-// CORRECTION CLÉ 2 : Logique de dépendance spécifique
-// ----------------------------------------------------------------------
 
 if (!isset($pdo) || !($pdo instanceof PDO)) {
-    // Problème A: La connexion PDO est manquante ou n'est pas un objet PDO.
+
     $erreur_dependance = "La connexion à la base de données (\$pdo) est manquante. Vérifiez l'ordre des inclusions dans le fichier parent (settings_manager.php).";
 } elseif (!isset($_SESSION['user_id'])) {
-    // Problème B: La session utilisateur est manquante (l'utilisateur n'est pas authentifié).
+
     $erreur_dependance = "L'ID utilisateur de la session est manquant. L'utilisateur n'est pas identifié.";
 }
 
 if ($erreur_dependance) {
-    // Afficher l'erreur spécifique
     echo "<div class='alert alert-danger'>
               <h4 class='alert-heading'>❌ Erreur Critique de Configuration</h4>
               <p>{$erreur_dependance}</p>
           </div>";
-    return; // Arrête l'exécution de la vue
+    return; 
 }
 
 // ----------------------------------------------------------------------
-// LOGIQUE PRINCIPALE (Exécutée si les dépendances sont OK)
 // ----------------------------------------------------------------------
 
 $user_id = $_SESSION['user_id'];
@@ -49,7 +31,7 @@ $notificationModel = new Notification($pdo);
 // Récupération de l'historique complet 
 $historique_notifications = $notificationModel->getAllNotifications($user_id);
 
-// Optionnel: On marque ici toutes les notifications comme lues
+//On marque ici toutes les notifications comme lues
 $notificationModel->marquerCommeLues($user_id); 
 ?>
 

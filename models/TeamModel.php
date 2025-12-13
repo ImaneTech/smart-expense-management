@@ -5,7 +5,7 @@ class TeamModel
 {
     private $pdo;
     private $userTable = 'users'; 
-    // private $teamTable est retiré car il n'est plus utilisé.
+
 
     public function __construct($pdo)
     {
@@ -67,13 +67,11 @@ class TeamModel
     {
         if (empty($memberIds)) return true;
 
-        // Préparation pour la mise à jour (Utilisation des paramètres nommés pour la clause IN)
         $updatePlaceholders = [];
         $paramsUpdate = [':managerIdUpdate' => $managerId];
         $k = 0;
         
         foreach ($memberIds as $memberId) {
-            // Création de placeholders nommés pour la clause IN (:updId0, :updId1, ...)
             $updatePlaceholders[] = ":updId{$k}";
             $paramsUpdate[":updId{$k}"] = (int) $memberId;
             $k++;
@@ -89,7 +87,6 @@ class TeamModel
         try {
             $stmtUpdate = $this->pdo->prepare($updateSql);
             
-            // Lie TOUS les paramètres nommés (manager et member IDs)
             foreach ($paramsUpdate as $key => $value) {
                 $stmtUpdate->bindValue($key, $value, PDO::PARAM_INT);
             }
@@ -98,7 +95,6 @@ class TeamModel
 
         } catch (PDOException $e) {
             error_log("SQL Error (addMembersToTeam): " . $e->getMessage());
-            // Si l'erreur persiste, le problème vient de la connexion ou du nom de table/colonne.
             return false;
         }
     }

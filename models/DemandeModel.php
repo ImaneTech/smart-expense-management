@@ -218,13 +218,7 @@ class DemandeModel {
     public function updateStatutFinal(int $id, string $nouveauStatutFinal, int $adminId, ?string $motif = null): bool {
         $this->pdo->beginTransaction();
         try {
-            // Admin updates 'statut_final'
-            // Also update 'statut' to reflect Admin action if needed (e.g. 'Validee Admin')
-            // But user requested: Admin uses statut_final.
-            
-            // Mapping for legacy 'statut' column compatibility if needed:
-            // If Admin Validates -> statut = 'validee_admin' (or similar)
-            // If Admin Rejects -> statut = 'Rejetée Admin' (or similar)
+
             
             $statutLegacy = ($nouveauStatutFinal === 'Validée') ? 'validee_admin' : 'Rejetée Admin';
 
@@ -235,8 +229,7 @@ class DemandeModel {
                 return false;
             }
 
-            // Log history?
-            // ...
+          
 
             $this->pdo->commit();
             return true;
@@ -370,14 +363,9 @@ public function createDemande(int $userId, array $data) {
             ':date_retour' => $data['date_retour']
         ]);
         
-        // Initialiser statut_final à 'En attente' par défaut (géré par la BDD normalement, mais on force ici pour être sûr)
-        // La colonne a un DEFAULT 'En attente', donc pas besoin de l'ajouter dans l'INSERT si on veut le défaut.
-        // Mais pour la clarté, on pourrait l'ajouter. Pour l'instant, on laisse le défaut BDD.
-        
+
         $demandeId = $this->pdo->lastInsertId();
-        // Optionnel: loguer la création dans historique_statuts
-        // $this->logStatutChange($demandeId, $userId, 'Création', 'En attente', 'Demande soumise.'); 
-        
+ 
         return (int)$demandeId;
     } catch (PDOException $e) {
         error_log("Erreur PDO dans createDemande : " . $e->getMessage());

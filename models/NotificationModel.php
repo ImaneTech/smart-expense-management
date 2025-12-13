@@ -8,7 +8,7 @@ class Notification {
      * @param PDO $pdo L'objet de connexion PDO à la base de données.
      */
     public function __construct(PDO $pdo) {
-        // Assurez-vous que le nom de la variable d'instance correspond à l'initialisation
+      
         $this->pdo = $pdo; 
     }
 
@@ -65,7 +65,7 @@ class Notification {
     public function getAllNotifications(int $user_id): array {
         $sql = "SELECT id, message, lien_url, date_creation, lue 
                 FROM notifications 
-                WHERE user_id_cible = :user_id /* CORRIGÉ: Utilise user_id_cible */
+                WHERE user_id_cible = :user_id 
                 ORDER BY date_creation DESC";
         
         $stmt = $this->pdo->prepare($sql);
@@ -83,7 +83,7 @@ class Notification {
      * Compte le nombre de notifications non lues.
      */
     public function compterNonLues(int $user_id): int {
-        $sql = "SELECT COUNT(id) FROM notifications WHERE user_id_cible = :user_id AND lue = 0"; /* CORRIGÉ: Utilise user_id_cible */
+        $sql = "SELECT COUNT(id) FROM notifications WHERE user_id_cible = :user_id AND lue = 0"; 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':user_id' => $user_id]);
 
@@ -94,7 +94,7 @@ class Notification {
      * Marque toutes les notifications non lues comme lues.
      */
     public function marquerCommeLues(int $user_id): bool {
-        $sql = "UPDATE notifications SET lue = 1 WHERE user_id_cible = :user_id AND lue = 0"; /* CORRIGÉ: Utilise user_id_cible */
+        $sql = "UPDATE notifications SET lue = 1 WHERE user_id_cible = :user_id AND lue = 0"; 
         $stmt = $this->pdo->prepare($sql);
         
         return $stmt->execute([':user_id' => $user_id]);

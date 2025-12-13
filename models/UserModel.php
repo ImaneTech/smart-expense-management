@@ -2,7 +2,6 @@
 // =============================================================
 // ================= USER MODEL ===============================
 // Fichier : Models/UserModel.php
-// Consolidated version - Merges Admin CRUD and Auth functionality
 // =============================================================
 
 require_once 'User.php';

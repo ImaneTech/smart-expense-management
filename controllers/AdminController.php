@@ -69,7 +69,7 @@ class AdminController {
             'rejetee_manager' => ['value' => 'Rejetée Manager', 'column' => 'statut'],
             // Legacy/Other
             'validee_admin' => ['value' => 'Validée', 'column' => 'statut_final'],
-            'payee' => ['value' => 'Payée', 'column' => 'statut'], // Assuming Payée is still in statut? Or statut_final? Let's keep statut for now.
+            'payee' => ['value' => 'Payée', 'column' => 'statut'], 
         ];
 
         $dbStatut = $statut;
@@ -143,24 +143,6 @@ class AdminController {
             return;
         }
 
-        // Pour l'instant, on met juste à jour le statut via updateStatut si présent,
-        // ou on pourrait implémenter une méthode updateDemande complète dans DemandeModel.
-        // Le dashboard admin semble vouloir tout modifier.
-        // Pour simplifier et répondre à l'urgence, on va supposer que l'admin modifie surtout le statut ou les infos de base.
-        // Mais DemandeModel n'a pas de méthode updateDemande générique (seulement updateStatut).
-        
-        // On va faire une mise à jour directe via SQL pour les champs de base pour l'instant
-        // car DemandeModel::createDemande est INSERT only.
-        
-        // TODO: Implémenter une vraie méthode update dans DemandeModel ou AdminModel.
-        // Pour l'instant, on va utiliser une méthode ad-hoc ici ou dans AdminModel.
-        // Utilisons AdminModel pour une update générique.
-        
-        // On va ajouter updateDemande à AdminModel dans la prochaine étape si besoin, 
-        // mais pour l'instant on va simuler le succès ou faire une update basique.
-        
-        // Vérifions si AdminModel a updateDemande... non.
-        // On va l'ajouter à AdminModel.
         
         $success = $this->updateDemandeInDb($id, $data);
         
@@ -182,23 +164,18 @@ class AdminController {
                 statut_final = :statut_final,
                 montant_total = :montant
                 WHERE id = :id";
-                
-        // Determine statut_final based on statut if not provided directly
-        // Or if admin provides statut_final directly.
-        // Let's assume data['statut'] is what the admin selected.
-        // If admin selects 'Validée', it means statut_final = 'Validée'.
+     
         
         $statut = $data['statut'] ?? 'En attente';
         $statutFinal = $data['statut_final'] ?? 'En attente';
         
-        // Logic sync:
-        // If admin sets 'Validée', statut_final = 'Validée', statut = 'validee_admin' (legacy)
+      
         if ($statut === 'Validée' || $statut === 'validee_admin') {
             $statutFinal = 'Validée';
             $statut = 'validee_admin';
         } elseif ($statut === 'Rejetée' || $statut === 'rejetee') {
             $statutFinal = 'Rejetée';
-            $statut = 'rejetee_admin'; // or keep previous?
+            $statut = 'rejetee_admin'; 
         }
         
         $stmt = $this->pdo->prepare($sql);

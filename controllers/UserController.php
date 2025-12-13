@@ -2,9 +2,7 @@
 // =============================================================
 // ================= USER CONTROLLER ==========================
 // Fichier : Controllers/UserController.php
-// Consolidated version - Merges Admin API and Auth functionality
-// Gère l'inscription, la connexion, la réinitialisation de mot de passe,
-// les préférences utilisateur, et la gestion CRUD des utilisateurs (Admin)
+
 // =============================================================
 
 require_once(__DIR__ . '/../Models/User.php');

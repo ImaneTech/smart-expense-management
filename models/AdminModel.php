@@ -38,7 +38,6 @@ class AdminModel {
         
         $params = [];
         if ($statut && $statut !== 'all') {
-            // Allow filtering by statut or statut_final
             $allowedColumns = ['statut', 'statut_final'];
             if (!in_array($column, $allowedColumns)) {
                 $column = 'statut';
@@ -65,16 +64,13 @@ class AdminModel {
     }
 
     public function deleteDemande(int $id): bool {
-        // Deleting a demand should cascade to details if foreign keys are set up, 
-        // but let's be safe and delete details first if needed, or rely on cascade.
-        // Assuming cascade or manual deletion.
+
         $this->pdo->beginTransaction();
         try {
-            // Delete details first
+          
             $stmtDetails = $this->pdo->prepare("DELETE FROM {$this->detailsTable} WHERE demande_id = ?");
             $stmtDetails->execute([$id]);
 
-            // Delete demand
             $stmtDemande = $this->pdo->prepare("DELETE FROM {$this->demandeTable} WHERE id = ?");
             $stmtDemande->execute([$id]);
 

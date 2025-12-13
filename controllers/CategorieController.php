@@ -2,8 +2,7 @@
 // =============================================
 // ======= CONTROLLER CATEGORIE ================
 // Fichier : controllers/CategorieController.php
-// Consolidated version - Merges Admin API and Session-based functionality
-// =============================================
+
 
 require_once __DIR__ . '/../Models/CategorieModel.php'; 
 

@@ -3,15 +3,13 @@ const API_URL = 'http://localhost/smart-expense-management/api/admin.php';
 let currentFilter = 'all';
 let allDemandes = []; // Store all fetched demands for local searching
 
-// 💡 CORRECTION : La variable doit inclure "liste_demandes.php"
+
 const isDashboardView = !(
     window.location.pathname.toLowerCase().includes('liste_demandes.php') ||
     window.location.pathname.toLowerCase().includes('full_list.php')
 );
 const MAX_DASHBOARD_ROWS = 5;
 
-// Map des statuts front-end (clés envoyées et reçues par le Contrôleur)
-// Note: This map is used for dropdowns, but for badges we use getBadgeStyle
 const STATUT_BADGE_MAP = {
     'en_attente': { text: 'En attente', class: 'bg-warning text-dark' },
     'validee_manager': { text: 'Validée Manager', class: 'bg-success' },
@@ -21,7 +19,7 @@ const STATUT_BADGE_MAP = {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log(`🚀 Application démarrée. Mode: ${isDashboardView ? 'Dashboard Limité' : 'Liste Complète'}`);
+    console.log(`Application démarrée. Mode: ${isDashboardView ? 'Dashboard Limité' : 'Liste Complète'}`);
 
     // Charger les stats uniquement si les éléments du Dashboard existent
     if (document.getElementById('stat-validees')) {
@@ -99,7 +97,7 @@ function loadStats() {
             if (statRejetees) statRejetees.textContent = data.rejetees || 0;
         })
         .catch(error => {
-            console.error('❌ Erreur stats:', error);
+            console.error('Erreur stats:', error);
             showAlert('Erreur lors du chargement des statistiques', 'danger');
         });
 }
@@ -119,7 +117,7 @@ function loadDemandes(statut = null) {
             if (!response.ok) {
                 throw new Error(`HTTP Error! Status: ${response.status}`);
             }
-            return response.text(); // Récupère le texte brut au lieu du JSON
+            return response.text(); 
         })
         .then(text => {
             try {
@@ -128,7 +126,7 @@ function loadDemandes(statut = null) {
                 displayDemandes(data);
             } catch (e) {
                 // Si le parsing JSON échoue, cela signifie que le serveur a renvoyé du texte HTML ou une erreur PHP.
-                console.error('❌ API RESPONSE TEXT:', text);
+                console.error('API RESPONSE TEXT:', text);
                 throw new Error('La réponse de l\'API n\'est pas un JSON valide. Voir la console pour le texte brut de l\'erreur.');
             }
 
@@ -137,7 +135,7 @@ function loadDemandes(statut = null) {
             }
         })
         .catch(error => {
-            console.error('❌ Erreur demandes:', error);
+            console.error(' Erreur demandes:', error);
             if (loadingElement) {
                 loadingElement.style.display = 'none';
             }
@@ -268,10 +266,7 @@ function getBadgeStyle(statut) {
 }
 
 function getStatutBadge(statutKey) {
-    // Deprecated but kept for compatibility if called elsewhere, redirecting to getBadgeStyle logic
-    // But since we replaced displayDemandes, we might not need this anymore for the table.
-    // However, let's keep it simple or just remove it if not used.
-    // For safety, let's just return a span with the style.
+ 
     const style = getBadgeStyle(statutKey);
     return `<span style="${style}">${statutKey}</span>`;
 }
@@ -361,7 +356,7 @@ async function updateDemande() {
 
     formData.append('id', id);
 
-    // 🗑️ CORRECTION CLÉ : SUPPRIMER user_id et manager_id de la vérification OBLIGATOIRE
+    
     if (!formData.get('objet_mission') || !formData.get('lieu_deplacement') || !formData.get('date_depart') || !formData.get('date_retour')) {
         showAlert('Veuillez remplir tous les champs obligatoires (*)', 'warning');
         return;
@@ -424,7 +419,6 @@ function editDemande(id) {
                 document.getElementById('edit_commentaire_manager').value = data.commentaire_manager || '';
 
                 if (data.date_traitement) {
-                    // Les inputs de type 'datetime-local' nécessitent un format précis (YYYY-MM-DDTHH:MM)
                     document.getElementById('edit_date_traitement').value = data.date_traitement.slice(0, 16).replace(' ', 'T');
                 } else {
                     document.getElementById('edit_date_traitement').value = '';

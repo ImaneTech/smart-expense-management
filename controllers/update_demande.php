@@ -61,10 +61,10 @@ foreach ($details_data as $key => $detail) {
         continue;
     }
 
-    $justificatif_path = $detail['justificatif_path_old'] ?? null; // Chemin existant
+    $justificatif_path = $detail['justificatif_path_old'] ?? null; 
     $is_new_file_uploaded = false;
     
-    $file_keys = []; // Clés pour le handler.
+    $file_keys = []; 
     $uploaded_file_name = ''; // Pour vérifier la présence du fichier
 
     if (isset($detail['id_detail_frais'])) {
@@ -121,7 +121,7 @@ if (!empty($errors)) {
 }
 
 try {
-    // Note : La connexion PDO doit être initialisée (on suppose qu'elle vient de config.php)
+    // La connexion PDO doit être initialisée (on suppose qu'elle vient de config.php)
     $demandeController = new DemandeController($pdo); 
     
     // Les données principales de la demande
@@ -137,7 +137,7 @@ try {
     $success = $demandeController->updateDemande($demande_id, $user_id, $demande_data, $processed_details, $details_to_delete, $fileHandler);
 
     if ($success) {
-        setFlash('success', '✅ La demande de frais a été **mise à jour** avec succès et soumise pour validation !');
+        setFlash('success', ' La demande de frais a été **mise à jour** avec succès et soumise pour validation !');
         header('Location: ' . BASE_URL . 'views/employe/details_demande.php?id=' . $demande_id);
         exit();
     } else {
@@ -146,7 +146,7 @@ try {
     }
 
 } catch (Exception $e) {
-    setFlash('danger', '❌ Échec de la mise à jour : ' . $e->getMessage());
+    setFlash('danger', 'Échec de la mise à jour : ' . $e->getMessage());
     header('Location: ' . BASE_URL . 'views/employe/edit_demande.php?id=' . $demande_id);
     exit();
 }

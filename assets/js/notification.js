@@ -1,21 +1,21 @@
 // Fichier: JavaScript
 $(document).ready(function () {
 
-    // Assurez-vous que API_ENDPOINT est défini dans votre code PHP/HTML principal
+
     const apiEndpoint = API_ENDPOINT;
-    console.log("DEBUG: API_ENDPOINT défini comme:", apiEndpoint); // DEBUG 1
+    console.log("DEBUG: API_ENDPOINT défini comme:", apiEndpoint); 
 
     // Fonction 1: Mettre à jour le Compteur (Badge)
     function updateNotificationCount() {
         const url_count = apiEndpoint + '?action=count';
-        console.log("DEBUG: Appel AJAX 'count' URL:", url_count); // DEBUG 2
+        console.log("DEBUG: Appel AJAX 'count' URL:", url_count); 
 
         $.ajax({
             url: url_count,
             method: 'GET',
             dataType: 'json',
             success: function (response) {
-                console.log("DEBUG: Réponse 'count' reçue:", response); // DEBUG 3
+                console.log("DEBUG: Réponse 'count' reçue:", response); 
 
                 const count = response.total || 0;
                 const $notifCount = $('#notif-count');
@@ -39,14 +39,14 @@ $(document).ready(function () {
         $modalBody.html('<p class="text-center text-muted p-4">Chargement des notifications...</p>');
 
         const url_list = apiEndpoint + '?action=list';
-        console.log("DEBUG: Appel AJAX 'list' URL:", url_list); // DEBUG 4
+        console.log("DEBUG: Appel AJAX 'list' URL:", url_list); 
 
         $.ajax({
             url: url_list,
             method: 'GET',
             dataType: 'json',
             success: function (response) {
-                console.log("DEBUG: Réponse 'list' reçue:", response); // DEBUG 5
+                console.log("DEBUG: Réponse 'list' reçue:", response); 
 
                 $modalBody.empty(); // Vider le contenu
 
@@ -55,7 +55,6 @@ $(document).ready(function () {
 
                     response.notifications.forEach(function (notif) {
 
-                        // ... (Logique d'affichage inchangée) ...
                         const displayDate = notif.date_creation ? notif.date_creation.substring(0, 10) : 'N/A';
                         const isUnread = notif.lue == 0;
                         const liStyle = isUnread ?
@@ -85,30 +84,29 @@ $(document).ready(function () {
                     markNotificationsAsRead();
 
                 } else {
-                    console.log("DEBUG: 'list' est vide ou ne contient pas 'notifications'."); // DEBUG 6
+                    console.log("DEBUG: 'list' est vide ou ne contient pas 'notifications'."); 
                     $modalBody.html('<p class="text-center p-3" style="color: #2566A1;">Aucune notification récente.</p>');
                     updateNotificationCount();
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                // IMPORTANT : Gestion d'erreur AJAX améliorée
-                $modalBody.html('<p class="text-center text-danger p-4">❌ Erreur lors du chargement des notifications. (Code: ' + jqXHR.status + ')</p>');
-                console.error("ERREUR AJAX 'list':", textStatus, errorThrown, jqXHR.responseText); // DEBUG 7
+              
+                $modalBody.html('<p class="text-center text-danger p-4">Erreur lors du chargement des notifications. (Code: ' + jqXHR.status + ')</p>');
+                console.error("ERREUR AJAX 'list':", textStatus, errorThrown, jqXHR.responseText); 
             }
         });
     }
 
-    // Nouvelle Fonction 3: Marquer les notifications comme lues (API)
     function markNotificationsAsRead() {
         const url_mark = apiEndpoint + '?action=mark_as_read';
-        console.log("DEBUG: Appel AJAX 'mark_as_read' URL:", url_mark); // DEBUG 8
+        console.log("DEBUG: Appel AJAX 'mark_as_read' URL:", url_mark); 
 
         $.ajax({
             url: url_mark,
             method: 'POST',
             dataType: 'json',
             success: function (response) {
-                console.log("DEBUG: Réponse 'mark_as_read' reçue:", response); // DEBUG 9
+                console.log("DEBUG: Réponse 'mark_as_read' reçue:", response);
                 const $notifCount = $('#notif-count');
                 $notifCount.hide().text('');
             },
@@ -124,7 +122,7 @@ $(document).ready(function () {
     // ----------------------------------------------------
 
     $('#notificationModal').on('show.bs.modal', function () {
-        console.log("INFO: Modal ouvert, appel de loadNotificationList."); // DEBUG 10
+        console.log("INFO: Modal ouvert, appel de loadNotificationList."); 
         loadNotificationList();
     });
 

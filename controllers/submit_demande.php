@@ -32,9 +32,9 @@ $demandeData = [
 ];
 
 $details = [];
-// Parse details from POST data and handle file uploads
+
 if (isset($_POST['details']) && is_array($_POST['details'])) {
-    // Create uploads directory if it doesn't exist
+ 
     $uploadsDir = BASE_PATH . 'uploads/justificatifs/';
     if (!is_dir($uploadsDir)) {
         mkdir($uploadsDir, 0755, true);
@@ -43,9 +43,7 @@ if (isset($_POST['details']) && is_array($_POST['details'])) {
     foreach ($_POST['details'] as $index => $detail) {
         $justificatifPath = '';
         
-        // Handle file upload for this detail
-        // Form sends files as: details[index][justificatif]
-        // PHP reorganizes this into: $_FILES['details']['name'][index]['justificatif']
+     
         
         if (isset($_FILES['details']['name'][$index]['justificatif']) && 
             $_FILES['details']['error'][$index]['justificatif'] === UPLOAD_ERR_OK) {
@@ -82,15 +80,14 @@ if (isset($_POST['details']) && is_array($_POST['details'])) {
     }
 }
 
-// Debug logging
+
 error_log("POST details: " . print_r($_POST['details'] ?? 'NOT SET', true));
 error_log("Prepared details array: " . print_r($details, true));
 error_log("Details count: " . count($details));
 
-// Call the controller method (it handles redirects and session messages internally)
 try {
     $demandeController->creerDemandeAction($demandeData, $details, $_FILES);
-    // If we reach here, the method didn't redirect (shouldn't happen)
+
     exit;
 } catch (\Exception $e) {
     setFlash('danger', 'Erreur: ' . $e->getMessage());

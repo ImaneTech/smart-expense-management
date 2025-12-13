@@ -1,5 +1,5 @@
 // ==========================================================
-// Fichier : assets/js/demandes_employe.js (CORRIGÉ & FINAL)
+// Fichier : assets/js/demandes_employe.js 
 // But : Gérer le chargement (limité ou complet) et le filtrage des demandes de frais, 
 //       et charger les statistiques des cartes.
 // ==========================================================
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const tbody = document.getElementById('demandes-tbody');
 
-    // NOUVEAU: Charger les statistiques pour les cartes (uniquement si DEFAULT_ROW_LIMIT est défini, i.e., dashboard)
+    // Charger les statistiques pour les cartes (uniquement si DEFAULT_ROW_LIMIT est défini, i.e., dashboard)
     if (typeof DEFAULT_ROW_LIMIT !== 'undefined') {
         loadDemandeStats();
     }
@@ -43,34 +43,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const filterDateFin = document.getElementById('filter-date-fin');
 
     // ******************************************************************
-    // ** MODIFICATION CLÉ : Suppression des écouteurs pour le filtrage instantané **
+    // Suppression des écouteurs pour le filtrage instantané 
     // ******************************************************************
 
     if (filterSearch) {
-        // filterSearch.addEventListener('input', applyFilters); <--- DÉSACTIVÉ
+
         filterSearch.addEventListener('input', checkActiveFilters);
     }
     if (filterStatut) {
-        // filterStatut.addEventListener('change', applyFilters); <--- DÉSACTIVÉ
+
         filterStatut.addEventListener('change', checkActiveFilters);
     }
     if (filterDateDebut) {
-        // filterDateDebut.addEventListener('change', applyFilters); <--- DÉSACTIVÉ
+    
         filterDateDebut.addEventListener('change', checkActiveFilters);
     }
     if (filterDateFin) {
-        // filterDateFin.addEventListener('change', applyFilters); <--- DÉSACTIVÉ
+      
         filterDateFin.addEventListener('change', checkActiveFilters);
     }
 
-    // Nous conservons checkActiveFilters car il n'impacte pas les résultats,
-    // mais gère seulement l'affichage du lien "Réinitialiser".
+  
     checkActiveFilters();
     // Le filtrage sera maintenant déclenché UNIQUEMENT par l'appel `onclick="applyFilters()"` sur le bouton HTML.
 });
 
 // ==========================================================
-// --- NOUVELLE FONCTION : Charger les statistiques pour les cartes ---
+// ---  FONCTION : Charger les statistiques pour les cartes ---
 // ==========================================================
 
 /**
@@ -94,15 +93,15 @@ function loadDemandeStats() {
                 document.getElementById('stat-validees').textContent = validee;
                 document.getElementById('stat-rejetees').textContent = rejetees;
 
-                // console.log(`✅ Statistiques chargées: Attente=${attente}, Validées=${validee}, Rejetées=${rejetees}`);
+                // console.log(` Statistiques chargées: Attente=${attente}, Validées=${validee}, Rejetées=${rejetees}`);
 
             } else {
-                console.error("❌ API 'getDemandeStats' n'a pas renvoyé le format de données attendu ou success est false.", data);
+                console.error(" API 'getDemandeStats' n'a pas renvoyé le format de données attendu ou success est false.", data);
                 // Optionnel: Afficher un message d'erreur ou laisser 0
             }
         })
         .catch(error => {
-            console.error('❌ Erreur lors du chargement des statistiques:', error);
+            console.error(' Erreur lors du chargement des statistiques:', error);
             // Optionnel: Afficher un message d'erreur
         });
 }
@@ -145,7 +144,7 @@ function loadRecentDemandes(limit) {
             displayDemandes(recentDemandes);
         })
         .catch(error => {
-            console.error('❌ Erreur lors du chargement des demandes récentes:', error);
+            console.error(' Erreur lors du chargement des demandes récentes:', error);
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="${COLSPAN_COUNT_TABLE}" class="text-center text-danger p-4">
                      <i class="bi bi-x-circle me-2"></i> Erreur de chargement des demandes récentes.
@@ -195,7 +194,7 @@ function loadAllDemandes() {
             displayDemandes(allDemandes);
         })
         .catch(error => {
-            console.error('❌ Erreur lors du chargement des demandes:', error);
+            console.error(' Erreur lors du chargement des demandes:', error);
             const errorMessage = (error.message && error.message.includes('API non trouvée'))
                 ? 'Impossible de trouver le fichier API. Vérifiez BASE_URL et le chemin d\'accès.'
                 : ((error.error || error.message) || 'Erreur de connexion ou du serveur.');

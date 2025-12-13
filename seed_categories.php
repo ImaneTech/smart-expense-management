@@ -4,7 +4,7 @@ require_once 'config.php';
 try {
     echo "Connected to database: $dbname\n";
 
-    // Catégories adaptées au contexte IT / Maroc
+    // Catégories 
     $categories = [
         ['nom' => 'Transport', 'description' => 'Frais liés aux déplacements professionnels (train, avion, taxi).'],
         ['nom' => 'Hébergement', 'description' => 'Frais pour les hôtels et logements lors des missions.'],

@@ -1,7 +1,4 @@
-/**
- * Fichier JS pour le Dashboard Manager (dashboard_manager.js)
- * Gère l'animation des compteurs et l'initialisation des composants.
- */
+
 
 // Durée de l'animation par défaut en millisecondes
 const ANIMATION_DURATION = 2000;

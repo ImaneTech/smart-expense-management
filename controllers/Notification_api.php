@@ -3,7 +3,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-// Fichier: controller/notifications_api.php (CORRIGÉ POUR LA PORTÉE PDO)
+// Fichier: controller/notifications_api.php 
 header('Content-Type: application/json');
 
 // ----------------------------------------------------
@@ -23,9 +23,9 @@ require_once BASE_PATH . 'Models/NotificationModel.php';
 
 
 // ----------------------------------------------------
-// 3. CORRECTION CLÉ : Rendre $pdo accessible
+// 3 Rendre $pdo accessible
 // ----------------------------------------------------
-global $pdo; // Cette ligne rend la variable $pdo (définie dans config.php) disponible dans ce script.
+global $pdo; 
 
 
 // 4. Utilisation
@@ -53,7 +53,7 @@ try {
             $response = ['notifications' => $notifications];
             break;
             
-        case 'mark_as_read': // NOUVELLE ACTION
+        case 'mark_as_read': 
             $success = $notificationModel->marquerCommeLues($user_id);
             // Après le marquage, on renvoie le nouveau compte
             $count = $notificationModel->compterNonLues($user_id); 
@@ -68,7 +68,7 @@ try {
     
 } catch (PDOException $e) {
     http_response_code(500);
-    // En production, ne jamais afficher $e->getMessage()
+
     $response = ['error' => 'Erreur de base de données (vérifiez les requêtes SQL).']; 
 } catch (Exception $e) {
     http_response_code(500);

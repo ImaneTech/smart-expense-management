@@ -2,7 +2,6 @@
 // =============================================
 // ======= MODEL CATEGORIE ====================
 // Fichier : Models/CategorieModel.php
-// Consolidated version - Complete CRUD operations
 // =============================================
 
 class CategorieModel {

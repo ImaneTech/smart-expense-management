@@ -30,7 +30,7 @@ function loadCategories() {
             }
         })
         .catch(error => {
-            console.error('❌ Erreur categories:', error);
+            console.error(' Erreur categories:', error);
             showAlert('Erreur lors du chargement des catégories (API)', 'danger');
         });
 }
@@ -42,7 +42,7 @@ function displayCategories(categories) {
     const totalCategoriesElement = document.getElementById('total-categories');
     if (totalCategoriesElement) totalCategoriesElement.textContent = categories.length;
 
-    // 🎯 Colspan ajusté à 3 (Nom, Description, Actions)
+    //  Colspan ajusté à 3 (Nom, Description, Actions)
     const colspan = 3;
 
     if (!Array.isArray(categories) || categories.length === 0) {
@@ -186,7 +186,7 @@ function deleteCategorie(id) {
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
-                            title: '✅ Catégorie supprimée avec succès !',
+                            title: ' Catégorie supprimée avec succès !',
                             showConfirmButton: false,
                             showCloseButton: true,
                             timer: null,
@@ -209,7 +209,6 @@ function deleteCategorie(id) {
     });
 }
 
-// 🗑️ Les fonctions `refreshData` et `exportCategories` sont supprimées.
 
 function showAlert(message, type) {
     const alertDiv = document.createElement('div');

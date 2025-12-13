@@ -1,7 +1,7 @@
 <?php
-// ===============================================================
-// ===============  API EMPLOYÉ (VERSION CORRIGÉE) ===============
-// ===============================================================
+// =============================================
+// ===============  API EMPLOYÉ  ===============
+// =============================================
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT');
@@ -42,7 +42,7 @@ if ($action === null) {
 }
 
 try {
-    // Using direct SQL queries for employee data
+
 
     // =========================================================
     //                    ROUTES / ACTIONS
@@ -50,7 +50,7 @@ try {
 
     if ($action === 'getDemandeStats') {
 
-        // Get stats for the current employee
+
         $sql = "SELECT statut, COUNT(*) AS total FROM demande_frais WHERE user_id = ? GROUP BY statut";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$employeId]);
@@ -73,7 +73,6 @@ try {
 
         $limit = (int)($_REQUEST['limit'] ?? 6);
         
-        // Use direct integer in LIMIT to avoid PDO binding issues
         $sql = "SELECT df.*, 
                        (SELECT SUM(det.montant) FROM details_frais det WHERE det.demande_id = df.id) AS montant_total
                 FROM demande_frais df
@@ -103,13 +102,10 @@ try {
 
     } elseif ($action === 'submitDemande') {
 
-        // Use DemandeController's creerDemandeAction method
-        // This would require adapting the data format
         echo json_encode(['success' => false, 'message' => 'Not implemented yet']);
 
     } elseif ($action === 'getDashboardData') {
 
-        // Simple dashboard data for employee
         $statsData = [];
         $sql = "SELECT statut, COUNT(*) AS total FROM demande_frais WHERE user_id = ? GROUP BY statut";
         $stmt = $pdo->prepare($sql);
@@ -138,7 +134,7 @@ try {
             exit;
         }
 
-        // Check if demande belongs to user and is "En attente"
+
         $stmt = $pdo->prepare("SELECT statut FROM demande_frais WHERE id = ? AND user_id = ?");
         $stmt->execute([$demandeId, $employeId]);
         $demande = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -155,13 +151,12 @@ try {
             exit;
         }
 
-        // Delete the demande
         $stmt = $pdo->prepare("DELETE FROM demande_frais WHERE id = ? AND user_id = ?");
         $success = $stmt->execute([$demandeId, $employeId]);
 
     if ($success) {
             require_once __DIR__ . '/../includes/flash.php';
-            setFlash('success', '✅ Demande supprimée avec succès !');
+            setFlash('success', 'Demande supprimée avec succès !');
             echo json_encode(['success' => true, 'message' => 'Demande supprimée avec succès.']);
         } else {
             http_response_code(500);

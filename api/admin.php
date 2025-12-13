@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// NOTE: L'en-tête JSON est géré par les contrôleurs.
+// L'en-tête JSON est géré par les contrôleurs.
         
 require_once __DIR__ . '/../config.php'; 
 

@@ -1,14 +1,14 @@
 // DANS assets/js/gestion_users.js
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-// 🎯 CORRECTION: Utiliser l'API centrale admin.php
+// Utiliser l'API centrale admin.php
 const API_URL = 'http://localhost/smart-expense-management/api/admin.php';
 let currentFilter = 'all';
 let allUsers = [];
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('🚀 Gestion Utilisateurs démarrée');
+    console.log(' Gestion Utilisateurs démarrée');
     loadStats();
     loadUsers();
 
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // --- Fonctions de chargement API ---
 
 function loadStats() {
-    // 🎯 Action: user_get_stats
+    // Action: user_get_stats
     fetch(`${API_URL}?action=user_get_stats`)
         .then(response => response.json())
         .then(data => {
@@ -34,13 +34,13 @@ function loadStats() {
             if (admins) admins.textContent = data.admins || 0;
         })
         .catch(error => {
-            console.error('❌ Erreur stats:', error);
+            console.error(' Erreur stats:', error);
             showAlert('Erreur lors du chargement des statistiques (API)', 'danger');
         });
 }
 
 function loadUsers(role = null) {
-    // 🎯 Action: user_get_users
+    // Action: user_get_users
     let url = `${API_URL}?action=user_get_users`;
     if (role && role !== 'all') {
         url += `&role=${role}`;
@@ -53,7 +53,7 @@ function loadUsers(role = null) {
             displayUsers(data);
         })
         .catch(error => {
-            console.error('❌ Erreur users:', error);
+            console.error('Erreur users:', error);
             showAlert('Erreur lors du chargement des utilisateurs (API)', 'danger');
         });
 }
@@ -133,7 +133,6 @@ function filterUsersBySearch(searchTerm) {
     displayUsers(filtered);
 }
 
-// 🗑️ L'ancienne fonction `createUser` est supprimée.
 
 function editUser(id) {
     const user = allUsers.find(u => u.id == id);
@@ -196,7 +195,7 @@ async function updateUser() {
     }
 
     try {
-        // 🎯 Action: user_update
+        // Action: user_update
         const response = await fetch(`${API_URL}?action=user_update`, {
             method: 'POST',
             body: formData
@@ -248,12 +247,7 @@ function deleteUser(id) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Refresh handled by reload to show flash message if set, 
-                    // OR we can just reload the table and show a toast.
-                    // For consistency with "flash", we usually want a reload if the API sets a session flash.
-                    // But here loadStats() and loadUsers() are AJAX.
-                    // Let's stick to the pattern: Show Success Alert matching Flash style.
-                    
+         
                     loadStats();
                     loadUsers();
                     
@@ -261,7 +255,7 @@ function deleteUser(id) {
                     Swal.fire({
                         position: 'top-end',
                         icon: 'success',
-                        title: '✅ Utilisateur supprimé avec succès !',
+                        title: ' Utilisateur supprimé avec succès !',
                         showConfirmButton: false,
                         showCloseButton: true,
                         timer: null,
@@ -285,10 +279,8 @@ function deleteUser(id) {
     });
 }
 
-// 🗑️ L'ancienne fonction `refreshData` est supprimée.
-
 function exportUsers() {
-    // 🎯 Action: user_export
+
     window.location.href = `${API_URL}?action=user_export`;
 }
 

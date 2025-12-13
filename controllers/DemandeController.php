@@ -91,7 +91,7 @@ class DemandeController
     private int $managerId;
     private int $userId;
 
-    /** @var \Models\Employe\DemandeFraisModel|null */
+
     private $employeModel;
 
     // =================== CONSTRUCTEUR ===========================
@@ -110,9 +110,9 @@ class DemandeController
 
         $this->model = new DemandeModel($this->pdo);
 
-        if (class_exists('\Models\Employe\DemandeFraisModel')) {
+        if (class_exists('\Models\DemandeFraisModel')) {
             $basePath = defined('BASE_PATH') ? BASE_PATH : '';
-            $this->employeModel = new \Models\Employe\DemandeFraisModel($this->pdo, $basePath);
+            // $this->employeModel = new \Models\DemandeFraisModel($this->pdo, $basePath);
         } else {
             $this->employeModel = null;
         }
@@ -209,7 +209,7 @@ class DemandeController
      */
     public function getDemandeDetails(int $demandeId): ?array
     {
-        // 💡 CORRECTION : Gestion du rôle Admin
+        // Gestion du rôle Admin
         $role = $_SESSION['role'] ?? 'employe';
 
         if ($role === 'admin') {
@@ -235,7 +235,7 @@ class DemandeController
      */
     public function traiterDemandeAction(array $postData): void
     {
-        // 💡 CORRECTION : Délégation à la méthode Admin si le rôle est admin
+        // Délégation à la méthode Admin si le rôle est admin
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
             $this->traiterDemandeAdmin($postData);
             return;
@@ -388,7 +388,7 @@ class DemandeController
             $this->pdo->commit();
             
             // =================================================================
-            // === LOGIQUE DE NOTIFICATION : Employé -> Manager ===
+            // === LOGIQUE DE NOTIFICATION : Employé -> Manager 
             // =================================================================
             $manager_id = $this->model->getManagerIdForUser($this->userId); 
             
@@ -402,7 +402,7 @@ class DemandeController
             // =================================================================
             
             setFlash('success', "Demande (ID: {$nouvel_id_demande}) soumise avec succès à votre manager.");
-            // 🛑 CORRECTION: Utilisation de BASE_URL pour une redirection absolue
+           
             header('Location: ' . BASE_URL . 'views/employe/employe_demandes.php');
             exit;
             
@@ -410,10 +410,10 @@ class DemandeController
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            error_log("❌ EXCEPTION: " . $e->getMessage());
+            error_log(" EXCEPTION: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
             setFlash('danger', "Erreur lors de la soumission de la demande: " . $e->getMessage());
-            // 🛑 CORRECTION: Utilisation de BASE_URL pour une redirection absolue
+           
             header('Location: ' . BASE_URL . 'views/employe/employe_demandes.php');
             exit;
         }
@@ -424,8 +424,7 @@ class DemandeController
      */
     public function getDemandeDetailsById(int $demandeId, int $userId): ?array
     {
-        // 🛑 CORRECTION: Le modèle DemandeFraisModel n'étant pas toujours disponible,
-        // on exécute la requête directement.
+     
         $stmt = $this->pdo->prepare("
             SELECT df.*, CONCAT(u.first_name, ' ', u.last_name) AS employe_nom, u.email AS employe_email 
             FROM demande_frais df 
