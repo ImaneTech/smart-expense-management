@@ -73,7 +73,7 @@ Pour exécuter ce projet localement, suivez ces étapes :
 
 1.  **Clonage du dépôt :**
     ```bash
-    git clone [https://github.com/votre-utilisateur/gestion-frais.git](https://github.com/votre-utilisateur/gestion-frais.git)
+    git clone [https://github.com/votre-utilisateur/gestion-frais.git](https://github.com/ImaneTech/gestion-frais.git)
     cd gestion-frais
     ```
 2.  **Configuration de la Base de Données :**
