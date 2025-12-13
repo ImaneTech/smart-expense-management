@@ -86,6 +86,8 @@ require_once BASE_PATH . 'includes/header.php';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/create_demande.css"> 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <style>
 /* ---------------------------------------------------- */
@@ -542,32 +544,63 @@ function closeImagePreview(event) {
     }
 }
 
+
 function deleteDemande(id) {
-    if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer cette demande ?\n\nCette action est irréversible.')) {
-        fetch('<?= BASE_URL ?>api/employe.php?action=deleteDemande&demande_id=' + id, { 
-            method: 'POST',
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Erreur réseau ou du serveur (Statut: ' + res.status + ')');
-            }
-            return res.json();
-        })
-        .then(data => {
-            if (data.success) {
-                sessionStorage.setItem('feedback_message', '✅ Demande supprimée avec succès !');
-                sessionStorage.setItem('feedback_type', 'success');
-                window.location.href = '<?= BASE_URL ?>views/employe/employe_demandes.php';
-            } else {
-                alert('❌ Erreur lors de la suppression : ' + (data.error || 'Erreur inconnue'));
-            }
-        })
-        .catch(err => {
-            alert('❌ Erreur de traitement de la requête: ' + err.message);
-            console.error(err);
-        });
-    }
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Cette action est irréversible !",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        background: '#fff5f5', 
+        customClass: {
+            popup: 'rounded-4 shadow-lg border border-danger', 
+            title: 'fw-bold text-danger',
+            confirmButton: 'btn btn-danger rounded-pill px-5 py-3 fs-5 me-3 fw-bold shadow-sm', 
+            cancelButton: 'btn btn-secondary rounded-pill px-5 py-3 fs-5 fw-bold shadow-sm'
+        },
+        buttonsStyling: false,
+        iconColor: '#dc3545'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('<?= BASE_URL ?>api/employe.php?action=deleteDemande&demande_id=' + id, { 
+                method: 'POST',
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Erreur réseau ou du serveur (Statut: ' + res.status + ')');
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Flash message set in API
+                    window.location.href = '<?= BASE_URL ?>views/employe/employe_demandes.php';
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: '❌ Erreur lors de la suppression : ' + (data.error || 'Erreur inconnue'),
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            })
+            .catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: '❌ Erreur de traitement de la requête: ' + err.message,
+                    confirmButtonColor: '#dc3545'
+                });
+                console.error(err);
+            });
+        }
+    });
 }
+
 
 // Fermer le modal avec la touche Escape
 document.addEventListener('keydown', function(e) {

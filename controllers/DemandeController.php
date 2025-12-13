@@ -10,6 +10,7 @@ declare(strict_types=1);
 // --- Détection de la classe de notification disponible ---
 // Utilisé pour le helper notifyUsers
 require_once BASE_PATH . 'Models/NotificationModel.php';
+require_once BASE_PATH . 'includes/flash.php'; // Fix: Include flash helper for setFlash()
 $notificationClass = 'Notification';
 
 // --- Inclusions sûres (teste plusieurs variantes de chemin) ---
@@ -285,11 +286,11 @@ class DemandeController
             $this->notifyUsers($employe_id, $id, $message_notif, $lien_notif);
             // =================================================================
             
-            $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès. L'employé a été notifié.";
+            setFlash('success', "Demande (ID: {$id}) traitée avec succès. L'employé a été notifié.");
             header('Location: ' . BASE_URL . 'views/manager/details_demande.php?id=' . $id);
             exit;
         } else {
-            $_SESSION['error_message'] = "Erreur technique lors de la mise à jour du statut.";
+            setFlash('danger', "Erreur technique lors de la mise à jour du statut.");
             header('Location: ' . BASE_URL . 'views/manager/details_demande.php?id=' . $id);
             exit;
         }
@@ -337,11 +338,11 @@ class DemandeController
              
              $this->notifyUsers($employe_id, $id, $message_notif, $lien_notif);
              
-             $_SESSION['message'] = "Demande (ID: {$id}) traitée avec succès (Admin).";
+             setFlash('success', "Demande (ID: {$id}) traitée avec succès (Admin).");
              header('Location: ' . BASE_URL . 'views/admin/details_demande.php?id=' . $id);
              exit;
         } else {
-            $_SESSION['error_message'] = "Erreur technique lors de la mise à jour du statut final.";
+            setFlash('danger', "Erreur technique lors de la mise à jour du statut final.");
             header('Location: ' . BASE_URL . 'views/admin/details_demande.php?id=' . $id);
             exit;
         }
@@ -400,7 +401,7 @@ class DemandeController
             }
             // =================================================================
             
-            $_SESSION['message'] = "Demande (ID: {$nouvel_id_demande}) soumise avec succès à votre manager.";
+            setFlash('success', "Demande (ID: {$nouvel_id_demande}) soumise avec succès à votre manager.");
             // 🛑 CORRECTION: Utilisation de BASE_URL pour une redirection absolue
             header('Location: ' . BASE_URL . 'views/employe/employe_demandes.php');
             exit;
@@ -411,7 +412,7 @@ class DemandeController
             }
             error_log("❌ EXCEPTION: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
-            $_SESSION['error_message'] = "Erreur lors de la soumission de la demande: " . $e->getMessage();
+            setFlash('danger', "Erreur lors de la soumission de la demande: " . $e->getMessage());
             // 🛑 CORRECTION: Utilisation de BASE_URL pour une redirection absolue
             header('Location: ' . BASE_URL . 'views/employe/employe_demandes.php');
             exit;

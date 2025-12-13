@@ -73,10 +73,8 @@ unset($_SESSION['error_message']);
 function getStatusClass($statut) {
     return match ($statut) {
         'En attente' => 'badge-wait',
-        'Validée Manager' => 'badge-valid',
-        'Rejetée Manager' => 'badge-reject',
-        'Approuvée Compta' => 'badge-valid',
-        'Payée' => 'badge-valid',
+        'Validée Manager', 'Validée', 'Approuvée Compta', 'Payée' => 'badge-valid',
+        'Rejetée Manager', 'Rejetée' => 'badge-reject',
         default => 'bg-secondary text-white',
     };
 }
@@ -90,6 +88,7 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
 <!-- Inclusion des CSS du thème -->
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/settings.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard_manager.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
     /* Styles spécifiques à cette page pour ajustements mineurs */
@@ -203,13 +202,10 @@ function getJustificatifUrl(int $demandeId, ?string $fileName): string {
         </div>
     </div>
 
-    <!-- Alerts -->
-    <?php if ($message): ?>
-        <div class="alert alert-success border-0 shadow-sm rounded-3 mb-4"><i class="fas fa-check-circle me-2"></i> <?= htmlspecialchars($message) ?></div>
-    <?php endif; ?>
-    <?php if ($error_message): ?>
-        <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4"><i class="fas fa-exclamation-triangle me-2"></i> <?= htmlspecialchars($error_message) ?></div>
-    <?php endif; ?>
+    <!-- Flash Messages -->
+    <?php require_once BASE_PATH . 'includes/flash.php'; ?>
+    <?php displayFlash(); ?>
+
 
     <div class="row g-4">
         <!-- Left Column: Mission & Expenses -->

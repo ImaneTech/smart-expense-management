@@ -1,196 +1,292 @@
--- ============================================
--- SCRIPT SQL COMPLET ET CORRIGÉ (Avec USE DB)
--- ============================================
+-- phpMyAdmin SQL Dump
+-- version 5.1.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Dec 11, 2025 at 02:48 PM
+-- Server version: 5.7.24
+-- PHP Version: 8.3.1
 
--- Suppression de l'ancienne BD si elle existe
-DROP DATABASE IF EXISTS gestion_frais_db;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- 1. Création de la base de données
-CREATE DATABASE gestion_frais_db;
 
-USE gestion_frais_db;
--- ============================================
--- 2. Création de la table "users" 
--- ============================================
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(20) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('employe', 'manager', 'admin') NOT NULL,
-    department VARCHAR(50) NOT NULL,
-    
-    -- CHAMP AJOUTÉ POUR LA GESTION MANAGER
-    manager_id INT NULL, 
-    
-    reset_token VARCHAR(255) NULL,
-    reset_expires DATETIME NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- CLÉ ÉTRANGÈRE AJOUTÉE POUR LA GESTION MANAGER
-    CONSTRAINT fk_user_manager FOREIGN KEY (manager_id) REFERENCES users(id) ON DELETE SET NULL
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `gestion_frais_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories_frais`
+--
+
+CREATE TABLE `categories_frais` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(50) NOT NULL,
+  `description` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
------------------------------------------
--- INSERTION DE DONNEES   "USERS" -------
------------------------------------------
-USE gestion_frais_db;
-INSERT INTO users (id, first_name, last_name, email, password, role, department, phone, manager_id) VALUES 
-( 2,'Sarah', 'Manager', 'manager@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employe', 'HR', '0600000002', NULL);
+-- --------------------------------------------------------
 
-USE gestion_frais_db;
-INSERT INTO users (id, first_name, last_name, email, password, role, department, phone, manager_id) VALUES 
-( 3,'Jean', 'Employé', 'employe@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employe', 'IT', '0600000001', 2),
-( 4,'Ali', 'Admin', 'admin@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employe', 'Finance', '0600000003', NULL);
+--
+-- Table structure for table `demande_frais`
+--
 
-
--------------------------------------------
-USE gestion_frais_db;
-ALTER TABLE users AUTO_INCREMENT = 1;
-
-
----
-
-USE gestion_frais_db;
--- ============================================
--- 3. Table des CATÉGORIES DE FRAIS
--- ============================================
-CREATE TABLE categories_frais (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(50) NOT NULL UNIQUE,
-    description TEXT
+CREATE TABLE `demande_frais` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `objet_mission` varchar(255) NOT NULL,
+  `lieu_deplacement` varchar(150) DEFAULT NULL,
+  `date_depart` date NOT NULL,
+  `date_retour` date NOT NULL,
+  `montant_total` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `statut` varchar(20) DEFAULT NULL,
+  `manager_id_validation` int(11) DEFAULT NULL,
+  `date_traitement` datetime DEFAULT NULL,
+  `commentaire_manager` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
 
-ALTER TABLE categories_frais
-ADD COLUMN actif BOOLEAN NOT NULL DEFAULT 1;
+--
+-- Table structure for table `details_frais`
+--
 
-USE gestion_frais_db;
--- Insertion des CATÉGORIES
-INSERT INTO categories_frais (nom) VALUES 
-('Transport'), ('Hébergement'), ('Restauration'), ('Carburant'), ('Divers');
-
----
-
-USE gestion_frais_db;
--- ============================================
--- 4. Table des DEMANDES (Dossier global de mission)
--- ============================================
-CREATE TABLE demande_frais (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    objet_mission VARCHAR(255) NOT NULL,
-    lieu_deplacement VARCHAR(150),
-    date_depart DATE NOT NULL,
-    date_retour DATE NOT NULL,
-    statut ENUM('En attente', 'Validée Manager', 'Rejetée Manager', 'Approuvée Compta', 'Payée') DEFAULT 'En attente',
-    manager_id_validation INT NULL,
-    date_traitement DATETIME NULL,
-    commentaire_manager TEXT, 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    CONSTRAINT fk_demande_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_demande_manager FOREIGN KEY (manager_id_validation) REFERENCES users(id) ON DELETE SET NULL
+CREATE TABLE `details_frais` (
+  `id` int(11) NOT NULL,
+  `demande_id` int(11) NOT NULL,
+  `categorie_id` int(11) NOT NULL,
+  `date_depense` date NOT NULL,
+  `montant` decimal(12,2) NOT NULL,
+  `description` text,
+  `justificatif_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
+-- --------------------------------------------------------
 
-ALTER TABLE demande_frais
-ADD COLUMN montant_total DECIMAL(10, 2) DEFAULT 0 NOT NULL AFTER date_retour;
+--
+-- Table structure for table `historique_statuts`
+--
 
-
-ALTER TABLE demande_frais 
-ADD COLUMN updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-
-
----
-USE gestion_frais_db;
--- ============================================
--- 5. Table des DÉTAILS (Lignes de dépenses)
--- ============================================
-CREATE TABLE details_frais (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    demande_id INT NOT NULL,
-    categorie_id INT NOT NULL,
-    date_depense DATE NOT NULL,
-    montant DECIMAL(10, 2) NOT NULL,
-    description TEXT,
-    justificatif_path VARCHAR(255),
-    FOREIGN KEY (demande_id) REFERENCES demande_frais(id) ON DELETE CASCADE,
-    FOREIGN KEY (categorie_id) REFERENCES categories_frais(id)
+CREATE TABLE `historique_statuts` (
+  `id` int(11) NOT NULL,
+  `demande_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `ancien_statut` varchar(50) DEFAULT NULL,
+  `nouveau_statut` varchar(50) DEFAULT NULL,
+  `date_action` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `commentaire` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
+-- --------------------------------------------------------
 
-USE gestion_frais_db;
--- ============================================
--- 6. Table HISTORIQUE (Traçabilité)
--- ============================================
-CREATE TABLE historique_statuts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    demande_id INT NOT NULL,
-    user_id INT NOT NULL, -- Qui a fait l'action
-    ancien_statut VARCHAR(50),
-    nouveau_statut VARCHAR(50),
-    date_action TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    commentaire TEXT,
-    FOREIGN KEY (demande_id) REFERENCES demande_frais(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+--
+-- Table structure for table `manager_team`
+--
+
+CREATE TABLE `manager_team` (
+  `id` int(11) NOT NULL,
+  `manager_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL,
+  `user_id_cible` int(11) NOT NULL,
+  `demande_id` int(11) DEFAULT NULL,
+  `message` varchar(255) NOT NULL,
+  `lien_url` varchar(255) DEFAULT NULL,
+  `date_creation` datetime DEFAULT CURRENT_TIMESTAMP,
+  `lue` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
+-- --------------------------------------------------------
 
+--
+-- Table structure for table `users`
+--
 
-CREATE TABLE notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    -- À qui s'adresse la notification : Employé, Manager ou Admin
-    user_id_cible INT NOT NULL, 
-    -- Lien vers la demande de frais concernée
-    demande_id INT, 
-    
-    message VARCHAR(255) NOT NULL,
-    -- URL de redirection pour cliquer sur la notification (ex: '/employe/demande_detail.php?id=123')
-    lien_url VARCHAR(255), 
-    
-    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    -- Statut : 0 = Non lue (unread), 1 = Lue (read)
-    lue BOOLEAN NOT NULL DEFAULT 0,
-    
-    -- Clé étrangère vers la table users
-    FOREIGN KEY (user_id_cible) REFERENCES users(id) 
-        ON DELETE CASCADE
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('employe','manager','admin') NOT NULL,
+  `department` varchar(50) NOT NULL,
+  `manager_id` int(11) DEFAULT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_expires` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `theme` enum('light','dark') DEFAULT 'light',
+  `preferred_currency` varchar(3) DEFAULT 'MAD'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- -----------------------------------------------------------------------------------------------------------
 
-USE gestion_frais_db;
--- ============================================
--- 7. Insertion des DEMANDES DE TEST
--- ============================================
+--
+-- Indexes for dumped tables
+--
 
--- Demande 1 (Employé ID 1: Jean Employé) - EN ATTENTE de Sarah (ID 2)
-INSERT INTO demande_frais (user_id, objet_mission, lieu_deplacement, date_depart, date_retour, statut,manager_id)
-VALUES (3, 'Réunion fournisseur A', 'Marseille', '2025-10-15', '2025-10-16', 'En attente',1);
+--
+-- Indexes for table `categories_frais`
+--
+ALTER TABLE `categories_frais`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nom` (`nom`);
 
-USE gestion_frais_db;
--- Demande 2 (Employé ID 1: Jean Employé) - VALIDÉE par Sarah (ID 2)
-INSERT INTO demande_frais (user_id, objet_mission, lieu_deplacement, date_depart, date_retour, statut, manager_id_validation, date_traitement)
-VALUES (2, 'Visite Usine B', 'Lille', '2025-09-01', '2025-09-03', 'Validée Manager', 4, NOW());
+--
+-- Indexes for table `demande_frais`
+--
+ALTER TABLE `demande_frais`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_demande_user` (`user_id`),
+  ADD KEY `fk_demande_manager` (`manager_id_validation`);
 
-USE gestion_frais_db;
--- Lignes de frais pour Demande 1
-INSERT INTO details_frais (demande_id, categorie_id, date_depense, montant, description, justificatif_path)
-VALUES 
-    (1, 1, '2025-10-15', 150.00, 'Billet TGV A/R', '/justificatifs/d1_train.pdf'),
-    (1, 2, '2025-10-15', 95.00, 'Nuitée hôtel', '/justificatifs/d1_hotel.pdf');
+--
+-- Indexes for table `details_frais`
+--
+ALTER TABLE `details_frais`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `demande_id` (`demande_id`),
+  ADD KEY `categorie_id` (`categorie_id`);
 
-USE gestion_frais_db;
--- Lignes de frais pour Demande 2
-INSERT INTO details_frais (demande_id, categorie_id, date_depense, montant, description, justificatif_path)
-VALUES 
-    (2, 3, '2025-09-02', 40.50, 'Déjeuner client', '/justificatifs/d2_repas.pdf');
-    
-ALTER TABLE demande_frais AUTO_INCREMENT = 3;
+--
+-- Indexes for table `historique_statuts`
+--
+ALTER TABLE `historique_statuts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `demande_id` (`demande_id`),
+  ADD KEY `user_id` (`user_id`);
 
+--
+-- Indexes for table `manager_team`
+--
+ALTER TABLE `manager_team`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_team_member` (`manager_id`,`member_id`),
+  ADD KEY `member_id` (`member_id`);
 
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id_cible` (`user_id_cible`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_user_manager` (`manager_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `categories_frais`
+--
+ALTER TABLE `categories_frais`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `demande_frais`
+--
+ALTER TABLE `demande_frais`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `details_frais`
+--
+ALTER TABLE `details_frais`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `historique_statuts`
+--
+ALTER TABLE `historique_statuts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `manager_team`
+--
+ALTER TABLE `manager_team`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `demande_frais`
+--
+ALTER TABLE `demande_frais`
+  ADD CONSTRAINT `fk_demande_manager` FOREIGN KEY (`manager_id_validation`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_demande_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `details_frais`
+--
+ALTER TABLE `details_frais`
+  ADD CONSTRAINT `details_frais_ibfk_1` FOREIGN KEY (`demande_id`) REFERENCES `demande_frais` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `details_frais_ibfk_2` FOREIGN KEY (`categorie_id`) REFERENCES `categories_frais` (`id`);
+
+--
+-- Constraints for table `historique_statuts`
+--
+ALTER TABLE `historique_statuts`
+  ADD CONSTRAINT `historique_statuts_ibfk_1` FOREIGN KEY (`demande_id`) REFERENCES `demande_frais` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `historique_statuts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `manager_team`
+--
+ALTER TABLE `manager_team`
+  ADD CONSTRAINT `manager_team_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `manager_team_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id_cible`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_user_manager` FOREIGN KEY (`manager_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

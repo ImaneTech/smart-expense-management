@@ -61,13 +61,21 @@ $currencySymbol = getCurrencySymbol($preferredCurrencyCode);
     if (typeof bootstrap === 'undefined') {
         console.warn("Bootstrap JS n'est pas chargé. Les modales ne fonctionneront pas.");
     }
+    
+    // Check for session storage feedback (from Delete action) - REMOVED (Handled by PHP Flash)
+    document.addEventListener('DOMContentLoaded', function() {
+       // Code removed as we now use server-side flash messages
+    });
 </script>
 <script src="<?= BASE_URL ?>assets/js/demandes_employe.js"></script>
 
 <div class="container-fluid p-4">
 
 
+    <?php require_once BASE_PATH . 'includes/flash.php'; ?>
+    
     <div class="d-flex justify-content-between align-items-center mb-5">
+        <?php displayFlash(); ?>
         <div>
             <h1 class="fw-bold m-0" style="color: #32325d;"><i class="bi bi-receipt me-2"></i>Mes Demandes de Frais</h1>
             <span class="text-muted small">Bienvenue, <?= htmlspecialchars($user_name) ?> - Gérez vos demandes</span>

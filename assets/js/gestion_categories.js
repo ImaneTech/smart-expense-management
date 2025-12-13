@@ -153,23 +153,60 @@ async function updateCategorie() {
 }
 
 function deleteCategorie(id) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return;
-    const formData = new FormData();
-    formData.append('id', id);
-    fetch(`${API_URL}?action=cat_delete`, { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                loadCategories();
-                showAlert('Catégorie supprimée', 'success');
-            } else {
-                showAlert(data.message || 'Erreur lors de la suppression', 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            showAlert('Erreur lors de la suppression', 'danger');
-        });
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Cette action est irréversible !",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        background: '#fff5f5',
+        customClass: {
+            popup: 'rounded-4 shadow-lg border border-danger',
+            title: 'fw-bold text-danger',
+            confirmButton: 'btn btn-danger rounded-pill px-5 py-3 fs-5 me-3 fw-bold shadow-sm',
+            cancelButton: 'btn btn-secondary rounded-pill px-5 py-3 fs-5 fw-bold shadow-sm'
+        },
+        buttonsStyling: false,
+        iconColor: '#dc3545'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('id', id);
+
+            fetch(`${API_URL}?action=cat_delete`, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadCategories();
+
+                        // Show success message using SweetAlert (mimicking Flash)
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: '✅ Catégorie supprimée avec succès !',
+                            showConfirmButton: false,
+                            showCloseButton: true,
+                            timer: null,
+                            toast: true,
+                            background: '#e8f5e9',
+                            color: '#1b5e20',
+                            customClass: {
+                                popup: 'mt-5'
+                            }
+                        });
+                    } else {
+                        showAlert(data.message || 'Erreur lors de la suppression', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showAlert('Erreur lors de la suppression', 'danger');
+                });
+        }
+    });
 }
 
 // 🗑️ Les fonctions `refreshData` et `exportCategories` sont supprimées.

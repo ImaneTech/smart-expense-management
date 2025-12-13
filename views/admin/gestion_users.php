@@ -14,8 +14,13 @@ if (!defined('BASE_URL')) {
 
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/settings.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/gestion_users.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container-fluid p-4">
+
+    <!-- Flash Messages -->
+    <?php require_once BASE_PATH . 'includes/flash.php'; ?>
+    <?php displayFlash(); ?>
 
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>

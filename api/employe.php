@@ -159,7 +159,9 @@ try {
         $stmt = $pdo->prepare("DELETE FROM demande_frais WHERE id = ? AND user_id = ?");
         $success = $stmt->execute([$demandeId, $employeId]);
 
-        if ($success) {
+    if ($success) {
+            require_once __DIR__ . '/../includes/flash.php';
+            setFlash('success', '✅ Demande supprimée avec succès !');
             echo json_encode(['success' => true, 'message' => 'Demande supprimée avec succès.']);
         } else {
             http_response_code(500);

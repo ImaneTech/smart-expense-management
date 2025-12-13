@@ -218,29 +218,71 @@ async function updateUser() {
 }
 
 function deleteUser(id) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Cette action est irréversible !",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        background: '#fff5f5', 
+        customClass: {
+            popup: 'rounded-4 shadow-lg border border-danger', 
+            title: 'fw-bold text-danger',
+            confirmButton: 'btn btn-danger rounded-pill px-5 py-3 fs-5 me-3 fw-bold shadow-sm', 
+            cancelButton: 'btn btn-secondary rounded-pill px-5 py-3 fs-5 fw-bold shadow-sm'
+        },
+        buttonsStyling: false,
+        iconColor: '#dc3545'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('id', id);
 
-    const formData = new FormData();
-    formData.append('id', id);
-
-    fetch(`${API_URL}?action=user_delete`, { // 🎯 Action: user_delete
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                loadStats();
-                loadUsers();
-                showAlert('Utilisateur supprimé', 'success');
-            } else {
-                showAlert(data.message || 'Erreur lors de la suppression', 'danger');
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            showAlert('Erreur lors de la suppression', 'danger');
-        });
+            fetch(`${API_URL}?action=user_delete`, { 
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh handled by reload to show flash message if set, 
+                    // OR we can just reload the table and show a toast.
+                    // For consistency with "flash", we usually want a reload if the API sets a session flash.
+                    // But here loadStats() and loadUsers() are AJAX.
+                    // Let's stick to the pattern: Show Success Alert matching Flash style.
+                    
+                    loadStats();
+                    loadUsers();
+                    
+                    // Show success message using SweetAlert (mimicking Flash)
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: '✅ Utilisateur supprimé avec succès !',
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        timer: null,
+                        toast: true,
+                        background: '#e8f5e9',
+                        color: '#1b5e20',
+                         customClass: {
+                            popup: 'mt-5'
+                        }
+                    });
+                    
+                } else {
+                    showAlert(data.message || 'Erreur lors de la suppression', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors de la suppression', 'danger');
+            });
+        }
+    });
 }
 
 // 🗑️ L'ancienne fonction `refreshData` est supprimée.

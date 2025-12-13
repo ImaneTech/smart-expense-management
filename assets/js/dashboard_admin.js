@@ -1,6 +1,7 @@
 // Définition de l'URL de l'API
 const API_URL = 'http://localhost/smart-expense-management/api/admin.php';
 let currentFilter = 'all';
+let allDemandes = []; // Store all fetched demands for local searching
 
 // 💡 CORRECTION : La variable doit inclure "liste_demandes.php"
 const isDashboardView = !(
@@ -29,7 +30,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadDemandes();
     setupModalStatutMapping();
+
+    // Add Search Listener
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function (e) {
+            filterDemandesBySearch(e.target.value);
+        });
+    }
 });
+
+function filterDemandesBySearch(searchTerm) {
+    if (!searchTerm) {
+        displayDemandes(allDemandes);
+        return;
+    }
+
+    const lowerTerm = searchTerm.toLowerCase();
+    const filtered = allDemandes.filter(d => {
+        const user = (d.utilisateur_nom || d.utilisateur || '').toLowerCase();
+        const objet = (d.objet_mission || '').toLowerCase();
+        const statut = (d.statut || '').toLowerCase();
+        const montant = (d.montant_total || '').toString();
+
+        return user.includes(lowerTerm) ||
+            objet.includes(lowerTerm) ||
+            statut.includes(lowerTerm) ||
+            montant.includes(lowerTerm);
+    });
+
+    displayDemandes(filtered);
+}
 
 /**
  * Initialise les selects de statut dans les modals pour utiliser les clés standardisées.
@@ -93,6 +124,7 @@ function loadDemandes(statut = null) {
         .then(text => {
             try {
                 const data = JSON.parse(text); // Essayer de parser le texte en JSON
+                allDemandes = data; // Save to global variable
                 displayDemandes(data);
             } catch (e) {
                 // Si le parsing JSON échoue, cela signifie que le serveur a renvoyé du texte HTML ou une erreur PHP.
@@ -218,12 +250,17 @@ function getBadgeStyle(statut) {
         case 'validee_manager':
         case 'Approuvée Compta':
         case 'validee_admin':
+        case 'Validée': // Admin status
+        case 'Validée Admin':
+        case 'validee':
         case 'Payée':
         case 'payee':
             colors = "background-color: #E8F5E9; color: #2E7D32; border-color: #C8E6C9;";
             break;
         case 'Rejetée Manager':
         case 'rejetee':
+        case 'Rejetée': // Admin status
+        case 'Rejetée Admin':
             colors = "background-color: #FFEBEE; color: #C62828; border-color: #FFCDD2;";
             break;
     }

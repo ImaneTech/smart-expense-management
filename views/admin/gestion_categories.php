@@ -18,9 +18,14 @@ if (!defined('BASE_URL')) {
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/components.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/table_layout.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/gestion_categories.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="<?= BASE_URL ?>assets/js/gestion_categories.js"></script>
 
 <div class="container-fluid p-4">
+
+    <!-- Flash Messages -->
+    <?php require_once BASE_PATH . 'includes/flash.php'; ?>
+    <?php displayFlash(); ?>
 
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>

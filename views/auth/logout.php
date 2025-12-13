@@ -1,7 +1,7 @@
 <?php
 // Configuration
 $redirect_url = 'login.php';
-$redirect_delay = 20;
+$redirect_delay = 6;
 
 // --- DÉCONNEXION ---
 

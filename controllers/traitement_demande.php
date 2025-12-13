@@ -29,7 +29,8 @@ try {
     }
 
 } catch (Exception $e) {
-    $_SESSION['error_message'] = "Erreur système : " . $e->getMessage();
+    require_once __DIR__ . '/../includes/flash.php';
+    setFlash('danger', "Erreur système : " . $e->getMessage());
     header('Location: ' . BASE_URL . 'views/manager/demandes_liste.php');
     exit;
 }
