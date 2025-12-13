@@ -1,4 +1,3 @@
-# gestion-frais
 # Système de Gestion des Frais de Déplacement
 
 ## Description
@@ -70,4 +69,4 @@ Elle permet aux employés de soumettre des demandes de remboursement, aux manage
 ## Installation
 1. Cloner le dépôt :
    ```bash
-   git clone https://github.com/votre-utilisateur/gestion-frais.git
+   git clone https://github.com/ImaneTech/gestion-frais.git
